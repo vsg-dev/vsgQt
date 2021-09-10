@@ -1,12 +1,11 @@
 #include <vsg/all.h>
 #include <vsgXchange/all.h>
 
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMainWindow>
+#include <QPlatformSurfaceEvent>
 #include <QVulkanInstance>
 #include <QWindow>
-#include <QPlatformSurfaceEvent>
-
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMainWindow>
 
 #include <vulkan/vulkan.h>
 
@@ -28,26 +27,26 @@ const char* instanceExtensionSurfaceName()
 #endif
 }
 
-VulkanWindow::VulkanWindow() : QWindow()
+VulkanWindow::VulkanWindow() :
+    QWindow()
 {
     setSurfaceType(QSurface::VulkanSurface);
 }
 
 VulkanWindow::~VulkanWindow()
 {
-    std::cout<<"VulkanWindow::~VulkanWindow() destrcutor"<<std::endl;
+    std::cout << "VulkanWindow::~VulkanWindow() destrcutor" << std::endl;
     delete vulkanInstance;
 }
 
 void VulkanWindow::exposeEvent(QExposeEvent* e)
 {
-    std::cout<<"vulkanWindow.isExposed() = "<<isExposed()<<std::endl;
+    std::cout << "vulkanWindow.isExposed() = " << isExposed() << std::endl;
     if (!_initialized && isExposed())
     {
         _initialized = true;
 
-
-        std::cout<<"    initializaing VulkanWindow"<<std::endl;
+        std::cout << "    initializaing VulkanWindow" << std::endl;
 
         const auto rect = e->region().boundingRect();
         const uint32_t width = static_cast<uint32_t>(rect.width());
@@ -57,8 +56,8 @@ void VulkanWindow::exposeEvent(QExposeEvent* e)
         traits->height = height;
         traits->fullscreen = false;
 
-
-        std::cout<<"    width = "<<width<<", height = "<<height<<std::endl;
+        std::cout << "    width = " << width << ", height = " << height
+                  << std::endl;
 
         // create instance
         vsg::Names instanceExtensions;
@@ -71,10 +70,12 @@ void VulkanWindow::exposeEvent(QExposeEvent* e)
         {
             instanceExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
             requestedLayers.push_back("VK_LAYER_KHRONOS_validation");
-            if (traits->apiDumpLayer) requestedLayers.push_back("VK_LAYER_LUNARG_api_dump");
+            if (traits->apiDumpLayer)
+                requestedLayers.push_back("VK_LAYER_LUNARG_api_dump");
         }
 
-        vsg::Names validatedNames = vsg::validateInstancelayerNames(requestedLayers);
+        vsg::Names validatedNames =
+            vsg::validateInstancelayerNames(requestedLayers);
 
         instance = vsg::Instance::create(instanceExtensions, validatedNames);
 

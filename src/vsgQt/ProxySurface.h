@@ -5,13 +5,13 @@
 namespace vsgQt
 {
 
-class ProxySurface : public vsg::Inherit<vsg::Surface, ProxySurface>
-{
-public:
-    ProxySurface(VkSurfaceKHR surface, vsg::Instance* instance);
+    class ProxySurface : public vsg::Inherit<vsg::Surface, ProxySurface>
+    {
+    public:
+        ProxySurface(VkSurfaceKHR surface, vsg::Instance* instance);
 
-protected:
-    virtual ~ProxySurface();
-};
+    protected:
+        virtual ~ProxySurface();
+    };
 
-}
+} // namespace vsgQt

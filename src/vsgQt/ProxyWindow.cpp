@@ -4,9 +4,9 @@
 
 using namespace vsgQt;
 
-ProxyWindow::ProxyWindow(VulkanWindow *win, vsg::ref_ptr<vsg::WindowTraits> traits)
-    : Inherit(traits)
-    , _window(win)
+ProxyWindow::ProxyWindow(VulkanWindow* win,
+                         vsg::ref_ptr<vsg::WindowTraits> traits) :
+    Inherit(traits), _window(win)
 {
     _instance = win->instance;
 
@@ -21,7 +21,7 @@ ProxyWindow::ProxyWindow(VulkanWindow *win, vsg::ref_ptr<vsg::WindowTraits> trai
     traits->nativeWindow = win;
 }
 
-bool ProxyWindow::pollEvents(vsg::UIEvents &events)
+bool ProxyWindow::pollEvents(vsg::UIEvents& events)
 {
     if (bufferedEvents.size() > 0)
     {
@@ -66,11 +66,11 @@ const char* ProxyWindow::instanceExtensionSurfaceName() const
 
 void ProxyWindow::_initSurface()
 {
-    _surface = ProxySurface::create(QVulkanInstance::surfaceForWindow(_window), _instance);
+    _surface = ProxySurface::create(QVulkanInstance::surfaceForWindow(_window),
+                                    _instance);
 }
 
 ProxyWindow::~ProxyWindow()
 {
     clear();
 }
-

@@ -1,11 +1,10 @@
 #pragma once
 
-
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMainWindow>
+#include <QPlatformSurfaceEvent>
 #include <QVulkanInstance>
 #include <QWindow>
-#include <QPlatformSurfaceEvent>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMainWindow>
 
 #include <vulkan/vulkan.h>
 
@@ -15,36 +14,36 @@
 namespace vsgQt
 {
 
-class VulkanWindow : public QWindow
-{
-public:
+    class VulkanWindow : public QWindow
+    {
+    public:
+        VulkanWindow();
+        virtual ~VulkanWindow();
 
-    VulkanWindow();
-    virtual ~VulkanWindow();
+        vsg::ref_ptr<vsg::WindowTraits> traits;
+        vsg::ref_ptr<vsg::Instance> instance;
+        vsg::ref_ptr<ProxySurface> proxySurface;
+        vsg::ref_ptr<ProxyWindow> proxyWindow;
 
-    vsg::ref_ptr<vsg::WindowTraits> traits;
-    vsg::ref_ptr<vsg::Instance> instance;
-    vsg::ref_ptr<ProxySurface> proxySurface;
-    vsg::ref_ptr<ProxyWindow> proxyWindow;
+    protected:
+        bool event(QEvent* e) override
+        {
+            return QWindow::event(e);
+        } // QEvent::UpdateRequest -> render winndow?
 
-protected:
+        void exposeEvent(QExposeEvent* e) override;
+        void keyPressEvent(QKeyEvent*) override{};
+        void keyReleaseEvent(QKeyEvent*) override{};
+        void mouseMoveEvent(QMouseEvent*) override{};
+        void mousePressEvent(QMouseEvent*) override{};
+        void mouseReleaseEvent(QMouseEvent*) override{};
+        void resizeEvent(QResizeEvent*) override{};
+        void moveEvent(QMoveEvent*) override{};
+        void wheelEvent(QWheelEvent*) override{};
 
-    bool event(QEvent *e) override { return QWindow::event(e); } // QEvent::UpdateRequest -> render winndow?
+    private:
+        bool _initialized = false;
+        QVulkanInstance* vulkanInstance = nullptr;
+    };
 
-    void exposeEvent(QExposeEvent *e) override;
-    void keyPressEvent(QKeyEvent *) override {};
-    void keyReleaseEvent(QKeyEvent *) override {};
-    void mouseMoveEvent(QMouseEvent *) override {};
-    void mousePressEvent(QMouseEvent *) override {};
-    void mouseReleaseEvent(QMouseEvent *) override {};
-    void resizeEvent(QResizeEvent *) override {};
-    void moveEvent(QMoveEvent *) override {};
-    void wheelEvent(QWheelEvent *) override {};
-
-private:
-
-    bool _initialized = false;
-    QVulkanInstance* vulkanInstance = nullptr;
-};
-
-}
+} // namespace vsgQt
