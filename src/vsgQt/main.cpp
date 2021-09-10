@@ -1,11 +1,20 @@
 #include <vsg/all.h>
 #include <vsgXchange/all.h>
 
-#include <QApplication>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMainWindow>
+#include <QVulkanInstance>
+#include <QWindow>
+#include <QPlatformSurfaceEvent>
+
+
+#include <vulkan/vulkan.h>
+
+#include "VulkanWindow.h"
+
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
     vsg::CommandLine arguments(&argc, argv);
 
     // set up vsg::Options to pass in filepaths and ReaderWriter's and other IO realted options to use when reading and writing files.
@@ -50,9 +59,21 @@ int main(int argc, char *argv[])
 
     if (useQt)
     {
-        //MainWindow w;
-        //w.show();
-        return a.exec();
+        QApplication application(argc, argv);
+
+        QMainWindow* mainWindow = new QMainWindow();
+
+        auto* vulkanWindow = new vsgQt::VulkanWindow();
+        vulkanWindow->traits = windowTraits;
+
+        auto widget = QWidget::createWindowContainer(vulkanWindow, mainWindow);
+        mainWindow->setCentralWidget(widget);
+
+        mainWindow->resize(windowTraits->width, windowTraits->height);
+
+        mainWindow->show();
+
+        return application.exec();
     }
     else
     {
