@@ -42,7 +42,7 @@ VulkanWindow::~VulkanWindow()
 
 void VulkanWindow::render()
 {
-    std::cout << __func__<<std::endl;
+    std::cout << __func__ << std::endl;
 #if 0
     if (p->viewer->advanceToNextFrame())
     {
@@ -55,7 +55,7 @@ void VulkanWindow::render()
     //requestUpdate();
 }
 
-bool VulkanWindow::event(QEvent *e)
+bool VulkanWindow::event(QEvent* e)
 {
     switch (e->type())
     {
@@ -124,11 +124,11 @@ void VulkanWindow::exposeEvent(QExposeEvent* e)
     }
 }
 
-void VulkanWindow::keyPressEvent(QKeyEvent *e)
+void VulkanWindow::keyPressEvent(QKeyEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout<<__func__<<std::endl;
+    std::cout << __func__ << std::endl;
 
     vsg::KeySymbol keySymbol, modifiedKeySymbol;
     vsg::KeyModifier keyModifier;
@@ -143,11 +143,11 @@ void VulkanWindow::keyPressEvent(QKeyEvent *e)
     }
 }
 
-void VulkanWindow::keyReleaseEvent(QKeyEvent *e)
+void VulkanWindow::keyReleaseEvent(QKeyEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout<<__func__<<std::endl;
+    std::cout << __func__ << std::endl;
 
     vsg::KeySymbol keySymbol, modifiedKeySymbol;
     vsg::KeyModifier keyModifier;
@@ -159,11 +159,11 @@ void VulkanWindow::keyReleaseEvent(QKeyEvent *e)
     }
 }
 
-void VulkanWindow::mouseMoveEvent(QMouseEvent *e)
+void VulkanWindow::mouseMoveEvent(QMouseEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout<<__func__<<std::endl;
+    std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -180,11 +180,11 @@ void VulkanWindow::mouseMoveEvent(QMouseEvent *e)
     proxyWindow->bufferedEvents.emplace_back(new vsg::MoveEvent(proxyWindow, event_time, e->x(), e->y(), (vsg::ButtonMask)button));
 }
 
-void VulkanWindow::mousePressEvent(QMouseEvent *e)
+void VulkanWindow::mousePressEvent(QMouseEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout<<__func__<<std::endl;
+    std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -201,11 +201,11 @@ void VulkanWindow::mousePressEvent(QMouseEvent *e)
     proxyWindow->bufferedEvents.emplace_back(new vsg::ButtonPressEvent(proxyWindow, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
 }
 
-void VulkanWindow::mouseReleaseEvent(QMouseEvent *e)
+void VulkanWindow::mouseReleaseEvent(QMouseEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout<<__func__<<std::endl;
+    std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -222,31 +222,31 @@ void VulkanWindow::mouseReleaseEvent(QMouseEvent *e)
     proxyWindow->bufferedEvents.emplace_back(new vsg::ButtonReleaseEvent(proxyWindow, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
 }
 
-void VulkanWindow::resizeEvent(QResizeEvent *e)
+void VulkanWindow::resizeEvent(QResizeEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout<<__func__<<std::endl;
+    std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
     proxyWindow->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(proxyWindow, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));
 }
 
-void VulkanWindow::moveEvent(QMoveEvent *e)
+void VulkanWindow::moveEvent(QMoveEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout<<__func__<<std::endl;
+    std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
     proxyWindow->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(proxyWindow, event_time, e->pos().x(), e->pos().y(), static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
 }
 
-void VulkanWindow::wheelEvent(QWheelEvent *e)
+void VulkanWindow::wheelEvent(QWheelEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout<<__func__<<std::endl;
+    std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
     proxyWindow->bufferedEvents.emplace_back(new vsg::ScrollWheelEvent(proxyWindow, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));

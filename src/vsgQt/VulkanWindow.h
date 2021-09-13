@@ -8,9 +8,9 @@
 
 #include <vulkan/vulkan.h>
 
+#include "KeyboardMap.h"
 #include "ProxySurface.h"
 #include "ProxyWindow.h"
-#include "KeyboardMap.h"
 
 namespace vsgQt
 {
@@ -28,10 +28,9 @@ namespace vsgQt
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
     protected:
-
         void render();
 
-        bool event(QEvent *e) override;
+        bool event(QEvent* e) override;
 
         void exposeEvent(QExposeEvent*) override;
         void keyPressEvent(QKeyEvent*) override;

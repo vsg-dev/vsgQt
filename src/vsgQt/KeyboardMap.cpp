@@ -2,8 +2,8 @@
 
 using namespace vsgQt;
 
-KeyboardMap::KeyboardMap()
-    : _keycodeMap{
+KeyboardMap::KeyboardMap() :
+    _keycodeMap{
         {0x0, vsg::KEY_Undefined},
         {Qt::Key_Space, vsg::KEY_Space},
 
@@ -229,11 +229,11 @@ KeyboardMap::KeyboardMap()
 
         /* Modifiers */
 
-        {Qt::Key_Shift, vsg::KEY_Shift_L},     /* Left shift */
+        {Qt::Key_Shift, vsg::KEY_Shift_L}, /* Left shift */
         //            {VK_RSHIFT, KEY_Shift_R},     /* Right shift */
         //            {VK_LCONTROL, KEY_Control_L}, /* Left control */
         {Qt::Key_Control, vsg::KEY_Control_R}, /* Right control */
-        {Qt::Key_CapsLock, vsg::KEY_Caps_Lock}  /* Caps lock */
+        {Qt::Key_CapsLock, vsg::KEY_Caps_Lock} /* Caps lock */
         //KEY_Shift_Lock = 0xFFE6, /* Shift lock */
 
         //KEY_Meta_L = 0xFFE7,  /* Left meta */
@@ -248,7 +248,7 @@ KeyboardMap::KeyboardMap()
 {
 }
 
-bool KeyboardMap::getKeySymbol(const QKeyEvent *e, vsg::KeySymbol &keySymbol, vsg::KeySymbol &modifiedKeySymbol, vsg::KeyModifier &keyModifier)
+bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vsg::KeySymbol& modifiedKeySymbol, vsg::KeyModifier& keyModifier)
 {
     auto itr = _keycodeMap.find((uint32_t)e->key());
 

@@ -12,7 +12,7 @@ namespace vsgQt
     public:
         KeyboardMap();
 
-        bool getKeySymbol(const QKeyEvent *e, vsg::KeySymbol &keySymbol, vsg::KeySymbol &modifiedKeySymbol, vsg::KeyModifier &keyModifier);
+        bool getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vsg::KeySymbol& modifiedKeySymbol, vsg::KeyModifier& keyModifier);
 
     protected:
         using VirtualKeyToKeySymbolMap = std::map<uint16_t, vsg::KeySymbol>;
