@@ -2,13 +2,15 @@
 
 #include <vsg/viewer/Window.h>
 
+#include <vsgQt/Export.h>
+
 namespace vsgQt
 {
 
     // forward declare
     class VulkanWindow;
 
-    class ProxyWindow : public vsg::Inherit<vsg::Window, ProxyWindow>
+    class VSGQT_DECLSPEC ProxyWindow : public vsg::Inherit<vsg::Window, ProxyWindow>
     {
     public:
         ProxyWindow(VulkanWindow* win, vsg::ref_ptr<vsg::WindowTraits> traits);

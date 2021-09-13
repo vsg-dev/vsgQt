@@ -1,6 +1,8 @@
-#include "ProxyWindow.h"
-#include "ProxySurface.h"
-#include "VulkanWindow.h"
+
+#include <vsgQt/ProxyWindow.h>
+#include <vsgQt/VulkanWindow.h>
+
+#include <QVulkanInstance>
 
 using namespace vsgQt;
 

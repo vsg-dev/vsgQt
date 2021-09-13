@@ -1,21 +1,27 @@
 #pragma once
 
-#include <QPlatformSurfaceEvent>
-#include <QVulkanInstance>
+namespace vsg
+{
+    class WindowTraits;
+    class Instance;
+}
+
+class QEvent;
+
+#include <vsgQt/ProxySurface.h>
+#include <vsgQt/ProxyWindow.h>
+#include <vsgQt/KeyboardMap.h>
+
 #include <QWindow>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMainWindow>
-
-#include <vulkan/vulkan.h>
-
-#include "KeyboardMap.h"
-#include "ProxySurface.h"
-#include "ProxyWindow.h"
 
 namespace vsgQt
 {
 
-    class VulkanWindow : public QWindow
+    // forward declare
+    class ProxySurface;
+    class ProxyWindow;
+
+    class VSGQT_DECLSPEC VulkanWindow : public QWindow
     {
     public:
         VulkanWindow();

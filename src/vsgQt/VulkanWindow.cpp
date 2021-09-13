@@ -1,5 +1,7 @@
 #include <vsg/all.h>
+#ifdef vsgXchange_FOUND
 #include <vsgXchange/all.h>
+#endif
 
 #include <QPlatformSurfaceEvent>
 #include <QVulkanInstance>
@@ -9,10 +11,10 @@
 
 #include <vulkan/vulkan.h>
 
-#include "ProxyWindow.h"
-#include "VulkanWindow.h"
+#include <vsgQt/VulkanWindow.h>
 
 using namespace vsgQt;
+
 
 const char* instanceExtensionSurfaceName()
 {
@@ -77,7 +79,7 @@ void VulkanWindow::exposeEvent(QExposeEvent* e)
     {
         _initialized = true;
 
-        std::cout << "    initializaing VulkanWindow" << std::endl;
+        std::cout << "    initializing VulkanWindow" << std::endl;
 
         const auto rect = e->region().boundingRect();
         const uint32_t width = static_cast<uint32_t>(rect.width());

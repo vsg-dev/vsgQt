@@ -1,4 +1,4 @@
-#include "KeyboardMap.h"
+#include <vsgQt/KeyboardMap.h>
 
 using namespace vsgQt;
 

@@ -9,7 +9,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "VulkanWindow.h"
+#include <vsgQt/VulkanWindow.h>
 
 int main(int argc, char* argv[])
 {
@@ -21,9 +21,10 @@ int main(int argc, char* argv[])
     options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
     options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
 
+#ifdef vsgXchange_FOUND
     // add vsgXchange's support for reading and writing 3rd party file formats
     options->add(vsgXchange::all::create());
-
+#endif
     arguments.read(options);
 
     auto windowTraits = vsg::WindowTraits::create();

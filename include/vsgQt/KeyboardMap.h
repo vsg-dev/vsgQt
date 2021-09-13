@@ -4,10 +4,12 @@
 
 #include <vsg/ui/KeyEvent.h>
 
+#include <vsgQt/Export.h>
+
 namespace vsgQt
 {
 
-    class KeyboardMap : public vsg::Inherit<vsg::Object, KeyboardMap>
+    class VSGQT_DECLSPEC KeyboardMap : public vsg::Inherit<vsg::Object, KeyboardMap>
     {
     public:
         KeyboardMap();
