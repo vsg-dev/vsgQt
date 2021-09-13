@@ -42,22 +42,30 @@ VulkanWindow::~VulkanWindow()
 
 void VulkanWindow::render()
 {
-    std::cout << __func__ << std::endl;
-
-    if (viewer && viewer->advanceToNextFrame())
+    if (viewer)
     {
-        viewer->handleEvents();
-        viewer->update();
-        viewer->recordAndSubmit();
-        viewer->present();
+        if (viewer->advanceToNextFrame())
+        {
+            // std::cout << __func__ << std::endl;
+            viewer->handleEvents();
+            viewer->update();
+            viewer->recordAndSubmit();
+            viewer->present();
+
+            // continue rendering
+            requestUpdate();
+        }
+        else
+        {
+            QCoreApplication::exit(0);
+        }
     }
 
-    requestUpdate();
 }
 
 bool VulkanWindow::event(QEvent* e)
 {
-    std::cout << __func__ << std::endl;
+    //std::cout << __func__ << std::endl;
     switch (e->type())
     {
     case QEvent::UpdateRequest:
@@ -125,7 +133,9 @@ void VulkanWindow::exposeEvent(QExposeEvent* e)
             vsg::clock::time_point event_time = vsg::clock::now();
             proxyWindow->bufferedEvents.emplace_back(new vsg::ExposeWindowEvent(proxyWindow, event_time, rect.x(), rect.y(), width, height));
 
-            render();
+            if (initializeCallback) initializeCallback(*this);
+
+            requestUpdate();
         }
     }
 }
@@ -138,9 +148,6 @@ void VulkanWindow::keyPressEvent(QKeyEvent* e)
 
     vsg::KeySymbol keySymbol, modifiedKeySymbol;
     vsg::KeyModifier keyModifier;
-
-    //    if (e->key() == Qt::Key_Escape)
-    //        QCoreApplication::exit(0);
 
     if (keyboardMap->getKeySymbol(e, keySymbol, modifiedKeySymbol, keyModifier))
     {
@@ -169,7 +176,7 @@ void VulkanWindow::mouseMoveEvent(QMouseEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout << __func__ << std::endl;
+    // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -190,7 +197,7 @@ void VulkanWindow::mousePressEvent(QMouseEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout << __func__ << std::endl;
+    // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -211,7 +218,7 @@ void VulkanWindow::mouseReleaseEvent(QMouseEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout << __func__ << std::endl;
+    // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -232,7 +239,7 @@ void VulkanWindow::resizeEvent(QResizeEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout << __func__ << std::endl;
+    // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
     proxyWindow->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(proxyWindow, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));
@@ -242,7 +249,7 @@ void VulkanWindow::moveEvent(QMoveEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout << __func__ << std::endl;
+    // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
     proxyWindow->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(proxyWindow, event_time, e->pos().x(), e->pos().y(), static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
@@ -252,7 +259,7 @@ void VulkanWindow::wheelEvent(QWheelEvent* e)
 {
     if (!proxyWindow) return;
 
-    std::cout << __func__ << std::endl;
+    // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
     proxyWindow->bufferedEvents.emplace_back(new vsg::ScrollWheelEvent(proxyWindow, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));

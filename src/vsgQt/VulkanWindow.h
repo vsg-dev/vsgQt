@@ -29,6 +29,9 @@ namespace vsgQt
         vsg::ref_ptr<ProxyWindow> proxyWindow;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
+        using InitialCallback = std::function<void(VulkanWindow&)>;
+        InitialCallback initializeCallback;
+
     protected:
         void render();
 
