@@ -73,13 +73,15 @@ int main(int argc, char* argv[])
 
         auto* vulkanWindow = new vsgQt::VulkanWindow();
         vulkanWindow->traits = windowTraits;
-        vulkanWindow->initializeCallback = [&](vsgQt::VulkanWindow& window) {
-            std::cout<<"Need to initilize "<<&window<<std::endl;
+        vulkanWindow->initializeCallback = [&](vsgQt::VulkanWindow& vw) {
 
-            if (!window.viewer)
+            auto& viewer = vw.viewer;
+            auto& window = vw.proxyWindow;
+
+            if (!viewer)
             {
-                window.viewer = vsg::Viewer::create();
-                window.viewer->addWindow(window.proxyWindow);
+                viewer = vsg::Viewer::create();
+                viewer->addWindow(window);
             }
 
             // compute the bounds of the scene graph to help position camera
@@ -104,32 +106,31 @@ int main(int argc, char* argv[])
             {
                 perspective = vsg::EllipsoidPerspective::create(
                     lookAt, ellipsoidModel, 30.0,
-                    static_cast<double>(window.proxyWindow->extent2D().width) /
-                        static_cast<double>(window.proxyWindow->extent2D().height),
+                    static_cast<double>(window->extent2D().width) /
+                        static_cast<double>(window->extent2D().height),
                     nearFarRatio, horizonMountainHeight);
             }
             else
             {
                 perspective = vsg::Perspective::create(
                     30.0,
-                    static_cast<double>(window.proxyWindow->extent2D().width) /
-                        static_cast<double>(window.proxyWindow->extent2D().height),
+                    static_cast<double>(window->extent2D().width) /
+                        static_cast<double>(window->extent2D().height),
                     nearFarRatio * radius, radius * 4.5);
             }
 
             auto camera = vsg::Camera::create(
-                perspective, lookAt, vsg::ViewportState::create(window.proxyWindow->extent2D()));
+                perspective, lookAt, vsg::ViewportState::create(window->extent2D()));
 
             // add close handler to respond the close window button and pressing
             // escape
-            window.viewer->addEventHandler(vsg::CloseHandler::create(window.viewer));
-            window.viewer->addEventHandler(vsg::Trackball::create(camera, ellipsoidModel));
+            viewer->addEventHandler(vsg::CloseHandler::create(viewer));
+            viewer->addEventHandler(vsg::Trackball::create(camera, ellipsoidModel));
 
-            auto commandGraph =
-                vsg::createCommandGraphForView(window.proxyWindow, camera, vsg_scene);
-            window.viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
+            auto commandGraph = vsg::createCommandGraphForView(window, camera, vsg_scene);
+            viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
 
-            window.viewer->compile();
+            viewer->compile();
 
         };
 
