@@ -10,6 +10,7 @@
 
 #include "ProxySurface.h"
 #include "ProxyWindow.h"
+#include "KeyboardMap.h"
 
 namespace vsgQt
 {
@@ -24,22 +25,23 @@ namespace vsgQt
         vsg::ref_ptr<vsg::Instance> instance;
         vsg::ref_ptr<ProxySurface> proxySurface;
         vsg::ref_ptr<ProxyWindow> proxyWindow;
+        vsg::ref_ptr<KeyboardMap> keyboardMap;
 
     protected:
-        bool event(QEvent* e) override
-        {
-            return QWindow::event(e);
-        } // QEvent::UpdateRequest -> render winndow?
 
-        void exposeEvent(QExposeEvent* e) override;
-        void keyPressEvent(QKeyEvent*) override{};
-        void keyReleaseEvent(QKeyEvent*) override{};
-        void mouseMoveEvent(QMouseEvent*) override{};
-        void mousePressEvent(QMouseEvent*) override{};
-        void mouseReleaseEvent(QMouseEvent*) override{};
-        void resizeEvent(QResizeEvent*) override{};
-        void moveEvent(QMoveEvent*) override{};
-        void wheelEvent(QWheelEvent*) override{};
+        void render();
+
+        bool event(QEvent *e) override;
+
+        void exposeEvent(QExposeEvent*) override;
+        void keyPressEvent(QKeyEvent*) override;
+        void keyReleaseEvent(QKeyEvent*) override;
+        void mouseMoveEvent(QMouseEvent*) override;
+        void mousePressEvent(QMouseEvent*) override;
+        void mouseReleaseEvent(QMouseEvent*) override;
+        void resizeEvent(QResizeEvent*) override;
+        void moveEvent(QMoveEvent*) override;
+        void wheelEvent(QWheelEvent*) override;
 
     private:
         bool _initialized = false;
