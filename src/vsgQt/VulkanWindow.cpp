@@ -43,20 +43,21 @@ VulkanWindow::~VulkanWindow()
 void VulkanWindow::render()
 {
     std::cout << __func__ << std::endl;
-#if 0
-    if (p->viewer->advanceToNextFrame())
+
+    if (viewer && viewer->advanceToNextFrame())
     {
-        p->viewer->handleEvents();
-        p->viewer->update();
-        p->viewer->recordAndSubmit();
-        p->viewer->present();
+        viewer->handleEvents();
+        viewer->update();
+        viewer->recordAndSubmit();
+        viewer->present();
     }
-#endif
-    //requestUpdate();
+
+    requestUpdate();
 }
 
 bool VulkanWindow::event(QEvent* e)
 {
+    std::cout << __func__ << std::endl;
     switch (e->type())
     {
     case QEvent::UpdateRequest:
@@ -123,6 +124,8 @@ void VulkanWindow::exposeEvent(QExposeEvent* e)
 
             vsg::clock::time_point event_time = vsg::clock::now();
             proxyWindow->bufferedEvents.emplace_back(new vsg::ExposeWindowEvent(proxyWindow, event_time, rect.x(), rect.y(), width, height));
+
+            render();
         }
     }
 }

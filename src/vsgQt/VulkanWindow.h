@@ -23,6 +23,8 @@ namespace vsgQt
 
         vsg::ref_ptr<vsg::WindowTraits> traits;
         vsg::ref_ptr<vsg::Instance> instance;
+        vsg::ref_ptr<vsg::Viewer> viewer;
+
         vsg::ref_ptr<ProxySurface> proxySurface;
         vsg::ref_ptr<ProxyWindow> proxyWindow;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
