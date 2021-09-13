@@ -120,6 +120,9 @@ void VulkanWindow::exposeEvent(QExposeEvent* e)
             setVulkanInstance(vulkanInstance);
 
             proxyWindow = ProxyWindow::create(this, traits);
+
+            vsg::clock::time_point event_time = vsg::clock::now();
+            proxyWindow->bufferedEvents.emplace_back(new vsg::ExposeWindowEvent(proxyWindow, event_time, rect.x(), rect.y(), width, height));
         }
     }
 }
