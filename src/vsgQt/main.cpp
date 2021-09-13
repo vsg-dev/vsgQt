@@ -39,10 +39,6 @@ int main(int argc, char* argv[])
     }
     auto horizonMountainHeight = arguments.value(0.0, "--hmh");
 
-    auto useQt = arguments.read("--qt");
-    if (arguments.read("--vsg"))
-        useQt = false;
-
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
 
@@ -64,10 +60,20 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    auto initViewer = [&](vsg::ref_ptr<vsg::Viewer>& viewer, vsg::ref_ptr<vsg::Window>& window) -> void
-    {
+    QApplication application(argc, argv);
+
+    QMainWindow* mainWindow = new QMainWindow();
+
+    auto* vulkanWindow = new vsgQt::VulkanWindow();
+    vulkanWindow->traits = windowTraits;
+
+    vulkanWindow->initializeCallback = [&](vsgQt::VulkanWindow& vw) {
+
+        auto& window = vw.proxyWindow;
+        if (!window) return false;
+
+        auto& viewer = vw.viewer;
         if (!viewer) viewer = vsg::Viewer::create();
-        if (!window) window = vsg::Window::create(windowTraits);
 
         viewer->addWindow(window);
 
@@ -82,8 +88,7 @@ int main(int argc, char* argv[])
         auto lookAt = vsg::LookAt::create(centre + vsg::dvec3(0.0, -radius * 3.5, 0.0), centre, vsg::dvec3(0.0, 0.0, 1.0));
 
         vsg::ref_ptr<vsg::ProjectionMatrix> perspective;
-        vsg::ref_ptr<vsg::EllipsoidModel> ellipsoidModel(
-            vsg_scene->getObject<vsg::EllipsoidModel>("EllipsoidModel"));
+        vsg::ref_ptr<vsg::EllipsoidModel> ellipsoidModel(vsg_scene->getObject<vsg::EllipsoidModel>("EllipsoidModel"));
         if (ellipsoidModel)
         {
             perspective = vsg::EllipsoidPerspective::create(
@@ -103,8 +108,7 @@ int main(int argc, char* argv[])
 
         auto camera = vsg::Camera::create(perspective, lookAt, vsg::ViewportState::create(window->extent2D()));
 
-        // add close handler to respond the close window button and pressing
-        // escape
+        // add close handler to respond the close window button and pressing escape
         viewer->addEventHandler(vsg::CloseHandler::create(viewer));
         viewer->addEventHandler(vsg::Trackball::create(camera, ellipsoidModel));
 
@@ -112,79 +116,32 @@ int main(int argc, char* argv[])
         viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
 
         viewer->compile();
+
+        return true;
     };
 
-    if (useQt)
-    {
-        QApplication application(argc, argv);
+    vulkanWindow->frameCallback = [](vsgQt::VulkanWindow& vw) {
 
-        QMainWindow* mainWindow = new QMainWindow();
+        if (!vw.viewer || !vw.viewer->advanceToNextFrame()) return false;
 
-        auto* vulkanWindow = new vsgQt::VulkanWindow();
-        vulkanWindow->traits = windowTraits;
+        // pass any events into EventHandlers assigned to the Viewer
+        vw.viewer->handleEvents();
 
-        vulkanWindow->initializeCallback = [&](vsgQt::VulkanWindow& vw) {
-            vsg::ref_ptr<vsg::Window> window = vw.proxyWindow;
-            initViewer(vw.viewer, window);
-        };
+        vw.viewer->update();
 
-        vulkanWindow->frameCallback = [](vsgQt::VulkanWindow& vw) {
+        vw.viewer->recordAndSubmit();
 
-            if (!vw.viewer || !vw.viewer->advanceToNextFrame()) return false;
+        vw.viewer->present();
 
-            // pass any events into EventHandlers assigned to the Viewer
-            vw.viewer->handleEvents();
+        return true;
+    };
 
-            vw.viewer->update();
+    auto widget = QWidget::createWindowContainer(vulkanWindow, mainWindow);
+    mainWindow->setCentralWidget(widget);
 
-            vw.viewer->recordAndSubmit();
+    mainWindow->resize(windowTraits->width, windowTraits->height);
 
-            vw.viewer->present();
+    mainWindow->show();
 
-            return true;
-        };
-
-        auto widget = QWidget::createWindowContainer(vulkanWindow, mainWindow);
-        mainWindow->setCentralWidget(widget);
-
-        mainWindow->resize(windowTraits->width, windowTraits->height);
-
-        mainWindow->show();
-
-        return application.exec();
-    }
-    else
-    {
-        try
-        {
-            // create the viewer and assign window(s) to it
-            vsg::ref_ptr<vsg::Viewer> viewer;
-            vsg::ref_ptr<vsg::Window> window;
-            initViewer(viewer, window);
-
-            // rendering main loop
-            while (viewer->advanceToNextFrame())
-            {
-                // pass any events into EventHandlers assigned to the Viewer
-                viewer->handleEvents();
-
-                viewer->update();
-
-                viewer->recordAndSubmit();
-
-                viewer->present();
-            }
-        }
-        catch (const vsg::Exception& ve)
-        {
-            for (int i = 0; i < argc; ++i)
-                std::cerr << argv[i] << " ";
-            std::cerr << "\n[Exception] - " << ve.message << " result = " << ve.result
-                      << std::endl;
-            return 1;
-        }
-
-        // clean up done automatically thanks to ref_ptr<>
-        return 0;
-    }
+    return application.exec();
 }
