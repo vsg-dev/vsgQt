@@ -30,10 +30,8 @@ int main(int argc, char* argv[])
     windowTraits->windowTitle = "vsgviewer";
     windowTraits->debugLayer = arguments.read({"--debug", "-d"});
     windowTraits->apiDumpLayer = arguments.read({"--api", "-a"});
-    if (arguments.read({"--fullscreen", "--fs"}))
-        windowTraits->fullscreen = true;
-    if (arguments.read({"--window", "-w"}, windowTraits->width,
-                       windowTraits->height))
+    if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
+    if (arguments.read({"--window", "-w"}, windowTraits->width,windowTraits->height))
     {
         windowTraits->fullscreen = false;
     }
