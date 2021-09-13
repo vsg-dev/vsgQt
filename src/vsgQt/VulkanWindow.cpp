@@ -42,7 +42,19 @@ VulkanWindow::~VulkanWindow()
 
 void VulkanWindow::render()
 {
-    if (viewer)
+    if (frameCallback)
+    {
+        if (frameCallback(*this))
+        {
+            // continue rendering
+            requestUpdate();
+        }
+        else
+        {
+            QCoreApplication::exit(0);
+        }
+    }
+    else if (viewer)
     {
         if (viewer->advanceToNextFrame())
         {

@@ -122,9 +122,26 @@ int main(int argc, char* argv[])
 
         auto* vulkanWindow = new vsgQt::VulkanWindow();
         vulkanWindow->traits = windowTraits;
+
         vulkanWindow->initializeCallback = [&](vsgQt::VulkanWindow& vw) {
             vsg::ref_ptr<vsg::Window> window = vw.proxyWindow;
             initViewer(vw.viewer, window);
+        };
+
+        vulkanWindow->frameCallback = [](vsgQt::VulkanWindow& vw) {
+
+            if (!vw.viewer || !vw.viewer->advanceToNextFrame()) return false;
+
+            // pass any events into EventHandlers assigned to the Viewer
+            vw.viewer->handleEvents();
+
+            vw.viewer->update();
+
+            vw.viewer->recordAndSubmit();
+
+            vw.viewer->present();
+
+            return true;
         };
 
         auto widget = QWidget::createWindowContainer(vulkanWindow, mainWindow);

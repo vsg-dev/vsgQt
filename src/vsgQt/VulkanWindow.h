@@ -32,6 +32,9 @@ namespace vsgQt
         using InitialCallback = std::function<void(VulkanWindow&)>;
         InitialCallback initializeCallback;
 
+        using FrameCallback = std::function<bool(VulkanWindow&)>;
+        FrameCallback frameCallback;
+
     protected:
         void render();
 
