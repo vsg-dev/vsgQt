@@ -60,7 +60,6 @@ void VulkanWindow::render()
             QCoreApplication::exit(0);
         }
     }
-
 }
 
 bool VulkanWindow::event(QEvent* e)
