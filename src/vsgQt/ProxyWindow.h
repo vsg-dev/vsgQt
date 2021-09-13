@@ -6,12 +6,12 @@ namespace vsgQt
 {
 
     // forward declare
-    class VulkanWindow;
+    class ViewerWindow;
 
     class ProxyWindow : public vsg::Inherit<vsg::Window, ProxyWindow>
     {
     public:
-        ProxyWindow(VulkanWindow* win, vsg::ref_ptr<vsg::WindowTraits> traits);
+        ProxyWindow(ViewerWindow* win, vsg::ref_ptr<vsg::WindowTraits> traits);
 
         ProxyWindow() = delete;
         ProxyWindow(const Window&) = delete;
@@ -35,7 +35,7 @@ namespace vsgQt
 
         virtual ~ProxyWindow() override;
 
-        VulkanWindow* _window = nullptr;
+        ViewerWindow* _window = nullptr;
     };
 
 } // namespace vsgQt

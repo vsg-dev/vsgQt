@@ -1,10 +1,10 @@
 #include "ProxyWindow.h"
 #include "ProxySurface.h"
-#include "VulkanWindow.h"
+#include "ViewerWindow.h"
 
 using namespace vsgQt;
 
-ProxyWindow::ProxyWindow(VulkanWindow* win,
+ProxyWindow::ProxyWindow(ViewerWindow* win,
                          vsg::ref_ptr<vsg::WindowTraits> traits) :
     Inherit(traits), _window(win)
 {

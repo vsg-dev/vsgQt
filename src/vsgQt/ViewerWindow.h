@@ -15,11 +15,11 @@
 namespace vsgQt
 {
 
-    class VulkanWindow : public QWindow
+    class ViewerWindow : public QWindow
     {
     public:
-        VulkanWindow();
-        virtual ~VulkanWindow();
+        ViewerWindow();
+        virtual ~ViewerWindow();
 
         vsg::ref_ptr<vsg::WindowTraits> traits;
         vsg::ref_ptr<vsg::Instance> instance;
@@ -29,10 +29,10 @@ namespace vsgQt
         vsg::ref_ptr<ProxyWindow> proxyWindow;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
-        using InitialCallback = std::function<void(VulkanWindow&)>;
+        using InitialCallback = std::function<void(ViewerWindow&)>;
         InitialCallback initializeCallback;
 
-        using FrameCallback = std::function<bool(VulkanWindow&)>;
+        using FrameCallback = std::function<bool(ViewerWindow&)>;
         FrameCallback frameCallback;
 
     protected:

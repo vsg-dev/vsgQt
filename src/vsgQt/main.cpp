@@ -9,7 +9,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "VulkanWindow.h"
+#include "ViewerWindow.h"
 
 int main(int argc, char* argv[])
 {
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     arguments.read(options);
 
     auto windowTraits = vsg::WindowTraits::create();
-    windowTraits->windowTitle = "vsgviewer";
+    windowTraits->windowTitle = "vsgQt viewer";
     windowTraits->debugLayer = arguments.read({"--debug", "-d"});
     windowTraits->apiDumpLayer = arguments.read({"--api", "-a"});
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
@@ -62,10 +62,10 @@ int main(int argc, char* argv[])
 
     QMainWindow* mainWindow = new QMainWindow();
 
-    auto* vulkanWindow = new vsgQt::VulkanWindow();
+    auto* vulkanWindow = new vsgQt::ViewerWindow();
     vulkanWindow->traits = windowTraits;
 
-    vulkanWindow->initializeCallback = [&](vsgQt::VulkanWindow& vw) {
+    vulkanWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw) {
 
         auto& window = vw.proxyWindow;
         if (!window) return false;
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
         return true;
     };
 
-    vulkanWindow->frameCallback = [](vsgQt::VulkanWindow& vw) {
+    vulkanWindow->frameCallback = [](vsgQt::ViewerWindow& vw) {
 
         if (!vw.viewer || !vw.viewer->advanceToNextFrame()) return false;
 

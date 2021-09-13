@@ -47,7 +47,7 @@ set(CMAKE_AUTOUIC ON)
 set(SOURCES
     src/vsgQt/ProxySurface.cpp
     src/vsgQt/ProxyWindow.cpp
-    src/vsgQt/VulkanWindow.cpp
+    src/vsgQt/ViewerWindow.cpp
     src/vsgQt/KeyboardMap.cpp
     src/vsgQt/main.cpp
 )

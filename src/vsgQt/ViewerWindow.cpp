@@ -10,7 +10,7 @@
 #include <vulkan/vulkan.h>
 
 #include "ProxyWindow.h"
-#include "VulkanWindow.h"
+#include "ViewerWindow.h"
 
 using namespace vsgQt;
 
@@ -27,20 +27,20 @@ const char* instanceExtensionSurfaceName()
 #endif
 }
 
-VulkanWindow::VulkanWindow() :
+ViewerWindow::ViewerWindow() :
     QWindow()
 {
     setSurfaceType(QSurface::VulkanSurface);
     keyboardMap = vsgQt::KeyboardMap::create();
 }
 
-VulkanWindow::~VulkanWindow()
+ViewerWindow::~ViewerWindow()
 {
-    std::cout << "VulkanWindow::~VulkanWindow() destrcutor" << std::endl;
+    std::cout << "ViewerWindow::~ViewerWindow() destrcutor" << std::endl;
     delete vulkanInstance;
 }
 
-void VulkanWindow::render()
+void ViewerWindow::render()
 {
     if (frameCallback)
     {
@@ -74,7 +74,7 @@ void VulkanWindow::render()
     }
 }
 
-bool VulkanWindow::event(QEvent* e)
+bool ViewerWindow::event(QEvent* e)
 {
     //std::cout << __func__ << std::endl;
     switch (e->type())
@@ -90,14 +90,14 @@ bool VulkanWindow::event(QEvent* e)
     return QWindow::event(e);
 }
 
-void VulkanWindow::exposeEvent(QExposeEvent* e)
+void ViewerWindow::exposeEvent(QExposeEvent* e)
 {
     std::cout << "vulkanWindow.isExposed() = " << isExposed() << std::endl;
     if (!_initialized && isExposed())
     {
         _initialized = true;
 
-        std::cout << "    initializaing VulkanWindow" << std::endl;
+        std::cout << "    initializaing ViewerWindow" << std::endl;
 
         const auto rect = e->region().boundingRect();
         const uint32_t width = static_cast<uint32_t>(rect.width());
@@ -151,7 +151,7 @@ void VulkanWindow::exposeEvent(QExposeEvent* e)
     }
 }
 
-void VulkanWindow::keyPressEvent(QKeyEvent* e)
+void ViewerWindow::keyPressEvent(QKeyEvent* e)
 {
     if (!proxyWindow) return;
 
@@ -167,7 +167,7 @@ void VulkanWindow::keyPressEvent(QKeyEvent* e)
     }
 }
 
-void VulkanWindow::keyReleaseEvent(QKeyEvent* e)
+void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
 {
     if (!proxyWindow) return;
 
@@ -183,7 +183,7 @@ void VulkanWindow::keyReleaseEvent(QKeyEvent* e)
     }
 }
 
-void VulkanWindow::mouseMoveEvent(QMouseEvent* e)
+void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
 {
     if (!proxyWindow) return;
 
@@ -204,7 +204,7 @@ void VulkanWindow::mouseMoveEvent(QMouseEvent* e)
     proxyWindow->bufferedEvents.emplace_back(new vsg::MoveEvent(proxyWindow, event_time, e->x(), e->y(), (vsg::ButtonMask)button));
 }
 
-void VulkanWindow::mousePressEvent(QMouseEvent* e)
+void ViewerWindow::mousePressEvent(QMouseEvent* e)
 {
     if (!proxyWindow) return;
 
@@ -225,7 +225,7 @@ void VulkanWindow::mousePressEvent(QMouseEvent* e)
     proxyWindow->bufferedEvents.emplace_back(new vsg::ButtonPressEvent(proxyWindow, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
 }
 
-void VulkanWindow::mouseReleaseEvent(QMouseEvent* e)
+void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
 {
     if (!proxyWindow) return;
 
@@ -246,7 +246,7 @@ void VulkanWindow::mouseReleaseEvent(QMouseEvent* e)
     proxyWindow->bufferedEvents.emplace_back(new vsg::ButtonReleaseEvent(proxyWindow, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
 }
 
-void VulkanWindow::resizeEvent(QResizeEvent* e)
+void ViewerWindow::resizeEvent(QResizeEvent* e)
 {
     if (!proxyWindow) return;
 
@@ -256,7 +256,7 @@ void VulkanWindow::resizeEvent(QResizeEvent* e)
     proxyWindow->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(proxyWindow, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));
 }
 
-void VulkanWindow::moveEvent(QMoveEvent* e)
+void ViewerWindow::moveEvent(QMoveEvent* e)
 {
     if (!proxyWindow) return;
 
@@ -266,7 +266,7 @@ void VulkanWindow::moveEvent(QMoveEvent* e)
     proxyWindow->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(proxyWindow, event_time, e->pos().x(), e->pos().y(), static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
 }
 
-void VulkanWindow::wheelEvent(QWheelEvent* e)
+void ViewerWindow::wheelEvent(QWheelEvent* e)
 {
     if (!proxyWindow) return;
 
