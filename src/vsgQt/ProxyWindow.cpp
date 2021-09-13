@@ -1,6 +1,6 @@
-#include "ProxyWindow.h"
-#include "ProxySurface.h"
-#include "ViewerWindow.h"
+#include <vsgQt/ProxyWindow.h>
+#include <vsgQt/ProxySurface.h>
+#include <vsgQt/ViewerWindow.h>
 
 using namespace vsgQt;
 

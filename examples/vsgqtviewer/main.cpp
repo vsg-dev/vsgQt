@@ -1,15 +1,12 @@
 #include <vsg/all.h>
 #include <vsgXchange/all.h>
 
-#include <QPlatformSurfaceEvent>
-#include <QVulkanInstance>
-#include <QWindow>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
 
 #include <vulkan/vulkan.h>
 
-#include "ViewerWindow.h"
+#include <vsgQt/ViewerWindow.h>
 
 int main(int argc, char* argv[])
 {

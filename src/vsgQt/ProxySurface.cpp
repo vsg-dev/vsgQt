@@ -1,4 +1,4 @@
-#include "ProxySurface.h"
+#include <vsgQt/ProxySurface.h>
 
 #include <iostream>
 

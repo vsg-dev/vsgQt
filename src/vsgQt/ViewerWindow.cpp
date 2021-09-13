@@ -9,8 +9,8 @@
 
 #include <vulkan/vulkan.h>
 
-#include "ProxyWindow.h"
-#include "ViewerWindow.h"
+#include <vsgQt/ProxyWindow.h>
+#include <vsgQt/ViewerWindow.h>
 
 using namespace vsgQt;
 
