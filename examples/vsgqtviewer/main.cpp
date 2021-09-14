@@ -109,6 +109,8 @@ int main(int argc, char* argv[])
 
         // add close handler to respond the close window button and pressing escape
         viewer->addEventHandler(vsg::CloseHandler::create(viewer));
+
+        // add trackball to enable mouse driven camera view control.
         viewer->addEventHandler(vsg::Trackball::create(camera, ellipsoidModel));
 
         auto commandGraph = vsg::createCommandGraphForView(window, camera, vsg_scene);
