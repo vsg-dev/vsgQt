@@ -21,6 +21,7 @@ vsgQtConfig.cmake
 vsgQtConfigVersion.cmake
 *_autogen/
 *vsgQtConfig.cmake.in
+include/vsgQt/Export.h
 
 # Compiled Object files
 *.slo

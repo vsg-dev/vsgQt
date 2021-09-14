@@ -1,5 +1,5 @@
-#include <vsgQt/ProxyWindow.h>
 #include <vsgQt/ProxySurface.h>
+#include <vsgQt/ProxyWindow.h>
 #include <vsgQt/ViewerWindow.h>
 
 #include <QPlatformSurfaceEvent>
