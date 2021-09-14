@@ -1,39 +1,42 @@
-#pragma once
 
-/* <editor-fold desc="MIT License">
+#ifndef VSGQT_DECLSPEC_H
+#define VSGQT_DECLSPEC_H
 
-Copyright(c) 2021 Robert Osfield
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-</editor-fold> */
-
-#if (defined(_MSC_VER) || defined(__CYGWIN__) || defined(__MINGW32__))
-#    if defined(vsgQt_EXPORTS)
-#        define VSGQT_DECLSPEC __declspec(dllexport)
-#    elif defined(VSGQT_SHARED_LIBRARY)
-#        define VSGQT_DECLSPEC __declspec(dllimport)
-#    else
-#        define VSGQT_DECLSPEC
-#    endif
+#ifdef VSGQT_STATIC_DEFINE
+#  define VSGQT_DECLSPEC
+#  define VSGQT_NO_EXPORT
 #else
-#    define VSGQT_DECLSPEC
+#  ifndef VSGQT_DECLSPEC
+#    ifdef vsgQt_EXPORTS
+        /* We are building this library */
+#      define VSGQT_DECLSPEC 
+#    else
+        /* We are using this library */
+#      define VSGQT_DECLSPEC 
+#    endif
+#  endif
+
+#  ifndef VSGQT_NO_EXPORT
+#    define VSGQT_NO_EXPORT 
+#  endif
 #endif
 
-#define GIS_API VSGQT_DECLSPEC
-#define GIS_DISABLE_INCLUDE_IMCONFIG_H
+#ifndef VSGQT_DEPRECATED
+#  define VSGQT_DEPRECATED __attribute__ ((__deprecated__))
+#endif
+
+#ifndef VSGQT_DEPRECATED_EXPORT
+#  define VSGQT_DEPRECATED_EXPORT VSGQT_DECLSPEC VSGQT_DEPRECATED
+#endif
+
+#ifndef VSGQT_DEPRECATED_NO_EXPORT
+#  define VSGQT_DEPRECATED_NO_EXPORT VSGQT_NO_EXPORT VSGQT_DEPRECATED
+#endif
+
+#if 0 /* DEFINE_NO_DEPRECATED */
+#  ifndef VSGQT_NO_DEPRECATED
+#    define VSGQT_NO_DEPRECATED
+#  endif
+#endif
+
+#endif /* VSGQT_DECLSPEC_H */

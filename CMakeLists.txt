@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(vsg REQUIRED)
 find_package(vsgXchange)
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 5.10 COMPONENTS Widgets REQUIRED)
 
 vsg_setup_build_vars()
 vsg_setup_dir_vars()
