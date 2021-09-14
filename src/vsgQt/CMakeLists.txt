@@ -64,6 +64,11 @@ target_link_libraries(vsgQt
 )
 
 add_library_export_header(vsgQt)
+
+if (NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(vsgQt INTERFACE VSGQT_STATIC_DEFINE)
+endif()
+
 install(TARGETS vsgQt ${INSTALL_TARGETS_DEFAULT_FLAGS})
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/vsgQt DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
