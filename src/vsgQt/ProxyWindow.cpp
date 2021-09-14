@@ -2,6 +2,9 @@
 #include <vsgQt/ProxySurface.h>
 #include <vsgQt/ViewerWindow.h>
 
+#include <QPlatformSurfaceEvent>
+#include <QVulkanInstance>
+
 using namespace vsgQt;
 
 ProxyWindow::ProxyWindow(ViewerWindow* win,
