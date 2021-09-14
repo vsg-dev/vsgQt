@@ -20,6 +20,7 @@ Doxyfile.docs
 vsgQtConfig.cmake
 vsgQtConfigVersion.cmake
 *_autogen/
+*vsgQtConfig.cmake.in
 
 # Compiled Object files
 *.slo
