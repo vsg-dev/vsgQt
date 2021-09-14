@@ -62,10 +62,11 @@ int main(int argc, char* argv[])
 
     QMainWindow* mainWindow = new QMainWindow();
 
-    auto* vulkanWindow = new vsgQt::ViewerWindow();
-    vulkanWindow->traits = windowTraits;
+    auto* viewerWindow = new vsgQt::ViewerWindow();
+    viewerWindow->traits = windowTraits;
 
-    vulkanWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw) {
+    // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::ViewerWindow
+    viewerWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw) {
 
         auto& window = vw.proxyWindow;
         if (!window) return false;
@@ -118,7 +119,8 @@ int main(int argc, char* argv[])
         return true;
     };
 
-    vulkanWindow->frameCallback = [](vsgQt::ViewerWindow& vw) {
+    // provide the calls to invokve the vsg::Viewer to render a frame.
+    viewerWindow->frameCallback = [](vsgQt::ViewerWindow& vw) {
 
         if (!vw.viewer || !vw.viewer->advanceToNextFrame()) return false;
 
@@ -134,7 +136,7 @@ int main(int argc, char* argv[])
         return true;
     };
 
-    auto widget = QWidget::createWindowContainer(vulkanWindow, mainWindow);
+    auto widget = QWidget::createWindowContainer(viewerWindow, mainWindow);
     mainWindow->setCentralWidget(widget);
 
     mainWindow->resize(windowTraits->width, windowTraits->height);
