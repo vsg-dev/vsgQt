@@ -1,5 +1,7 @@
 #include <vsg/all.h>
+#ifdef vsgXchange_FOUND
 #include <vsgXchange/all.h>
+#endif
 
 #include <QPlatformSurfaceEvent>
 #include <QVulkanInstance>

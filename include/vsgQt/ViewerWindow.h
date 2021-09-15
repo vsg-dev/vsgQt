@@ -23,7 +23,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 namespace vsgQt
 {
 
-    class VSG_DECLSPEC ViewerWindow : public QWindow
+    class VSGQT_DECLSPEC ViewerWindow : public QWindow
     {
     public:
         ViewerWindow();
