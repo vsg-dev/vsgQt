@@ -1,5 +1,5 @@
 # vsgQt
-C++ library providing integration of VulkanSceneGraph with Qt windowing.
+[Open Source](LICENSE.md), cross platform (Windows, Linux, macOS) C++ library providing integration of VulkanSceneGraph with Qt windowing.
 
 ## Checking out vsgQt
 
