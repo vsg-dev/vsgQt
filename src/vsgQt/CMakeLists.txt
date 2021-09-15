@@ -25,6 +25,11 @@ macro(add_library_export_header _TARGET)
         EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/include/${_TARGET}/Export.h
     )
     install(FILES ${CMAKE_BINARY_DIR}/include/${_TARGET}/Export.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${_TARGET})
+
+    # pass the creation mode to the corresponding target in the cmake
+    if(NOT BUILD_SHARED_LIBS)
+        target_compile_definitions(${_TARGET} INTERFACE ${TARGET_UPPER}_STATIC_DEFINE)
+    endif()
 endmacro()
 
 set(SOURCES
@@ -63,11 +68,11 @@ target_link_libraries(vsgQt
         vsg::vsg
 )
 
-add_library_export_header(vsgQt)
-
-if (NOT BUILD_SHARED_LIBS)
-    target_compile_definitions(vsgQt INTERFACE VSGQT_STATIC_DEFINE)
+if(vsgXchange_FOUND)
+    target_link_libraries(vsgQt PRIVATE vsgXchange::vsgXchange)
 endif()
+
+add_library_export_header(vsgQt)
 
 install(TARGETS vsgQt ${INSTALL_TARGETS_DEFAULT_FLAGS})
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/vsgQt DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

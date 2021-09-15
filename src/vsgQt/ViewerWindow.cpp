@@ -11,7 +11,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 </editor-fold> */
 
 #include <vsg/all.h>
+#ifdef vsgXchange_FOUND
 #include <vsgXchange/all.h>
+#endif
 
 #include <QPlatformSurfaceEvent>
 #include <QVulkanInstance>
