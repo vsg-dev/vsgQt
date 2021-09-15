@@ -1,13 +1,13 @@
 # vsgQt
-Qt integration with VulkanSceneGraph
+C++ library providing integration of VulkanSceneGraph with Qt windowing.
 
 ## Checking out vsgQt
 
     git clone https://github.com/vsg-dev/vsgQt.git
 
-## Required dependencies:
+## Dependencies:
 
-* [VulkanSDK](https://www.lunarg.com/vulkan-sdk/)
+* [VulkanSDK](https://www.lunarg.com/vulkan-sdk/) minimum version 1.2.162
 * [VulkanSceneGraph](https://github.com/vsg-dev/VulkanSceneGraph)
 * [CMake](https://cmake.org/) minimum version 3.7
 * [Qt](https://www.qt.io/) minimum version 5.10 or later
