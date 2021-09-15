@@ -10,7 +10,7 @@ Qt integration with VulkanSceneGraph
 * [VulkanSDK](https://www.lunarg.com/vulkan-sdk/)
 * [VulkanSceneGraph](https://github.com/vsg-dev/VulkanSceneGraph)
 * [CMake](https://cmake.org/) minimum version 3.7
-* [Qt](https://qt.org/) minimum version 5.10 or later
+* [Qt](https://www.qt.io/) minimum version 5.10 or later
 * C++17 capable compiler
 
 ## Building vsgQt
