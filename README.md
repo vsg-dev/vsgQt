@@ -17,8 +17,6 @@ Qt, and hence vsgQt, is suited for interactive, event driven applications. For r
 
 ## Building vsgQt
 
-The first run of cmake will automatically checkout imgui as a submodule when required.
-
     cd vsgQt
     cmake .
     make -j 8
