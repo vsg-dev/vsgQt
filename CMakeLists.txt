@@ -12,7 +12,7 @@ set(vsgQt_RELEASE_CANDIDATE 0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(vsg REQUIRED)
+find_package(vsg 0.1.6 REQUIRED)
 find_package(vsgXchange) # only used by exanples
 find_package(Qt5 5.10 COMPONENTS Widgets REQUIRED)
 
