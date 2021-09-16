@@ -12,9 +12,12 @@ set(vsgQt_RELEASE_CANDIDATE 0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(QT_PACKAGE_NAME Qt5 CACHE STRING "Set Qt package name, i.e. Qt5 or Qt6.")
+set(QT_PACKAGE_VERSION 5.10 CACHE STRING "Set minimum Qt package version.")
+
 find_package(vsg 0.1.6 REQUIRED)
 find_package(vsgXchange) # only used by exanples
-find_package(Qt5 5.10 COMPONENTS Widgets REQUIRED)
+find_package(${QT_PACKAGE_NAME} ${QT_PACKAGE_VERSION} COMPONENTS Widgets REQUIRED)
 
 vsg_setup_build_vars()
 vsg_setup_dir_vars()

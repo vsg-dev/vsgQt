@@ -64,7 +64,7 @@ target_include_directories(vsgQt
 )
 target_link_libraries(vsgQt
     PUBLIC
-        Qt5::Widgets
+        ${QT_PACKAGE_NAME}::Widgets
         vsg::vsg
 )
 
