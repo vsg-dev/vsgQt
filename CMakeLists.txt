@@ -51,7 +51,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 if(WIN32)
-    add_definitions(-DVK_USE_PLATFORM_WIN32_KHR)
+    add_definitions(-DVK_USE_PLATFORM_WIN32_KHR -DNOMINMAX)
     set(MODE WIN32)
 elseif(APPLE)
     add_definitions(-DVK_USE_PLATFORM_MACOS_MVK)
