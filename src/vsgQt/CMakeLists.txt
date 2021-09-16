@@ -62,11 +62,20 @@ target_include_directories(vsgQt
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(vsgQt
-    PUBLIC
-        Qt5::Widgets
-        vsg::vsg
-)
+
+if(APPLE)
+    target_link_libraries(vsgQt
+        PUBLIC
+            Qt6::Widgets
+            vsg::vsg
+    )
+else()
+    target_link_libraries(vsgQt
+        PUBLIC
+            Qt5::Widgets
+            vsg::vsg
+    )
+endif()
 
 if(vsgXchange_FOUND)
     target_link_libraries(vsgQt PRIVATE vsgXchange::vsgXchange)

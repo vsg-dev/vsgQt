@@ -13,8 +13,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(vsg 0.1.6 REQUIRED)
-find_package(vsgXchange) # only used by exanples
-find_package(Qt5 5.10 COMPONENTS Widgets REQUIRED)
+find_package(vsgXchange) # only used by examples
+
+if(APPLE)
+    find_package(Qt6 COMPONENTS Widgets REQUIRED)
+else()
+    find_package(Qt5 5.10 COMPONENTS Widgets REQUIRED)
+endif()
 
 vsg_setup_build_vars()
 vsg_setup_dir_vars()
@@ -50,8 +55,10 @@ set(CMAKE_AUTOUIC ON)
 if(WIN32)
     add_definitions(-DVK_USE_PLATFORM_WIN32_KHR)
     set(MODE WIN32)
-elseif(UNIX)
+elseif(UNIX AND NOT APPLE)
     add_definitions(-DVK_USE_PLATFORM_XCB_KHR)
+elseif(APPLE)
+    add_definitions(-DVK_USE_PLATFORM_MACOS_MVK)
 else()
     add_definitions(-DVK_USE_PLATFORM_XLIB_KHR)
 endif()
