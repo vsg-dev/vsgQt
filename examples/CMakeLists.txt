@@ -1,1 +1,2 @@
 add_subdirectory(vsgqtviewer)
+add_subdirectory(vsgqtnative)
