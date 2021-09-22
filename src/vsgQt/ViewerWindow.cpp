@@ -50,8 +50,16 @@ ViewerWindow::ViewerWindow() :
 
 ViewerWindow::~ViewerWindow()
 {
-    std::cout << "ViewerWindow::~ViewerWindow() destrcutor" << std::endl;
+    std::cout << "ViewerWindow::~ViewerWindow() destructor" << std::endl;
     delete vulkanInstance;
+}
+
+void ViewerWindow::cleanup()
+{
+    // remove links to all the VSG related classes.
+    proxySurface = {};
+    proxyWindow = {};
+    viewer = {};
 }
 
 void ViewerWindow::render()
@@ -65,6 +73,7 @@ void ViewerWindow::render()
         }
         else
         {
+            cleanup();
             QCoreApplication::exit(0);
         }
     }
@@ -83,6 +92,7 @@ void ViewerWindow::render()
         }
         else
         {
+            cleanup();
             QCoreApplication::exit(0);
         }
     }
@@ -96,6 +106,15 @@ bool ViewerWindow::event(QEvent* e)
     case QEvent::UpdateRequest:
         render();
         break;
+
+    case QEvent::PlatformSurface:
+    {
+        auto surfaceEvent = dynamic_cast<QPlatformSurfaceEvent*>(e);
+        if (surfaceEvent->surfaceEventType()==QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
+        {
+            cleanup();
+        }
+    }
 
     default:
         break;

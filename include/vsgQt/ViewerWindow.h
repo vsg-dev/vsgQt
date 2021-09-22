@@ -45,6 +45,7 @@ namespace vsgQt
 
     protected:
         void render();
+        void cleanup();
 
         bool event(QEvent* e) override;
 

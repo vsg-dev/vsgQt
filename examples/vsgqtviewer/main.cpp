@@ -124,7 +124,11 @@ int main(int argc, char* argv[])
     // provide the calls to invokve the vsg::Viewer to render a frame.
     viewerWindow->frameCallback = [](vsgQt::ViewerWindow& vw) {
 
-        if (!vw.viewer || !vw.viewer->advanceToNextFrame()) return false;
+        if (!vw.viewer || !vw.viewer->advanceToNextFrame())
+        {
+            std::cout<<"frameCallback inactive, vw.viewer = "<<vw.viewer<<std::endl;
+            return false;
+        }
 
         // pass any events into EventHandlers assigned to the Viewer
         vw.viewer->handleEvents();
