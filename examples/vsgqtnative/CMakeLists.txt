@@ -1,8 +1,10 @@
 set(SOURCES
     main.cpp
+    ViewerWindow2.cpp
 )
 
 set(HEADERS
+    ViewerWindow2.h
 )
 
 add_executable(vsgqtnative ${MODE} ${SOURCES} ${HEADERS} ${FORMS})

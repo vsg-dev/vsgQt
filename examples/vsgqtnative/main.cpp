@@ -12,6 +12,8 @@
 
 #include <vsgQt/ViewerWindow.h>
 
+#include "ViewerWindow2.h"
+
 int main(int argc, char* argv[])
 {
     vsg::CommandLine arguments(&argc, argv);
@@ -142,12 +144,10 @@ int main(int argc, char* argv[])
     auto mainWindow = new QMainWindow();
 
 
-    auto viewerWindow = new QWindow();
+    //auto viewerWindow = new QWindow();
+    auto viewerWindow = new vsgQt::ViewerWindow2();
 
-    auto xcbConnection = static_cast<xcb_connection_t *>(application.platformNativeInterface()->nativeResourceForIntegration(QByteArrayLiteral("connection")));
-
-
-    windowTraits->systemConnection = xcbConnection;
+    windowTraits->systemConnection = static_cast<xcb_connection_t *>(application.platformNativeInterface()->nativeResourceForIntegration(QByteArrayLiteral("connection")));
     windowTraits->nativeWindow = static_cast<xcb_window_t>(viewerWindow->winId());
 
     auto widget = QWidget::createWindowContainer(viewerWindow, mainWindow);
@@ -165,6 +165,9 @@ int main(int argc, char* argv[])
         std::cout << "Could not create windows." << std::endl;
         return 1;
     }
+
+    //viewerWindow->viewer = viewer;
+    viewerWindow->window = window;
 
     std::cout << "Created VSG window." <<window<< std::endl;
 
@@ -207,8 +210,7 @@ int main(int argc, char* argv[])
     // add trackball to enable mouse driven camera view control.
     viewer->addEventHandler(vsg::Trackball::create(camera, ellipsoidModel));
 
-    auto commandGraph = vsg::createCommandGraphForView(window, camera, vsg_scene);
-    viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
+    viewer->assignRecordAndSubmitTaskAndPresentation({vsg::createCommandGraphForView(window, camera, vsg_scene)});
 
     viewer->compile();
 
@@ -219,9 +221,8 @@ int main(int argc, char* argv[])
     //auto qtWindow = QWindow::fromWinId(std::any_cast<xcb_window_t>(windowTraits->nativeWindow));
     //qDebug()<<"qtWindow = "<< qtWindow;
 
-    std::thread frameThread([&viewer](){
-        // take a reference of the viewer to prevent it going out of scope while we are still running
-        auto local_viewer = viewer;
+    auto frameLoop = [](vsg::ref_ptr<vsg::Viewer> local_viewer)
+    {
         while (local_viewer->advanceToNextFrame())
         {
             std::cout<<"Frame"<<std::endl;
@@ -236,15 +237,27 @@ int main(int argc, char* argv[])
             local_viewer->present();
         }
         std::cout<<"Exciting frameloop"<<std::endl;
-    });
+    };
+
+    std::thread frameThread(frameLoop, viewer);
+
+    vsg_scene = {};
+    viewer = {};
+    window = {};
 
     bool result = application.exec();
 
-    viewer->status->set(false);
+    //viewer->status->set(false);
+    //viewer->close();
 
-    std::cout<<"Exiting "<<result<<std::endl;
+    std::cout<<"Exiting A "<<result<<std::endl;
 
-    frameThread.join();
+
+    std::cout<<"Exiting B "<<result<<std::endl;
+
+    //frameThread.join();
+
+    std::cout<<"Exiting C "<<result<<std::endl;
 
     return result;
 }
