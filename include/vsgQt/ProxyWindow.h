@@ -33,15 +33,11 @@ namespace vsgQt
         bool visible() const override { return _window != nullptr; }
         bool valid() const override { return _window != nullptr; }
 
-        bool pollEvents(vsg::UIEvents& events) override;
-
         bool resized() const override;
 
         void resize() override;
 
-        virtual const char* instanceExtensionSurfaceName() const override;
-
-        vsg::UIEvents bufferedEvents;
+        const char* instanceExtensionSurfaceName() const override;
 
     protected:
         virtual void _initSurface() override;

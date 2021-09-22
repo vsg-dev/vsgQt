@@ -123,6 +123,46 @@ bool ViewerWindow::event(QEvent* e)
     return QWindow::event(e);
 }
 
+class AdapterWindow : public vsg::Inherit<vsg::Window, AdapterWindow>
+{
+public:
+    AdapterWindow(vsg::ref_ptr<vsg::Surface> surface, vsg::ref_ptr<vsg::WindowTraits> traits) :
+        Inherit(traits)
+    {
+        if (surface)
+        {
+            _surface = surface;
+            _instance = surface->getInstance();
+        }
+        if (traits)
+        {
+            _extent2D.width = traits->width;
+            _extent2D.height = traits->height;
+        }
+    }
+
+    AdapterWindow() = delete;
+    AdapterWindow(const Window&) = delete;
+    AdapterWindow& operator=(const Window&) = delete;
+
+    const char* instanceExtensionSurfaceName() const override { return nullptr; }
+
+    VkExtent2D& extent2D() { return _extent2D; }
+
+    bool visible() const override { return true; }
+    bool valid() const override { return true; }
+
+    bool resized() const override { return false; }
+    void resize() override { buildSwapchain(); }
+
+protected:
+
+    virtual ~AdapterWindow() {}
+
+    void _initSurface() override {};
+};
+
+
 void ViewerWindow::exposeEvent(QExposeEvent* e)
 {
     std::cout << "vulkanWindow.isExposed() = " << isExposed() << std::endl;
@@ -140,8 +180,7 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
         traits->height = height;
         traits->fullscreen = false;
 
-        std::cout << "    width = " << width << ", height = " << height
-                  << std::endl;
+        std::cout << "    width = " << width << ", height = " << height << std::endl;
 
         // create instance
         vsg::Names instanceExtensions;
@@ -171,9 +210,13 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
         {
             // set up the window for Vulkan usage
             setVulkanInstance(vulkanInstance);
+#if 1
+            auto surface = ProxySurface::create(QVulkanInstance::surfaceForWindow(this), instance);
 
+            proxyWindow = new AdapterWindow(surface, traits);
+#else
             proxyWindow = ProxyWindow::create(this, traits);
-
+#endif
             vsg::clock::time_point event_time = vsg::clock::now();
             proxyWindow->bufferedEvents.emplace_back(new vsg::ExposeWindowEvent(proxyWindow, event_time, rect.x(), rect.y(), width, height));
 
@@ -284,6 +327,14 @@ void ViewerWindow::resizeEvent(QResizeEvent* e)
     if (!proxyWindow) return;
 
     // std::cout << __func__ << std::endl;
+
+    // AdapterWindow
+    auto adapterWindow = dynamic_cast<AdapterWindow*>(proxyWindow.get());
+    if (adapterWindow)
+    {
+        adapterWindow->extent2D().width = e->size().width();
+        adapterWindow->extent2D().height = e->size().height();
+    }
 
     vsg::clock::time_point event_time = vsg::clock::now();
     proxyWindow->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(proxyWindow, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));

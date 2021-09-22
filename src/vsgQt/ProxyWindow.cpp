@@ -36,18 +36,6 @@ ProxyWindow::ProxyWindow(ViewerWindow* win,
     traits->nativeWindow = win;
 }
 
-bool ProxyWindow::pollEvents(vsg::UIEvents& events)
-{
-    if (bufferedEvents.size() > 0)
-    {
-        events.splice(events.end(), bufferedEvents);
-        bufferedEvents.clear();
-        return true;
-    }
-
-    return false;
-}
-
 bool ProxyWindow::resized() const
 {
     const auto width = _window->width();
