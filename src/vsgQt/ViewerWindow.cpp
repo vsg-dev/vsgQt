@@ -44,8 +44,8 @@ const char* instanceExtensionSurfaceName()
 ViewerWindow::ViewerWindow() :
     QWindow()
 {
-    setSurfaceType(QSurface::VulkanSurface);
     keyboardMap = vsgQt::KeyboardMap::create();
+    //setSurfaceType(QSurface::VulkanSurface);
 }
 
 ViewerWindow::~ViewerWindow()
@@ -128,74 +128,91 @@ bool ViewerWindow::event(QEvent* e)
     return QWindow::event(e);
 }
 
+void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
+{
+    std::cout<<":intializeUsingAdapterWindow( "<<width<<",  "<<height<<")"<<std::endl;
+    _initialized = true;
+
+
+    traits->width = width;
+    traits->height = height;
+    traits->fullscreen = false;
+
+    // create instance
+    vsg::Names instanceExtensions;
+    vsg::Names requestedLayers;
+
+    //instanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+    instanceExtensions.push_back("VK_KHR_surface");
+    instanceExtensions.push_back(instanceExtensionSurfaceName());
+
+    if (traits->debugLayer || traits->apiDumpLayer)
+    {
+        instanceExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+        requestedLayers.push_back("VK_LAYER_KHRONOS_validation");
+        if (traits->apiDumpLayer)
+            requestedLayers.push_back("VK_LAYER_LUNARG_api_dump");
+    }
+
+    vsg::Names validatedNames =
+        vsg::validateInstancelayerNames(requestedLayers);
+
+    instance = vsg::Instance::create(instanceExtensions, validatedNames);
+
+    // create Qt wrapper of vkInstance
+    vulkanInstance = new QVulkanInstance;
+    vulkanInstance->setVkInstance(*instance);
+
+    if (vulkanInstance->create())
+    {
+        // set up the window for Vulkan usage
+        setVulkanInstance(vulkanInstance);
+
+        auto surface = vsg::Surface::create(QVulkanInstance::surfaceForWindow(this), instance);
+        windowAdapter = new vsg::WindowAdapter(surface, traits);
+
+        // vsg::clock::time_point event_time = vsg::clock::now();
+        // windowAdapter->bufferedEvents.emplace_back(new vsg::ExposeWindowEvent(windowAdapter, event_time, rect.x(), rect.y(), width, height));
+    }
+}
+
+void ViewerWindow::intializeUsingVSGWindow(uint32_t width, uint32_t height)
+{
+    _initialized = true;
+
+    //traits->systemConnection = static_cast<xcb_connection_t *>(application.platformNativeInterface()->nativeResourceForIntegration(QByteArrayLiteral("connection")));
+    traits->nativeWindow = static_cast<xcb_window_t>(winId());
+    traits->width = width;
+    traits->height = height;
+
+    windowAdapter = vsg::Window::create(traits);
+}
 
 void ViewerWindow::exposeEvent(QExposeEvent* e)
 {
     if (!_initialized && isExposed())
     {
-        _initialized = true;
-
         const auto rect = e->region().boundingRect();
         const uint32_t width = static_cast<uint32_t>(rect.width());
         const uint32_t height = static_cast<uint32_t>(rect.height());
 
-        traits->width = width;
-        traits->height = height;
-        traits->fullscreen = false;
+        if (initializeCallback) initializeCallback(*this, width, height);
 
-        // create instance
-        vsg::Names instanceExtensions;
-        vsg::Names requestedLayers;
-
-        instanceExtensions.push_back("VK_KHR_surface");
-        instanceExtensions.push_back(instanceExtensionSurfaceName());
-
-        if (traits->debugLayer || traits->apiDumpLayer)
-        {
-            instanceExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-            requestedLayers.push_back("VK_LAYER_KHRONOS_validation");
-            if (traits->apiDumpLayer)
-                requestedLayers.push_back("VK_LAYER_LUNARG_api_dump");
-        }
-
-        vsg::Names validatedNames =
-            vsg::validateInstancelayerNames(requestedLayers);
-
-        instance = vsg::Instance::create(instanceExtensions, validatedNames);
-
-        // create Qt wrapper of vkInstance
-        vulkanInstance = new QVulkanInstance;
-        vulkanInstance->setVkInstance(*instance);
-
-        if (vulkanInstance->create())
-        {
-            // set up the window for Vulkan usage
-            setVulkanInstance(vulkanInstance);
-
-            auto surface = vsg::Surface::create(QVulkanInstance::surfaceForWindow(this), instance);
-            windowAdapter = new vsg::WindowAdapter(surface, traits);
-
-            vsg::clock::time_point event_time = vsg::clock::now();
-            windowAdapter->bufferedEvents.emplace_back(new vsg::ExposeWindowEvent(windowAdapter, event_time, rect.x(), rect.y(), width, height));
-
-            if (initializeCallback) initializeCallback(*this);
-
-            requestUpdate();
-        }
+        requestUpdate();
     }
 
-    if (windowAdapter)
+    if (auto adapter = windowAdapter.cast<vsg::WindowAdapter>(); adapter)
     {
-        windowAdapter->windowValid = true;
-        windowAdapter->windowVisible = isExposed();
+        adapter->windowValid = true;
+        adapter->windowVisible = isExposed();
     }
 }
 
 void ViewerWindow::hideEvent(QHideEvent* /*e*/)
 {
-    if (windowAdapter)
+    if (auto adapter = windowAdapter.cast<vsg::WindowAdapter>(); adapter)
     {
-        windowAdapter->windowVisible = false;
+        adapter->windowVisible = false;
     }
 }
 
@@ -206,7 +223,10 @@ void ViewerWindow::resizeEvent(QResizeEvent* e)
     // std::cout << __func__ << std::endl;
 
     // WindowAdapter
-    windowAdapter->updateExtents(e->size().width(), e->size().height());
+    if (auto adapter = windowAdapter.cast<vsg::WindowAdapter>(); adapter)
+    {
+        adapter->updateExtents(e->size().width(), e->size().height());
+    }
 
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(windowAdapter, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));
