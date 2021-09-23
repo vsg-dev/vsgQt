@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
     // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::ViewerWindow
     viewerWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw) {
 
-        auto& window = vw.proxyWindow;
+        auto& window = vw.windowAdapter;
         if (!window) return false;
 
         auto& viewer = vw.viewer;

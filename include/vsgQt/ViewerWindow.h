@@ -16,9 +16,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <QVulkanInstance>
 #include <QWindow>
 
+#include <vsg/viewer/WindowAdapter.h>
+#include <vsg/viewer/WindowAdapter.h>
+
 #include <vsgQt/KeyboardMap.h>
-#include <vsgQt/ProxySurface.h>
-#include <vsgQt/ProxyWindow.h>
 
 namespace vsgQt
 {
@@ -33,8 +34,7 @@ namespace vsgQt
         vsg::ref_ptr<vsg::Instance> instance;
         vsg::ref_ptr<vsg::Viewer> viewer;
 
-        vsg::ref_ptr<ProxySurface> proxySurface;
-        vsg::ref_ptr<ProxyWindow> proxyWindow;
+        vsg::ref_ptr<vsg::WindowAdapter> windowAdapter;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
         using InitialCallback = std::function<void(ViewerWindow&)>;
@@ -50,6 +50,8 @@ namespace vsgQt
         bool event(QEvent* e) override;
 
         void exposeEvent(QExposeEvent*) override;
+        void hideEvent(QHideEvent *ev) override;
+
         void keyPressEvent(QKeyEvent*) override;
         void keyReleaseEvent(QKeyEvent*) override;
         void mouseMoveEvent(QMouseEvent*) override;
