@@ -57,8 +57,8 @@ ViewerWindow::~ViewerWindow()
 void ViewerWindow::cleanup()
 {
     // remove links to all the VSG related classes.
-    proxyWindow->getSurface()->release();
-    proxyWindow = {};
+    windowAdapter->getSurface()->release();
+    windowAdapter = {};
     viewer = {};
 }
 
@@ -123,45 +123,6 @@ bool ViewerWindow::event(QEvent* e)
     return QWindow::event(e);
 }
 
-class AdapterWindow : public vsg::Inherit<vsg::Window, AdapterWindow>
-{
-public:
-    AdapterWindow(vsg::ref_ptr<vsg::Surface> surface, vsg::ref_ptr<vsg::WindowTraits> traits) :
-        Inherit(traits)
-    {
-        if (surface)
-        {
-            _surface = surface;
-            _instance = surface->getInstance();
-        }
-        if (traits)
-        {
-            _extent2D.width = traits->width;
-            _extent2D.height = traits->height;
-        }
-    }
-
-    AdapterWindow() = delete;
-    AdapterWindow(const Window&) = delete;
-    AdapterWindow& operator=(const Window&) = delete;
-
-    const char* instanceExtensionSurfaceName() const override { return nullptr; }
-
-    VkExtent2D& extent2D() { return _extent2D; }
-
-    bool visible() const override { return true; }
-    bool valid() const override { return true; }
-
-    bool resized() const override { return false; }
-    void resize() override { buildSwapchain(); }
-
-protected:
-
-    virtual ~AdapterWindow() {}
-
-    void _initSurface() override {};
-};
-
 
 void ViewerWindow::exposeEvent(QExposeEvent* e)
 {
@@ -210,26 +171,53 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
         {
             // set up the window for Vulkan usage
             setVulkanInstance(vulkanInstance);
-#if 1
-            auto surface = vsg::Surface::create(QVulkanInstance::surfaceForWindow(this), instance);
 
-            proxyWindow = new AdapterWindow(surface, traits);
-#else
-            proxyWindow = ProxyWindow::create(this, traits);
-#endif
+            auto surface = vsg::Surface::create(QVulkanInstance::surfaceForWindow(this), instance);
+            windowAdapter = new vsg::WindowAdapter(surface, traits);
+
             vsg::clock::time_point event_time = vsg::clock::now();
-            proxyWindow->bufferedEvents.emplace_back(new vsg::ExposeWindowEvent(proxyWindow, event_time, rect.x(), rect.y(), width, height));
+            windowAdapter->bufferedEvents.emplace_back(new vsg::ExposeWindowEvent(windowAdapter, event_time, rect.x(), rect.y(), width, height));
 
             if (initializeCallback) initializeCallback(*this);
 
             requestUpdate();
         }
     }
+
+    if (windowAdapter)
+    {
+        windowAdapter->windowValid = true;
+        windowAdapter->windowVisible = isExposed();
+    }
+}
+
+void ViewerWindow::hideEvent(QHideEvent* /*e*/)
+{
+    std::cout<<"ViewerWindow::hideEvent()"<<std::endl;
+    if (windowAdapter)
+    {
+        windowAdapter->windowVisible = false;
+    }
+}
+
+void ViewerWindow::resizeEvent(QResizeEvent* e)
+{
+    if (!windowAdapter) return;
+
+    // std::cout << __func__ << std::endl;
+
+    // WindowAdapter
+    windowAdapter->extent2D().width = e->size().width();
+    windowAdapter->extent2D().height = e->size().height();
+    windowAdapter->windowResized = true;
+
+    vsg::clock::time_point event_time = vsg::clock::now();
+    windowAdapter->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(windowAdapter, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));
 }
 
 void ViewerWindow::keyPressEvent(QKeyEvent* e)
 {
-    if (!proxyWindow) return;
+    if (!windowAdapter) return;
 
     std::cout << __func__ << std::endl;
 
@@ -239,13 +227,13 @@ void ViewerWindow::keyPressEvent(QKeyEvent* e)
     if (keyboardMap->getKeySymbol(e, keySymbol, modifiedKeySymbol, keyModifier))
     {
         vsg::clock::time_point event_time = vsg::clock::now();
-        proxyWindow->bufferedEvents.emplace_back(new vsg::KeyPressEvent(proxyWindow, event_time, keySymbol, modifiedKeySymbol, keyModifier));
+        windowAdapter->bufferedEvents.emplace_back(new vsg::KeyPressEvent(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
 }
 
 void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
 {
-    if (!proxyWindow) return;
+    if (!windowAdapter) return;
 
     std::cout << __func__ << std::endl;
 
@@ -255,13 +243,13 @@ void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
     if (keyboardMap->getKeySymbol(e, keySymbol, modifiedKeySymbol, keyModifier))
     {
         vsg::clock::time_point event_time = vsg::clock::now();
-        proxyWindow->bufferedEvents.emplace_back(new vsg::KeyReleaseEvent(proxyWindow, event_time, keySymbol, modifiedKeySymbol, keyModifier));
+        windowAdapter->bufferedEvents.emplace_back(new vsg::KeyReleaseEvent(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
 }
 
 void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
 {
-    if (!proxyWindow) return;
+    if (!windowAdapter) return;
 
     // std::cout << __func__ << std::endl;
 
@@ -277,12 +265,12 @@ void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
     default: button = 0; break;
     }
 
-    proxyWindow->bufferedEvents.emplace_back(new vsg::MoveEvent(proxyWindow, event_time, e->x(), e->y(), (vsg::ButtonMask)button));
+    windowAdapter->bufferedEvents.emplace_back(new vsg::MoveEvent(windowAdapter, event_time, e->x(), e->y(), (vsg::ButtonMask)button));
 }
 
 void ViewerWindow::mousePressEvent(QMouseEvent* e)
 {
-    if (!proxyWindow) return;
+    if (!windowAdapter) return;
 
     // std::cout << __func__ << std::endl;
 
@@ -298,12 +286,12 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
     default: button = 0; break;
     }
 
-    proxyWindow->bufferedEvents.emplace_back(new vsg::ButtonPressEvent(proxyWindow, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
+    windowAdapter->bufferedEvents.emplace_back(new vsg::ButtonPressEvent(windowAdapter, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
 }
 
 void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
 {
-    if (!proxyWindow) return;
+    if (!windowAdapter) return;
 
     // std::cout << __func__ << std::endl;
 
@@ -319,43 +307,25 @@ void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
     default: button = 0; break;
     }
 
-    proxyWindow->bufferedEvents.emplace_back(new vsg::ButtonReleaseEvent(proxyWindow, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
-}
-
-void ViewerWindow::resizeEvent(QResizeEvent* e)
-{
-    if (!proxyWindow) return;
-
-    // std::cout << __func__ << std::endl;
-
-    // AdapterWindow
-    auto adapterWindow = dynamic_cast<AdapterWindow*>(proxyWindow.get());
-    if (adapterWindow)
-    {
-        adapterWindow->extent2D().width = e->size().width();
-        adapterWindow->extent2D().height = e->size().height();
-    }
-
-    vsg::clock::time_point event_time = vsg::clock::now();
-    proxyWindow->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(proxyWindow, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));
+    windowAdapter->bufferedEvents.emplace_back(new vsg::ButtonReleaseEvent(windowAdapter, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
 }
 
 void ViewerWindow::moveEvent(QMoveEvent* e)
 {
-    if (!proxyWindow) return;
+    if (!windowAdapter) return;
 
     // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
-    proxyWindow->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(proxyWindow, event_time, e->pos().x(), e->pos().y(), static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
+    windowAdapter->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(windowAdapter, event_time, e->pos().x(), e->pos().y(), static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
 }
 
 void ViewerWindow::wheelEvent(QWheelEvent* e)
 {
-    if (!proxyWindow) return;
+    if (!windowAdapter) return;
 
     // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
-    proxyWindow->bufferedEvents.emplace_back(new vsg::ScrollWheelEvent(proxyWindow, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));
+    windowAdapter->bufferedEvents.emplace_back(new vsg::ScrollWheelEvent(windowAdapter, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));
 }
