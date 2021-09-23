@@ -50,14 +50,19 @@ ViewerWindow::ViewerWindow() :
 
 ViewerWindow::~ViewerWindow()
 {
-    std::cout << "ViewerWindow::~ViewerWindow() destructor" << std::endl;
+    cleanup();
+
     delete vulkanInstance;
 }
 
 void ViewerWindow::cleanup()
 {
     // remove links to all the VSG related classes.
-    windowAdapter->getSurface()->release();
+    if (windowAdapter)
+    {
+        windowAdapter->getSurface()->release();
+    }
+
     windowAdapter = {};
     viewer = {};
 }
@@ -126,12 +131,9 @@ bool ViewerWindow::event(QEvent* e)
 
 void ViewerWindow::exposeEvent(QExposeEvent* e)
 {
-    std::cout << "vulkanWindow.isExposed() = " << isExposed() << std::endl;
     if (!_initialized && isExposed())
     {
         _initialized = true;
-
-        std::cout << "    initializaing ViewerWindow" << std::endl;
 
         const auto rect = e->region().boundingRect();
         const uint32_t width = static_cast<uint32_t>(rect.width());
@@ -140,8 +142,6 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
         traits->width = width;
         traits->height = height;
         traits->fullscreen = false;
-
-        std::cout << "    width = " << width << ", height = " << height << std::endl;
 
         // create instance
         vsg::Names instanceExtensions;
@@ -193,7 +193,6 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
 
 void ViewerWindow::hideEvent(QHideEvent* /*e*/)
 {
-    std::cout<<"ViewerWindow::hideEvent()"<<std::endl;
     if (windowAdapter)
     {
         windowAdapter->windowVisible = false;
