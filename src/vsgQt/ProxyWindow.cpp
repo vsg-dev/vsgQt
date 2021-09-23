@@ -69,11 +69,12 @@ const char* ProxyWindow::instanceExtensionSurfaceName() const
 
 void ProxyWindow::_initSurface()
 {
-    _surface = ProxySurface::create(QVulkanInstance::surfaceForWindow(_window),
-                                    _instance);
+    _surface = vsg::Surface::create(QVulkanInstance::surfaceForWindow(_window), _instance);
 }
 
 ProxyWindow::~ProxyWindow()
 {
+    if (_surface) _surface->release();
+
     clear();
 }

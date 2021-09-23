@@ -57,7 +57,7 @@ ViewerWindow::~ViewerWindow()
 void ViewerWindow::cleanup()
 {
     // remove links to all the VSG related classes.
-    proxySurface = {};
+    proxyWindow->getSurface()->release();
     proxyWindow = {};
     viewer = {};
 }
@@ -211,7 +211,7 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
             // set up the window for Vulkan usage
             setVulkanInstance(vulkanInstance);
 #if 1
-            auto surface = ProxySurface::create(QVulkanInstance::surfaceForWindow(this), instance);
+            auto surface = vsg::Surface::create(QVulkanInstance::surfaceForWindow(this), instance);
 
             proxyWindow = new AdapterWindow(surface, traits);
 #else

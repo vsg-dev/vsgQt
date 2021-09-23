@@ -34,14 +34,12 @@ endmacro()
 
 set(SOURCES
     KeyboardMap.cpp
-    ProxySurface.cpp
     ProxyWindow.cpp
     ViewerWindow.cpp
 )
 
 set(HEADERS
     ../../include/vsgQt/KeyboardMap.h
-    ../../include/vsgQt/ProxySurface.h
     ../../include/vsgQt/ProxyWindow.h
     ../../include/vsgQt/ViewerWindow.h
 )

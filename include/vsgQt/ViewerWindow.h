@@ -33,12 +33,7 @@ namespace vsgQt
         vsg::ref_ptr<vsg::Instance> instance;
         vsg::ref_ptr<vsg::Viewer> viewer;
 
-        vsg::ref_ptr<ProxySurface> proxySurface;
-#if 1
         vsg::ref_ptr<vsg::Window> proxyWindow;
-#else
-        vsg::ref_ptr<ProxyWindow> proxyWindow;
-#endif
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
         using InitialCallback = std::function<void(ViewerWindow&)>;
