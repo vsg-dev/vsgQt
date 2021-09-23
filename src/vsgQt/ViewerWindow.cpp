@@ -206,9 +206,7 @@ void ViewerWindow::resizeEvent(QResizeEvent* e)
     // std::cout << __func__ << std::endl;
 
     // WindowAdapter
-    windowAdapter->extent2D().width = e->size().width();
-    windowAdapter->extent2D().height = e->size().height();
-    windowAdapter->windowResized = true;
+    windowAdapter->updateExtents(e->size().width(), e->size().height());
 
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(windowAdapter, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));
