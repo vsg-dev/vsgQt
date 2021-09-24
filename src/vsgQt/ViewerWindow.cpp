@@ -57,7 +57,7 @@ ViewerWindow::~ViewerWindow()
 void ViewerWindow::cleanup()
 {
     // remove links to all the VSG related classes.
-    if (windowAdapter)
+    if (windowAdapter && surfaceType()==QSurface::VulkanSurface)
     {
         windowAdapter->getSurface()->release();
     }
@@ -129,7 +129,6 @@ bool ViewerWindow::event(QEvent* e)
 
 void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
 {
-    std::cout<<":intializeUsingAdapterWindow( "<<width<<",  "<<height<<")"<<std::endl;
     _initialized = true;
 
     traits->width = width;
