@@ -56,9 +56,16 @@ ViewerWindow::~ViewerWindow()
 void ViewerWindow::cleanup()
 {
     // remove links to all the VSG related classes.
-    if (windowAdapter && surfaceType() == QSurface::VulkanSurface)
+    if (windowAdapter)
     {
-        windowAdapter->getSurface()->release();
+        if (surfaceType() == QSurface::VulkanSurface)
+        {
+            windowAdapter->getSurface()->release();
+        }
+        else
+        {
+            windowAdapter->releaseWindow();
+        }
     }
 
     windowAdapter = {};
