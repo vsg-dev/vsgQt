@@ -132,7 +132,6 @@ void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
     std::cout<<":intializeUsingAdapterWindow( "<<width<<",  "<<height<<")"<<std::endl;
     _initialized = true;
 
-
     traits->width = width;
     traits->height = height;
     traits->fullscreen = false;
@@ -194,6 +193,17 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
         const auto rect = e->region().boundingRect();
         const uint32_t width = static_cast<uint32_t>(rect.width());
         const uint32_t height = static_cast<uint32_t>(rect.height());
+
+        if (surfaceType()==QSurface::VulkanSurface)
+        {
+            std::cout<<"Using QSurface"<<std::endl;
+            intializeUsingAdapterWindow(width, height);
+        }
+        else
+        {
+            std::cout<<"Using vsg::Surface"<<std::endl;
+            intializeUsingVSGWindow(width, height);
+        }
 
         if (initializeCallback) initializeCallback(*this, width, height);
 

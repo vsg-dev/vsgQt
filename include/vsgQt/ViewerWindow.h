@@ -43,10 +43,12 @@ namespace vsgQt
         using FrameCallback = std::function<bool(ViewerWindow&)>;
         FrameCallback frameCallback;
 
+
+    protected:
+
         void intializeUsingAdapterWindow(uint32_t width, uint32_t height);
         void intializeUsingVSGWindow(uint32_t width, uint32_t height);
 
-    protected:
         void render();
         void cleanup();
 

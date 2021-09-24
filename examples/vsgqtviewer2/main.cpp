@@ -36,6 +36,7 @@ int main(int argc, char* argv[])
         windowTraits->fullscreen = false;
     }
     auto horizonMountainHeight = arguments.value(0.0, "--hmh");
+    bool useQtSurface = arguments.read("--qt");
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -63,12 +64,13 @@ int main(int argc, char* argv[])
     QMainWindow* mainWindow = new QMainWindow();
 
     auto* viewerWindow = new vsgQt::ViewerWindow();
+
+    if (useQtSurface) viewerWindow->setSurfaceType(QSurface::VulkanSurface);
+
     viewerWindow->traits = windowTraits;
 
     // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::ViewerWindow
     viewerWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw, uint32_t width, uint32_t height) {
-
-        vw.intializeUsingVSGWindow(width, height);
 
         auto& window = vw.windowAdapter;
         if (!window) return false;
