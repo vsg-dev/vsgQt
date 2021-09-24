@@ -12,7 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <vsg/all.h>
 #ifdef vsgXchange_FOUND
-#include <vsgXchange/all.h>
+#    include <vsgXchange/all.h>
 #endif
 
 #include <QPlatformSurfaceEvent>
@@ -56,7 +56,7 @@ ViewerWindow::~ViewerWindow()
 void ViewerWindow::cleanup()
 {
     // remove links to all the VSG related classes.
-    if (windowAdapter && surfaceType()==QSurface::VulkanSurface)
+    if (windowAdapter && surfaceType() == QSurface::VulkanSurface)
     {
         windowAdapter->getSurface()->release();
     }
@@ -110,10 +110,9 @@ bool ViewerWindow::event(QEvent* e)
         render();
         break;
 
-    case QEvent::PlatformSurface:
-    {
+    case QEvent::PlatformSurface: {
         auto surfaceEvent = dynamic_cast<QPlatformSurfaceEvent*>(e);
-        if (surfaceEvent->surfaceEventType()==QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
+        if (surfaceEvent->surfaceEventType() == QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
         {
             cleanup();
         }
@@ -191,14 +190,14 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
         const uint32_t width = static_cast<uint32_t>(rect.width());
         const uint32_t height = static_cast<uint32_t>(rect.height());
 
-        if (surfaceType()==QSurface::VulkanSurface)
+        if (surfaceType() == QSurface::VulkanSurface)
         {
-            std::cout<<"Using QSurface"<<std::endl;
+            std::cout << "Using QSurface" << std::endl;
             intializeUsingAdapterWindow(width, height);
         }
         else
         {
-            std::cout<<"Using vsg::Surface"<<std::endl;
+            std::cout << "Using vsg::Surface" << std::endl;
             intializeUsingVSGWindow(width, height);
         }
 
