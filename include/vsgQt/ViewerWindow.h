@@ -37,8 +37,8 @@ namespace vsgQt
         vsg::ref_ptr<vsg::Window> windowAdapter;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
-        using InitialCallback = std::function<void(ViewerWindow&, uint32_t width, uint32_t height)>;
-        InitialCallback initializeCallback;
+        using InitializeCallback = std::function<void(ViewerWindow&, uint32_t width, uint32_t height)>;
+        InitializeCallback initializeCallback;
 
         using FrameCallback = std::function<bool(ViewerWindow&)>;
         FrameCallback frameCallback;
