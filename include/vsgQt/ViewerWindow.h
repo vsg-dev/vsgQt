@@ -12,13 +12,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 </editor-fold> */
 
-#include <QPlatformSurfaceEvent>
-#include <QVulkanInstance>
+//#include <QVulkanInstance>
 #include <QWindow>
 
 #include <vsg/viewer/WindowAdapter.h>
 
 #include <vsgQt/KeyboardMap.h>
+
+#define QT_HAS_VULKAN_SUPPORT (QT_VERSION >= QT_VERSION_CHECK(5,10,0))
 
 namespace vsgQt
 {
@@ -65,7 +66,6 @@ namespace vsgQt
 
     private:
         bool _initialized = false;
-        QVulkanInstance* vulkanInstance = nullptr;
     };
 
 } // namespace vsgQt
