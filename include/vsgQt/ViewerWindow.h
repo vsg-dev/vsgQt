@@ -17,7 +17,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <QWindow>
 
 #include <vsg/viewer/WindowAdapter.h>
-#include <vsg/viewer/WindowAdapter.h>
 
 #include <vsgQt/KeyboardMap.h>
 
@@ -34,23 +33,26 @@ namespace vsgQt
         vsg::ref_ptr<vsg::Instance> instance;
         vsg::ref_ptr<vsg::Viewer> viewer;
 
-        vsg::ref_ptr<vsg::WindowAdapter> windowAdapter;
+        vsg::ref_ptr<vsg::Window> windowAdapter;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
-        using InitialCallback = std::function<void(ViewerWindow&)>;
+        using InitialCallback = std::function<void(ViewerWindow&, uint32_t width, uint32_t height)>;
         InitialCallback initializeCallback;
 
         using FrameCallback = std::function<bool(ViewerWindow&)>;
         FrameCallback frameCallback;
 
     protected:
+        void intializeUsingAdapterWindow(uint32_t width, uint32_t height);
+        void intializeUsingVSGWindow(uint32_t width, uint32_t height);
+
         void render();
         void cleanup();
 
         bool event(QEvent* e) override;
 
         void exposeEvent(QExposeEvent*) override;
-        void hideEvent(QHideEvent *ev) override;
+        void hideEvent(QHideEvent* ev) override;
 
         void keyPressEvent(QKeyEvent*) override;
         void keyReleaseEvent(QKeyEvent*) override;
