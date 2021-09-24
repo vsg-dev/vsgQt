@@ -12,7 +12,7 @@ Qt, and hence vsgQt, is suited for interactive, event driven applications. For r
 * [VulkanSDK](https://www.lunarg.com/vulkan-sdk/) version 1.2.162 or later
 * [VulkanSceneGraph](https://github.com/vsg-dev/VulkanSceneGraph) master recommended.
 * [CMake](https://cmake.org/) version 3.7 or later
-* [Qt](https://www.qt.io/) version 5.10 or later
+* [Qt](https://www.qt.io/) version 5 or later
 * C++17 capable compiler
 
 ## Building vsgQt
