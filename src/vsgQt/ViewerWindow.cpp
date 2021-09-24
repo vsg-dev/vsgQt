@@ -44,7 +44,6 @@ ViewerWindow::ViewerWindow() :
     QWindow()
 {
     keyboardMap = vsgQt::KeyboardMap::create();
-    //setSurfaceType(QSurface::VulkanSurface);
 }
 
 ViewerWindow::~ViewerWindow()
@@ -139,7 +138,7 @@ void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
     vsg::Names instanceExtensions;
     vsg::Names requestedLayers;
 
-    //instanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+    instanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     instanceExtensions.push_back("VK_KHR_surface");
     instanceExtensions.push_back(instanceExtensionSurfaceName());
 
@@ -177,7 +176,6 @@ void ViewerWindow::intializeUsingVSGWindow(uint32_t width, uint32_t height)
 {
     _initialized = true;
 
-    //traits->systemConnection = static_cast<xcb_connection_t *>(application.platformNativeInterface()->nativeResourceForIntegration(QByteArrayLiteral("connection")));
     traits->nativeWindow = static_cast<xcb_window_t>(winId());
     traits->width = width;
     traits->height = height;

@@ -18,8 +18,6 @@ set(QT_PACKAGE_VERSION 5.10 CACHE STRING "Set minimum Qt package version.")
 find_package(vsg 0.1.7 REQUIRED)
 find_package(vsgXchange) # only used by exanples
 find_package(${QT_PACKAGE_NAME} ${QT_PACKAGE_VERSION} COMPONENTS Widgets REQUIRED)
-find_package(Qt5Gui)
-# native requires qtbase5-private-dev
 
 vsg_setup_build_vars()
 vsg_setup_dir_vars()
