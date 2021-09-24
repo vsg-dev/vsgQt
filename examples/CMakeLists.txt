@@ -1,4 +1,1 @@
 add_subdirectory(vsgqtviewer)
-add_subdirectory(vsgqtviewer2)
-add_subdirectory(vsgqtnative)
-add_subdirectory(vsgqtfromWinId)

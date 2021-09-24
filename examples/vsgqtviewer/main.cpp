@@ -36,6 +36,7 @@ int main(int argc, char* argv[])
         windowTraits->fullscreen = false;
     }
     auto horizonMountainHeight = arguments.value(0.0, "--hmh");
+    bool useQtSurface = !arguments.read("--vsg");
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -63,8 +64,11 @@ int main(int argc, char* argv[])
     QMainWindow* mainWindow = new QMainWindow();
 
     auto* viewerWindow = new vsgQt::ViewerWindow();
+
+    // if required set the QWindow's SurfaceType to QSurface::VulkanSurface.
+    if (useQtSurface) viewerWindow->setSurfaceType(QSurface::VulkanSurface);
+
     viewerWindow->traits = windowTraits;
-    viewerWindow->setSurfaceType(QSurface::VulkanSurface);
 
     // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::ViewerWindow
     viewerWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw, uint32_t width, uint32_t height) {
@@ -93,16 +97,16 @@ int main(int argc, char* argv[])
         {
             perspective = vsg::EllipsoidPerspective::create(
                 lookAt, ellipsoidModel, 30.0,
-                static_cast<double>(window->extent2D().width) /
-                    static_cast<double>(window->extent2D().height),
+                static_cast<double>(width) /
+                    static_cast<double>(height),
                 nearFarRatio, horizonMountainHeight);
         }
         else
         {
             perspective = vsg::Perspective::create(
                 30.0,
-                static_cast<double>(window->extent2D().width) /
-                    static_cast<double>(window->extent2D().height),
+                static_cast<double>(width) /
+                    static_cast<double>(height),
                 nearFarRatio * radius, radius * 4.5);
         }
 
