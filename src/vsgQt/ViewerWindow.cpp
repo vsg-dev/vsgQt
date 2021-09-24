@@ -25,7 +25,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <vsgQt/ViewerWindow.h>
 
 #if QT_HAS_VULKAN_SUPPORT
-    #include <QVulkanInstance>
+#    include <QVulkanInstance>
 #endif
 
 using namespace vsgQt;
@@ -185,7 +185,7 @@ void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
         delete vulkanInstance;
     }
 #else
-    std::cout<<"ViewerWindow::intializeUsingAdapterWindow("<<width<<", "<<height<<") not supported, requires Qt 5.10 or later."<<std::endl;
+    std::cout << "ViewerWindow::intializeUsingAdapterWindow(" << width << ", " << height << ") not supported, requires Qt 5.10 or later." << std::endl;
 #endif
 }
 
