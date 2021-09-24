@@ -12,13 +12,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 </editor-fold> */
 
-#include <QPlatformSurfaceEvent>
-#include <QVulkanInstance>
+//#include <QVulkanInstance>
 #include <QWindow>
 
 #include <vsg/viewer/WindowAdapter.h>
 
 #include <vsgQt/KeyboardMap.h>
+
+#define QT_HAS_VULKAN_SUPPORT (QT_VERSION >= QT_VERSION_CHECK(5,10,0))
 
 namespace vsgQt
 {
@@ -36,8 +37,8 @@ namespace vsgQt
         vsg::ref_ptr<vsg::Window> windowAdapter;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
-        using InitialCallback = std::function<void(ViewerWindow&, uint32_t width, uint32_t height)>;
-        InitialCallback initializeCallback;
+        using InitializeCallback = std::function<void(ViewerWindow&, uint32_t width, uint32_t height)>;
+        InitializeCallback initializeCallback;
 
         using FrameCallback = std::function<bool(ViewerWindow&)>;
         FrameCallback frameCallback;
@@ -65,7 +66,6 @@ namespace vsgQt
 
     private:
         bool _initialized = false;
-        QVulkanInstance* vulkanInstance = nullptr;
     };
 
 } // namespace vsgQt

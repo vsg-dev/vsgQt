@@ -36,7 +36,10 @@ int main(int argc, char* argv[])
         windowTraits->fullscreen = false;
     }
     auto horizonMountainHeight = arguments.value(0.0, "--hmh");
+
+#if QT_HAS_VULKAN_SUPPORT
     bool useQtSurface = !arguments.read("--vsg");
+#endif
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -65,8 +68,10 @@ int main(int argc, char* argv[])
 
     auto* viewerWindow = new vsgQt::ViewerWindow();
 
+    #if QT_HAS_VULKAN_SUPPORT
     // if required set the QWindow's SurfaceType to QSurface::VulkanSurface.
     if (useQtSurface) viewerWindow->setSurfaceType(QSurface::VulkanSurface);
+    #endif
 
     viewerWindow->traits = windowTraits;
 

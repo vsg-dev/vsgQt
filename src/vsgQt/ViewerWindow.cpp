@@ -16,7 +16,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #endif
 
 #include <QPlatformSurfaceEvent>
-#include <QVulkanInstance>
 #include <QWindow>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
@@ -24,6 +23,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <vulkan/vulkan.h>
 
 #include <vsgQt/ViewerWindow.h>
+
+#if QT_HAS_VULKAN_SUPPORT
+    #include <QVulkanInstance>
+#endif
 
 using namespace vsgQt;
 
@@ -49,8 +52,6 @@ ViewerWindow::ViewerWindow() :
 ViewerWindow::~ViewerWindow()
 {
     cleanup();
-
-    delete vulkanInstance;
 }
 
 void ViewerWindow::cleanup()
@@ -58,11 +59,13 @@ void ViewerWindow::cleanup()
     // remove links to all the VSG related classes.
     if (windowAdapter)
     {
+#if QT_HAS_VULKAN_SUPPORT
         if (surfaceType() == QSurface::VulkanSurface)
         {
             windowAdapter->getSurface()->release();
         }
         else
+#endif
         {
             windowAdapter->releaseWindow();
         }
@@ -134,6 +137,7 @@ bool ViewerWindow::event(QEvent* e)
 
 void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
 {
+#if QT_HAS_VULKAN_SUPPORT
     _initialized = true;
 
     traits->width = width;
@@ -162,7 +166,7 @@ void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
     instance = vsg::Instance::create(instanceExtensions, validatedNames);
 
     // create Qt wrapper of vkInstance
-    vulkanInstance = new QVulkanInstance;
+    auto vulkanInstance = new QVulkanInstance;
     vulkanInstance->setVkInstance(*instance);
 
     if (vulkanInstance->create())
@@ -176,6 +180,13 @@ void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
         // vsg::clock::time_point event_time = vsg::clock::now();
         // windowAdapter->bufferedEvents.emplace_back(new vsg::ExposeWindowEvent(windowAdapter, event_time, rect.x(), rect.y(), width, height));
     }
+    else
+    {
+        delete vulkanInstance;
+    }
+#else
+    std::cout<<"ViewerWindow::intializeUsingAdapterWindow("<<width<<", "<<height<<") not supported, requires Qt 5.10 or later."<<std::endl;
+#endif
 }
 
 void ViewerWindow::intializeUsingVSGWindow(uint32_t width, uint32_t height)
@@ -197,12 +208,14 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
         const uint32_t width = static_cast<uint32_t>(rect.width());
         const uint32_t height = static_cast<uint32_t>(rect.height());
 
+#if QT_HAS_VULKAN_SUPPORT
         if (surfaceType() == QSurface::VulkanSurface)
         {
             std::cout << "Using QSurface" << std::endl;
             intializeUsingAdapterWindow(width, height);
         }
         else
+#endif
         {
             std::cout << "Using vsg::Surface" << std::endl;
             intializeUsingVSGWindow(width, height);
