@@ -24,6 +24,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <vsgQt/ViewerWindow.h>
 
+#include <vsg/viewer/WindowAdapter.h>
+
 #if QT_HAS_VULKAN_SUPPORT
 #    include <QVulkanInstance>
 #endif

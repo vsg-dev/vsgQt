@@ -15,7 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 //#include <QVulkanInstance>
 #include <QWindow>
 
-#include <vsg/viewer/WindowAdapter.h>
+#include <vsg/viewer/Window.h>
 
 #include <vsgQt/KeyboardMap.h>
 
