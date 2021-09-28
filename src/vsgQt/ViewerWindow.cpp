@@ -86,7 +86,7 @@ void ViewerWindow::render()
             // continue rendering
             requestUpdate();
         }
-        else
+        else if (viewer->status->cancel())
         {
             cleanup();
             QCoreApplication::exit(0);
@@ -105,7 +105,7 @@ void ViewerWindow::render()
             // continue rendering
             requestUpdate();
         }
-        else
+        else if (viewer->status->cancel())
         {
             cleanup();
             QCoreApplication::exit(0);
