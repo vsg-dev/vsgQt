@@ -136,7 +136,6 @@ int main(int argc, char* argv[])
 
         if (!vw.viewer || !vw.viewer->advanceToNextFrame())
         {
-            std::cout<<"frameCallback inactive, vw.viewer = "<<vw.viewer<<std::endl;
             return false;
         }
 

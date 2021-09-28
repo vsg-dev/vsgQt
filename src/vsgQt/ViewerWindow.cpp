@@ -272,7 +272,7 @@ void ViewerWindow::keyPressEvent(QKeyEvent* e)
 {
     if (!windowAdapter) return;
 
-    std::cout << __func__ << std::endl;
+    // std::cout << __func__ << std::endl;
 
     vsg::KeySymbol keySymbol, modifiedKeySymbol;
     vsg::KeyModifier keyModifier;
@@ -288,7 +288,7 @@ void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
 {
     if (!windowAdapter) return;
 
-    std::cout << __func__ << std::endl;
+    // std::cout << __func__ << std::endl;
 
     vsg::KeySymbol keySymbol, modifiedKeySymbol;
     vsg::KeyModifier keyModifier;
