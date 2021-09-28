@@ -195,7 +195,16 @@ void ViewerWindow::intializeUsingVSGWindow(uint32_t width, uint32_t height)
 {
     _initialized = true;
 
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    traits->nativeWindow = static_cast<HWND>(winId());
+#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+    traits->nativeWindow = static_cast<::Window>(winId());
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
     traits->nativeWindow = static_cast<xcb_window_t>(winId());
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+    traits->nativeWindow = static_cast<NSWindow>(winId());
+#endif
+
     traits->width = width;
     traits->height = height;
 
