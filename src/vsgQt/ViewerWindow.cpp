@@ -318,7 +318,7 @@ void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
     default: button = 0; break;
     }
 
-    windowAdapter->bufferedEvents.emplace_back(new vsg::MoveEvent(windowAdapter, event_time, e->x(), e->y(), (vsg::ButtonMask)button));
+    windowAdapter->bufferedEvents.emplace_back(new vsg::MoveEvent(windowAdapter, event_time, e->x(), e->y(), static_cast<vsg::ButtonMask>(button)));
 }
 
 void ViewerWindow::mousePressEvent(QMouseEvent* e)
@@ -339,7 +339,7 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
     default: button = 0; break;
     }
 
-    windowAdapter->bufferedEvents.emplace_back(new vsg::ButtonPressEvent(windowAdapter, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
+    windowAdapter->bufferedEvents.emplace_back(new vsg::ButtonPressEvent(windowAdapter, event_time, e->x(), e->y(), static_cast<vsg::ButtonMask>(button), static_cast<uint32_t>(e->button())));
 }
 
 void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
@@ -360,7 +360,7 @@ void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
     default: button = 0; break;
     }
 
-    windowAdapter->bufferedEvents.emplace_back(new vsg::ButtonReleaseEvent(windowAdapter, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
+    windowAdapter->bufferedEvents.emplace_back(new vsg::ButtonReleaseEvent(windowAdapter, event_time, e->x(), e->y(), static_cast<vsg::ButtonMask>(button), static_cast<uint32_t>(e->button())));
 }
 
 void ViewerWindow::moveEvent(QMoveEvent* e)
