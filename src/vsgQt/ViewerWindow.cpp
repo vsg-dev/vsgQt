@@ -265,7 +265,7 @@ void ViewerWindow::resizeEvent(QResizeEvent* e)
     }
 
     vsg::clock::time_point event_time = vsg::clock::now();
-    windowAdapter->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(windowAdapter, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));
+    windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));
 }
 
 void ViewerWindow::keyPressEvent(QKeyEvent* e)
@@ -280,7 +280,7 @@ void ViewerWindow::keyPressEvent(QKeyEvent* e)
     if (keyboardMap->getKeySymbol(e, keySymbol, modifiedKeySymbol, keyModifier))
     {
         vsg::clock::time_point event_time = vsg::clock::now();
-        windowAdapter->bufferedEvents.emplace_back(new vsg::KeyPressEvent(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
+        windowAdapter->bufferedEvents.push_back(vsg::KeyPressEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
 }
 
@@ -296,7 +296,7 @@ void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
     if (keyboardMap->getKeySymbol(e, keySymbol, modifiedKeySymbol, keyModifier))
     {
         vsg::clock::time_point event_time = vsg::clock::now();
-        windowAdapter->bufferedEvents.emplace_back(new vsg::KeyReleaseEvent(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
+        windowAdapter->bufferedEvents.push_back(vsg::KeyReleaseEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
 }
 
@@ -308,59 +308,35 @@ void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
-    int button = 0;
-    switch (e->buttons())
-    {
-    case Qt::LeftButton: button |= vsg::BUTTON_MASK_1; break;
-    case Qt::RightButton: button |= vsg::BUTTON_MASK_3; break;
-    case Qt::MiddleButton: button |= vsg::BUTTON_MASK_2; break;
-    case Qt::NoButton: button = 0; break;
-    default: button = 0; break;
-    }
+    auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.emplace_back(new vsg::MoveEvent(windowAdapter, event_time, e->x(), e->y(), (vsg::ButtonMask)button));
+    windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, e->x(), e->y(), mask));
 }
 
 void ViewerWindow::mousePressEvent(QMouseEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
+    std::cout << __func__ << " "<<e->buttons()<<std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
-    int button = 0;
-    switch (e->buttons())
-    {
-    case Qt::LeftButton: button |= vsg::BUTTON_MASK_1; break;
-    case Qt::RightButton: button |= vsg::BUTTON_MASK_3; break;
-    case Qt::MiddleButton: button |= vsg::BUTTON_MASK_2; break;
-    case Qt::NoButton: button = 0; break;
-    default: button = 0; break;
-    }
+    auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.emplace_back(new vsg::ButtonPressEvent(windowAdapter, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
+    windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, e->x(), e->y(), mask, button));
 }
 
 void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
+    // std::cout << __func__ << " "<<e->buttons()<<std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
-    int button = 0;
-    switch (e->buttons())
-    {
-    case Qt::LeftButton: button |= vsg::BUTTON_MASK_1; break;
-    case Qt::RightButton: button |= vsg::BUTTON_MASK_3; break;
-    case Qt::MiddleButton: button |= vsg::BUTTON_MASK_2; break;
-    case Qt::NoButton: button = 0; break;
-    default: button = 0; break;
-    }
+    auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.emplace_back(new vsg::ButtonReleaseEvent(windowAdapter, event_time, e->x(), e->y(), (vsg::ButtonMask)button, 0));
+    windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, e->x(), e->y(), mask, button));
 }
 
 void ViewerWindow::moveEvent(QMoveEvent* e)
@@ -370,7 +346,7 @@ void ViewerWindow::moveEvent(QMoveEvent* e)
     // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
-    windowAdapter->bufferedEvents.emplace_back(new vsg::ConfigureWindowEvent(windowAdapter, event_time, e->pos().x(), e->pos().y(), static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
+    windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, e->pos().x(), e->pos().y(), static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
 }
 
 void ViewerWindow::wheelEvent(QWheelEvent* e)
@@ -380,5 +356,25 @@ void ViewerWindow::wheelEvent(QWheelEvent* e)
     // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
-    windowAdapter->bufferedEvents.emplace_back(new vsg::ScrollWheelEvent(windowAdapter, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));
+    windowAdapter->bufferedEvents.push_back(vsg::ScrollWheelEvent::create(windowAdapter, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));
 }
+
+std::pair<vsg::ButtonMask, uint32_t> ViewerWindow::convertMouseButtons(QMouseEvent* e) const
+{
+    uint16_t mask{0};
+    uint32_t button = 0;
+
+    if (e->buttons() & Qt::LeftButton) mask = mask | vsg::BUTTON_MASK_1;
+    if (e->buttons() & Qt::MiddleButton) mask = mask | vsg::BUTTON_MASK_2;
+    if (e->buttons() & Qt::RightButton) mask = mask | vsg::BUTTON_MASK_3;
+
+    switch(e->button())
+    {
+        case Qt::LeftButton: button = 1; break;
+        case Qt::RightButton: button = 2; break;
+        case Qt::MiddleButton: button = 3; break;
+        default: break;
+    }
+
+    return {static_cast<vsg::ButtonMask>(mask), button};
+ }

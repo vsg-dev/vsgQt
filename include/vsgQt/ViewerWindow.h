@@ -64,6 +64,8 @@ namespace vsgQt
         void moveEvent(QMoveEvent*) override;
         void wheelEvent(QWheelEvent*) override;
 
+        std::pair<vsg::ButtonMask, uint32_t> convertMouseButtons(QMouseEvent* e) const;
+
     private:
         bool _initialized = false;
     };
