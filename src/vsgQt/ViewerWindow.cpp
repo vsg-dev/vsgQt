@@ -317,7 +317,7 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
 {
     if (!windowAdapter) return;
 
-    std::cout << __func__ << " "<<e->buttons()<<std::endl;
+    // std::cout << __func__ << " "<<e->buttons()<<std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
