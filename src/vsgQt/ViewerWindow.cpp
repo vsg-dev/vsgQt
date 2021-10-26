@@ -295,6 +295,9 @@ void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
 
     if (keyboardMap->getKeySymbol(e, keySymbol, modifiedKeySymbol, keyModifier))
     {
+
+        std::cout<<"ViewerWindow::keyReleaseEvent(QKeyEvent* "<<e<<") , keySymbol = "<<keySymbol<<", modifiedKeySymbol = "<<modifiedKeySymbol<<std::endl;
+
         vsg::clock::time_point event_time = vsg::clock::now();
         windowAdapter->bufferedEvents.push_back(vsg::KeyReleaseEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
