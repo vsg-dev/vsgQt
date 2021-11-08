@@ -274,14 +274,14 @@ bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vs
         keySymbol = itr->second;
         modifiedKeySymbol = keySymbol;
 
-        std::cout<<"KeyboardMap::getKeySymbol() found in map "<<keySymbol<<std::endl;
+        // std::cout<<"KeyboardMap::getKeySymbol() found in map "<<keySymbol<<std::endl;
     }
     else
     {
         keySymbol = vsg::KeySymbol(e->key());
         modifiedKeySymbol = vsg::KeySymbol(*(e->text().toLatin1().data()));
 
-        std::cout<<"KeyboardMap::getKeySymbol() NOT found in map keySymbol = "<<keySymbol<<", modifiedKeySymbol = "<<modifiedKeySymbol<<std::endl;
+        // std::cout<<"KeyboardMap::getKeySymbol() NOT found in map keySymbol = "<<keySymbol<<", modifiedKeySymbol = "<<modifiedKeySymbol<<std::endl;
     }
 
     uint16_t modifierMask = 0;
