@@ -96,7 +96,6 @@ void ViewerWindow::render()
     {
         if (viewer->advanceToNextFrame())
         {
-            // std::cout << __func__ << std::endl;
             viewer->handleEvents();
             viewer->update();
             viewer->recordAndSubmit();
@@ -115,7 +114,6 @@ void ViewerWindow::render()
 
 bool ViewerWindow::event(QEvent* e)
 {
-    //std::cout << __func__ << std::endl;
     switch (e->type())
     {
     case QEvent::UpdateRequest:
@@ -222,13 +220,13 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
 #if QT_HAS_VULKAN_SUPPORT
         if (surfaceType() == QSurface::VulkanSurface)
         {
-            std::cout << "Using QSurface" << std::endl;
+            vsg::info("Using QSurface");
             intializeUsingAdapterWindow(width, height);
         }
         else
 #endif
         {
-            std::cout << "Using vsg::Surface" << std::endl;
+            vsg::info("Using vsg::Surface");
             intializeUsingVSGWindow(width, height);
         }
 
@@ -272,8 +270,6 @@ void ViewerWindow::keyPressEvent(QKeyEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
-
     vsg::KeySymbol keySymbol, modifiedKeySymbol;
     vsg::KeyModifier keyModifier;
 
@@ -288,15 +284,13 @@ void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
-
     vsg::KeySymbol keySymbol, modifiedKeySymbol;
     vsg::KeyModifier keyModifier;
 
     if (keyboardMap->getKeySymbol(e, keySymbol, modifiedKeySymbol, keyModifier))
     {
 
-        std::cout<<"ViewerWindow::keyReleaseEvent(QKeyEvent* "<<e<<") , keySymbol = "<<keySymbol<<", modifiedKeySymbol = "<<modifiedKeySymbol<<std::endl;
+        vsg::debug("ViewerWindow::keyReleaseEvent(QKeyEvent* ", e, ") , keySymbol = ", keySymbol, ", modifiedKeySymbol = ", modifiedKeySymbol);
 
         vsg::clock::time_point event_time = vsg::clock::now();
         windowAdapter->bufferedEvents.push_back(vsg::KeyReleaseEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
@@ -306,8 +300,6 @@ void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
 void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
 {
     if (!windowAdapter) return;
-
-    // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -320,8 +312,6 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << " "<<e->buttons()<<std::endl;
-
     vsg::clock::time_point event_time = vsg::clock::now();
 
     auto [mask, button] = convertMouseButtons(e);
@@ -332,8 +322,6 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
 void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
 {
     if (!windowAdapter) return;
-
-    // std::cout << __func__ << " "<<e->buttons()<<std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -346,8 +334,6 @@ void ViewerWindow::moveEvent(QMoveEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
-
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, e->pos().x(), e->pos().y(), static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
 }
@@ -355,8 +341,6 @@ void ViewerWindow::moveEvent(QMoveEvent* e)
 void ViewerWindow::wheelEvent(QWheelEvent* e)
 {
     if (!windowAdapter) return;
-
-    // std::cout << __func__ << std::endl;
 
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ScrollWheelEvent::create(windowAdapter, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));
