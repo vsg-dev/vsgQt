@@ -222,13 +222,13 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
 #if QT_HAS_VULKAN_SUPPORT
         if (surfaceType() == QSurface::VulkanSurface)
         {
-            std::cout << "Using QSurface" << std::endl;
+            vsg::debug("Using QSurface");
             intializeUsingAdapterWindow(width, height);
         }
         else
 #endif
         {
-            std::cout << "Using vsg::Surface" << std::endl;
+            vsg::debug("Using vsg::Surface");
             intializeUsingVSGWindow(width, height);
         }
 
@@ -256,7 +256,7 @@ void ViewerWindow::resizeEvent(QResizeEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
+    vsg::debug(__func__);
 
     // WindowAdapter
     if (auto adapter = windowAdapter.cast<vsg::WindowAdapter>(); adapter)
@@ -272,7 +272,7 @@ void ViewerWindow::keyPressEvent(QKeyEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
+    vsg::debug(__func__);
 
     vsg::KeySymbol keySymbol, modifiedKeySymbol;
     vsg::KeyModifier keyModifier;
@@ -288,7 +288,7 @@ void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
+    vsg::debug(__func__);
 
     vsg::KeySymbol keySymbol, modifiedKeySymbol;
     vsg::KeyModifier keyModifier;
@@ -304,7 +304,7 @@ void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
+    vsg::debug(__func__);
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -317,7 +317,7 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << " "<<e->buttons()<<std::endl;
+    vsg::debug(__func__, " ", e->buttons());
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -330,7 +330,7 @@ void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << " "<<e->buttons()<<std::endl;
+    vsg::debug(__func__, " ", e->buttons());
 
     vsg::clock::time_point event_time = vsg::clock::now();
 
@@ -343,7 +343,7 @@ void ViewerWindow::moveEvent(QMoveEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
+    vsg::debug(__func__);
 
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, e->pos().x(), e->pos().y(), static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
@@ -353,7 +353,7 @@ void ViewerWindow::wheelEvent(QWheelEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
+    vsg::debug(__func__);
 
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ScrollWheelEvent::create(windowAdapter, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));
