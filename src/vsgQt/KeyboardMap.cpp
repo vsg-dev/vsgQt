@@ -18,7 +18,7 @@ KeyboardMap::KeyboardMap() :
     _keycodeMap{
         {0x0, vsg::KEY_Undefined},
         {Qt::Key_Space, vsg::KEY_Space},
-
+#if 0
         {'0', vsg::KEY_0},
         {'1', vsg::KEY_1},
         {'2', vsg::KEY_2},
@@ -83,7 +83,7 @@ KeyboardMap::KeyboardMap() :
         {'X', vsg::KEY_X},
         {'Y', vsg::KEY_Y},
         {'Z', vsg::KEY_Z},
-
+#endif
         /* Cursor control & motion */
 
         {Qt::Key_Home, vsg::KEY_Home},
@@ -184,6 +184,7 @@ KeyboardMap::KeyboardMap() :
         //KEY_KP_Decimal = 0xFFAE,
         //KEY_KP_Divide = 0xFFAF,
 
+#if 0
         {Qt::Key_0, vsg::KEY_KP_0},
         {Qt::Key_1, vsg::KEY_KP_1},
         {Qt::Key_2, vsg::KEY_KP_2},
@@ -195,6 +196,7 @@ KeyboardMap::KeyboardMap() :
         {Qt::Key_8, vsg::KEY_KP_8},
         {Qt::Key_9, vsg::KEY_KP_9},
 
+#endif
         /*
                 * Auxiliary Functions; note the duplicate definitions for left and right
                 * function keys;  Sun keyboards and a few other manufactures have such
@@ -260,15 +262,27 @@ KeyboardMap::KeyboardMap() :
 {
 }
 
+#include <iostream>
+
 bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vsg::KeySymbol& modifiedKeySymbol, vsg::KeyModifier& keyModifier)
 {
     auto itr = _keycodeMap.find((uint32_t)e->key());
 
-    if (itr == _keycodeMap.end())
-        return false;
+    if (itr != _keycodeMap.end())
+    {
 
-    keySymbol = itr->second;
-    modifiedKeySymbol = keySymbol;
+        keySymbol = itr->second;
+        modifiedKeySymbol = keySymbol;
+
+        // std::cout<<"KeyboardMap::getKeySymbol() found in map "<<keySymbol<<std::endl;
+    }
+    else
+    {
+        keySymbol = vsg::KeySymbol(e->key());
+        modifiedKeySymbol = vsg::KeySymbol(*(e->text().toLatin1().data()));
+
+        // std::cout<<"KeyboardMap::getKeySymbol() NOT found in map keySymbol = "<<keySymbol<<", modifiedKeySymbol = "<<modifiedKeySymbol<<std::endl;
+    }
 
     uint16_t modifierMask = 0;
     switch (e->modifiers())

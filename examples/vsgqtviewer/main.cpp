@@ -8,6 +8,7 @@
 #include <QtWidgets/QMainWindow>
 
 #include <vsgQt/ViewerWindow.h>
+#include <iostream>
 
 #include <iostream>
 
