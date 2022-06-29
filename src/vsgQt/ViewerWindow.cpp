@@ -254,7 +254,7 @@ void ViewerWindow::resizeEvent(QResizeEvent* e)
 {
     if (!windowAdapter) return;
 
-    // std::cout << __func__ << std::endl;
+    vsg::debug(__func__);
 
     // WindowAdapter
     if (auto adapter = windowAdapter.cast<vsg::WindowAdapter>(); adapter)

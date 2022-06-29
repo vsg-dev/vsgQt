@@ -10,6 +10,8 @@
 #include <vsgQt/ViewerWindow.h>
 #include <iostream>
 
+#include <iostream>
+
 int main(int argc, char* argv[])
 {
     vsg::CommandLine arguments(&argc, argv);
