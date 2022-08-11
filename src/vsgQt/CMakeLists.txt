@@ -45,6 +45,12 @@ set(HEADERS
 # shared mode is automatically choosed by setting BUILD_SHARED_LIBS=ON
 # POSITION_INDEPENDENT_CODE ON is set be default in shared mode
 add_library(vsgQt ${SOURCES} ${HEADERS})
+
+# add definitions to enable building vsgQT as part of submodule
+add_library(vsgQT::vsgQT ALIAS vsgQT)
+set(vsgQT_FOUND TRUE CACHE INTERNAL "vsgQT found.")
+set(CMAKE_DISABLE_FIND_PACKAGE_vsgQT TRUE CACHE INTERNAL "Disable find_package(vsgQT) as it's not necessary.")
+
 set_target_properties(vsgQt
     PROPERTIES
         VERSION ${vsgQt_VERSION}
