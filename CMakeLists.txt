@@ -11,12 +11,6 @@ set(vsgQt_RELEASE_CANDIDATE 0)
 set(VSGQT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "Root source directory of vsgQt")
 set(VSGQT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "Root binary directory of vsgQt")
 
-list(APPEND CMAKE_MODULE_PATH ${VSGQT_SOURCE_DIR}/cmake)
-include(vsgMacros)
-
-vsg_setup_dir_vars()
-vsg_setup_build_vars()
-
 # set the use of C++17 globally as all examples require it
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -24,6 +18,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_PACKAGE_NAME Qt5 CACHE STRING "Set Qt package name, i.e. Qt5 or Qt6.")
 
 find_package(vsg 0.7.0)
+
+vsg_setup_dir_vars()
+vsg_setup_build_vars()
+
 find_package(vsgXchange) # only used by exanples
 find_package(${QT_PACKAGE_NAME} COMPONENTS Widgets REQUIRED)
 
