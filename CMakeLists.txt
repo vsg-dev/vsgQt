@@ -17,10 +17,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(QT_PACKAGE_NAME Qt5 CACHE STRING "Set Qt package name, i.e. Qt5 or Qt6.")
 
-find_package(vsg 0.7.0)
+find_package(vsg 1.0.0)
 
 vsg_setup_dir_vars()
 vsg_setup_build_vars()
+
 
 find_package(vsgXchange) # only used by exanples
 find_package(${QT_PACKAGE_NAME} COMPONENTS Widgets REQUIRED)
