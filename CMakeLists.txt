@@ -26,27 +26,27 @@ vsg_setup_build_vars()
 find_package(vsgXchange) # only used by exanples
 find_package(${QT_PACKAGE_NAME} COMPONENTS Widgets REQUIRED)
 
+vsg_add_target_clang_format(
+    FILES
+        include/*/*.h
+        src/*/*.cpp
+)
+vsg_add_target_clobber()
+vsg_add_target_cppcheck(
+    FILES
+        include/*/*.h
+        src/*/*.cpp
+)
+vsg_add_target_docs(
+    FILES
+        src
+        include/*/*.h
+        src/*/*.cpp
+)
+vsg_add_target_uninstall()
+
 # only provide custom targets if not building as a submodule/FetchContent
 if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
-
-    vsg_add_target_clang_format(
-        FILES
-            include/*/*.h
-            src/*/*.cpp
-    )
-    vsg_add_target_clobber()
-    vsg_add_target_cppcheck(
-        FILES
-            include/*/*.h
-            src/*/*.cpp
-    )
-    vsg_add_target_docs(
-        FILES
-            src
-            include/*/*.h
-            src/*/*.cpp
-    )
-    vsg_add_target_uninstall()
 
     vsg_add_option_maintainer(
         PREFIX ${PROJECT_NAME}
