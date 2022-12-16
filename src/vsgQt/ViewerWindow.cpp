@@ -358,8 +358,8 @@ std::pair<vsg::ButtonMask, uint32_t> ViewerWindow::convertMouseButtons(QMouseEve
     switch(e->button())
     {
         case Qt::LeftButton: button = 1; break;
-        case Qt::RightButton: button = 2; break;
-        case Qt::MiddleButton: button = 3; break;
+        case Qt::MiddleButton: button = 2; break;
+        case Qt::RightButton: button = 3; break;
         default: break;
     }
 
