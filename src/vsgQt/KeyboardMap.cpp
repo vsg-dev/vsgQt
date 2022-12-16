@@ -92,9 +92,9 @@ KeyboardMap::KeyboardMap() :
         {Qt::Key_Right, vsg::KEY_Right}, /* Move right, right arrow */
         {Qt::Key_Down, vsg::KEY_Down},   /* Move down, down arrow */
         //{Qt::Key_Home, vsg::KEY_Prior}, /* Prior, previous */
-        //{ VK_, KEY_Page_Up = 0xFF55,
+        {Qt::Key_PageUp, vsg::KEY_Page_Up},
         {Qt::Key_Home, vsg::KEY_Next}, /* Next */
-        //KEY_Page_Down = 0xFF56,
+        {Qt::Key_PageDown, vsg::KEY_Page_Down},
         {Qt::Key_End, vsg::KEY_End}, /* EOL */
         //{ KEY_Begin = 0xFF58, /* BOL */
 
@@ -128,6 +128,7 @@ KeyboardMap::KeyboardMap() :
 
         {Qt::Key_Back, vsg::KEY_BackSpace}, /* back space, back char */
         {Qt::Key_Tab, vsg::KEY_Tab},
+        {Qt::Key_Backtab, vsg::KEY_Tab},
         //    KEY_Linefeed = 0xFF0A, /* Linefeed, LF */
         {Qt::Key_Clear, vsg::KEY_Clear},
         {Qt::Key_Return, vsg::KEY_Return}, /* Return, enter */
@@ -261,8 +262,6 @@ KeyboardMap::KeyboardMap() :
     }
 {
 }
-
-#include <iostream>
 
 bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vsg::KeySymbol& modifiedKeySymbol, vsg::KeyModifier& keyModifier)
 {
