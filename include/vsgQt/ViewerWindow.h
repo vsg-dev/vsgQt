@@ -37,6 +37,7 @@ namespace vsgQt
         vsg::ref_ptr<vsg::Window> windowAdapter;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
+        /// width and height in VSG/Vulkan coordinates that map 1:1 to the device pixels, rather than Qt's scaled coordinates.
         using InitializeCallback = std::function<void(ViewerWindow&, uint32_t width, uint32_t height)>;
         InitializeCallback initializeCallback;
 
@@ -44,7 +45,12 @@ namespace vsgQt
         FrameCallback frameCallback;
 
     protected:
+        /// Initialize the Vulkan integration using Qt's vkInstance/vkSurface support
+        /// width and height in VSG/Vulkan coordinates that map 1:1 to the device pixels, rather than Qt's scaled coordinates.
         void intializeUsingAdapterWindow(uint32_t width, uint32_t height);
+
+        /// Initialize the Vulkan integration using VulkanSceneGraph vkInstance/vkSurface support
+        /// width and height in VSG/Vulkan coordinates that map 1:1 to the device pixels, rather than Qt's scaled coordinates.
         void intializeUsingVSGWindow(uint32_t width, uint32_t height);
 
         void render();
@@ -63,6 +69,11 @@ namespace vsgQt
         void resizeEvent(QResizeEvent*) override;
         void moveEvent(QMoveEvent*) override;
         void wheelEvent(QWheelEvent*) override;
+
+        /// convert Qt's window coordinate into Vulkan/VSG ones by scaling by the devicePixelRatio()
+        int32_t convert_coord(int c) const { return static_cast<int32_t>(std::round(static_cast<float>(c) * devicePixelRatio())); }
+        int32_t convert_coord(unsigned int c) const { return static_cast<int32_t>(std::round(static_cast<float>(c) * devicePixelRatio())); }
+        int32_t convert_coord(float c) const { return static_cast<int32_t>(std::round(c * devicePixelRatio())); }
 
         std::pair<vsg::ButtonMask, uint32_t> convertMouseButtons(QMouseEvent* e) const;
 

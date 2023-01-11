@@ -213,24 +213,21 @@ void ViewerWindow::exposeEvent(QExposeEvent* e)
 {
     if (!_initialized && isExposed())
     {
-        const auto rect = e->region().boundingRect();
-        const uint32_t width = static_cast<uint32_t>(rect.width());
-        const uint32_t height = static_cast<uint32_t>(rect.height());
-
 #if QT_HAS_VULKAN_SUPPORT
         if (surfaceType() == QSurface::VulkanSurface)
         {
             vsg::info("Using QSurface");
-            intializeUsingAdapterWindow(width, height);
+            intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
         }
         else
 #endif
         {
             vsg::info("Using vsg::Surface");
-            intializeUsingVSGWindow(width, height);
+            intializeUsingVSGWindow(convert_coord(width()), convert_coord(height()));
         }
 
-        if (initializeCallback) initializeCallback(*this, width, height);
+        if (initializeCallback) initializeCallback(*this, convert_coord(width()), convert_coord(height()));
+
 
         requestUpdate();
     }
@@ -254,16 +251,14 @@ void ViewerWindow::resizeEvent(QResizeEvent* e)
 {
     if (!windowAdapter) return;
 
-    vsg::debug(__func__);
-
     // WindowAdapter
     if (auto adapter = windowAdapter.cast<vsg::WindowAdapter>(); adapter)
     {
-        adapter->updateExtents(e->size().width(), e->size().height());
+        adapter->updateExtents(convert_coord(width()), convert_coord(height()));
     }
 
     vsg::clock::time_point event_time = vsg::clock::now();
-    windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, x(), y(), static_cast<uint32_t>(e->size().width()), static_cast<uint32_t>(e->size().height())));
+    windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, convert_coord(x()), convert_coord(y()), convert_coord(width()), convert_coord(height())));
 }
 
 void ViewerWindow::keyPressEvent(QKeyEvent* e)
@@ -289,9 +284,6 @@ void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
 
     if (keyboardMap->getKeySymbol(e, keySymbol, modifiedKeySymbol, keyModifier))
     {
-
-        vsg::debug("ViewerWindow::keyReleaseEvent(QKeyEvent* ", e, ") , keySymbol = ", keySymbol, ", modifiedKeySymbol = ", modifiedKeySymbol);
-
         vsg::clock::time_point event_time = vsg::clock::now();
         windowAdapter->bufferedEvents.push_back(vsg::KeyReleaseEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
@@ -305,7 +297,7 @@ void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
 
     auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, e->x(), e->y(), mask));
+    windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask));
 }
 
 void ViewerWindow::mousePressEvent(QMouseEvent* e)
@@ -316,7 +308,7 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
 
     auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, e->x(), e->y(), mask, button));
+    windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask, button));
 }
 
 void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
@@ -327,15 +319,15 @@ void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
 
     auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, e->x(), e->y(), mask, button));
+    windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask, button));
 }
 
-void ViewerWindow::moveEvent(QMoveEvent* e)
+void ViewerWindow::moveEvent(QMoveEvent*)
 {
     if (!windowAdapter) return;
 
     vsg::clock::time_point event_time = vsg::clock::now();
-    windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, e->pos().x(), e->pos().y(), static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
+    windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, convert_coord(x()), convert_coord(y()), convert_coord(width()), convert_coord(height())));
 }
 
 void ViewerWindow::wheelEvent(QWheelEvent* e)
