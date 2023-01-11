@@ -18,72 +18,7 @@ KeyboardMap::KeyboardMap() :
     _keycodeMap{
         {0x0, vsg::KEY_Undefined},
         {Qt::Key_Space, vsg::KEY_Space},
-#if 0
-        {'0', vsg::KEY_0},
-        {'1', vsg::KEY_1},
-        {'2', vsg::KEY_2},
-        {'3', vsg::KEY_3},
-        {'4', vsg::KEY_4},
-        {'5', vsg::KEY_5},
-        {'6', vsg::KEY_6},
-        {'7', vsg::KEY_7},
-        {'8', vsg::KEY_8},
-        {'9', vsg::KEY_9},
 
-        {'a', vsg::KEY_a},
-        {'b', vsg::KEY_b},
-        {'c', vsg::KEY_c},
-        {'d', vsg::KEY_d},
-        {'e', vsg::KEY_e},
-        {'f', vsg::KEY_f},
-        {'g', vsg::KEY_g},
-        {'h', vsg::KEY_h},
-        {'i', vsg::KEY_i},
-        {'j', vsg::KEY_j},
-        {'k', vsg::KEY_k},
-        {'l', vsg::KEY_l},
-        {'m', vsg::KEY_m},
-        {'n', vsg::KEY_n},
-        {'o', vsg::KEY_o},
-        {'p', vsg::KEY_p},
-        {'q', vsg::KEY_q},
-        {'r', vsg::KEY_r},
-        {'s', vsg::KEY_s},
-        {'t', vsg::KEY_t},
-        {'u', vsg::KEY_u},
-        {'z', vsg::KEY_v},
-        {'w', vsg::KEY_w},
-        {'x', vsg::KEY_x},
-        {'y', vsg::KEY_y},
-        {'z', vsg::KEY_z},
-
-        {'A', vsg::KEY_A},
-        {'B', vsg::KEY_B},
-        {'C', vsg::KEY_C},
-        {'D', vsg::KEY_D},
-        {'E', vsg::KEY_E},
-        {'F', vsg::KEY_F},
-        {'G', vsg::KEY_G},
-        {'H', vsg::KEY_H},
-        {'I', vsg::KEY_I},
-        {'J', vsg::KEY_J},
-        {'K', vsg::KEY_K},
-        {'L', vsg::KEY_L},
-        {'M', vsg::KEY_M},
-        {'N', vsg::KEY_N},
-        {'O', vsg::KEY_O},
-        {'P', vsg::KEY_P},
-        {'Q', vsg::KEY_Q},
-        {'R', vsg::KEY_R},
-        {'S', vsg::KEY_S},
-        {'T', vsg::KEY_T},
-        {'U', vsg::KEY_U},
-        {'V', vsg::KEY_V},
-        {'W', vsg::KEY_W},
-        {'X', vsg::KEY_X},
-        {'Y', vsg::KEY_Y},
-        {'Z', vsg::KEY_Z},
-#endif
         /* Cursor control & motion */
 
         {Qt::Key_Home, vsg::KEY_Home},
@@ -265,23 +200,6 @@ KeyboardMap::KeyboardMap() :
 
 bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vsg::KeySymbol& modifiedKeySymbol, vsg::KeyModifier& keyModifier)
 {
-    auto itr = _keycodeMap.find((uint32_t)e->key());
-
-    if (itr != _keycodeMap.end())
-    {
-
-        keySymbol = itr->second;
-        modifiedKeySymbol = keySymbol;
-
-        // std::cout<<"KeyboardMap::getKeySymbol() found in map "<<keySymbol<<std::endl;
-    }
-    else
-    {
-        keySymbol = vsg::KeySymbol(e->key());
-        modifiedKeySymbol = vsg::KeySymbol(*(e->text().toLatin1().data()));
-
-        // std::cout<<"KeyboardMap::getKeySymbol() NOT found in map keySymbol = "<<keySymbol<<", modifiedKeySymbol = "<<modifiedKeySymbol<<std::endl;
-    }
 
     uint16_t modifierMask = 0;
     switch (e->modifiers())
@@ -300,6 +218,25 @@ bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vs
     }
 
     keyModifier = (vsg::KeyModifier)modifierMask;
+
+    auto itr = _keycodeMap.find((uint32_t)e->key());
+    if (itr != _keycodeMap.end())
+    {
+        keySymbol = itr->second;
+        modifiedKeySymbol = keySymbol;
+
+        // std::cout<<"KeyboardMap::getKeySymbol() found in map, keySymbol = "<<keySymbol<<" "<<char(keySymbol)<< ", modifiedKeySymbol = "<<modifiedKeySymbol<<" "<<char(modifiedKeySymbol)<<std::endl;
+    }
+    else
+    {
+        keySymbol = vsg::KeySymbol(e->key());
+        if (keySymbol>='A' || keySymbol>='Z') keySymbol = vsg::KeySymbol(int(keySymbol) + int('a'-'A'));
+
+        modifiedKeySymbol = vsg::KeySymbol(*(e->text().toLatin1().data()));
+
+        // std::cout<<"KeyboardMap::getKeySymbol() NOT found in map, keySymbol = "<<keySymbol<<" "<<char(keySymbol)<< ", modifiedKeySymbol = "<<modifiedKeySymbol<<" "<<char(modifiedKeySymbol)<<std::endl;
+    }
+
 
     return true;
 }
