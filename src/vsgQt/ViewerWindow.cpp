@@ -185,7 +185,7 @@ void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
         delete vulkanInstance;
     }
 #else
-    std::cout << "ViewerWindow::intializeUsingAdapterWindow(" << width << ", " << height << ") not supported, requires Qt 5.10 or later." << std::endl;
+    vsg::info("ViewerWindow::intializeUsingAdapterWindow(", width, ", ", height, ") not supported, requires Qt 5.10 or later.");
 #endif
 }
 
@@ -209,7 +209,7 @@ void ViewerWindow::intializeUsingVSGWindow(uint32_t width, uint32_t height)
     windowAdapter = vsg::Window::create(traits);
 }
 
-void ViewerWindow::exposeEvent(QExposeEvent* e)
+void ViewerWindow::exposeEvent(QExposeEvent* /*e*/)
 {
     if (!_initialized && isExposed())
     {
@@ -247,7 +247,7 @@ void ViewerWindow::hideEvent(QHideEvent* /*e*/)
     }
 }
 
-void ViewerWindow::resizeEvent(QResizeEvent* e)
+void ViewerWindow::resizeEvent(QResizeEvent* /*e*/)
 {
     if (!windowAdapter) return;
 
