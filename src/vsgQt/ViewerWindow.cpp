@@ -38,8 +38,12 @@ const char* instanceExtensionSurfaceName()
     return VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
     return VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-    return VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+#elif defined(VK_USE_PLATFORM_XCB_KHR) || defined (VK_USE_PLATFORM_WAYLAND_KHR)
+    auto platform = qGuiApp->platformName();
+    if(platform == "wayland")
+        return VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
+    else
+        return VK_KHR_XCB_SURFACE_EXTENSION_NAME;
 #elif defined(VK_USE_PLATFORM_MACOS_MVK)
     return VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
 #endif
@@ -214,7 +218,14 @@ void ViewerWindow::exposeEvent(QExposeEvent* /*e*/)
     if (!_initialized && isExposed())
     {
 #if QT_HAS_VULKAN_SUPPORT
-        if (surfaceType() == QSurface::VulkanSurface)
+        auto platform = qGuiApp->platformName();
+        if(platform == "wayland")
+        {
+            vsg::info("Wayland platform detected, forced using QSurface");
+            setSurfaceType(QSurface::VulkanSurface);
+            intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
+        }
+        else if (surfaceType() == QSurface::VulkanSurface)
         {
             vsg::info("Using QSurface");
             intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
@@ -297,7 +308,8 @@ void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
 
     auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask));
+    auto position = e->position();
+    windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, convert_coord(position.x()), convert_coord(position.y()), mask));
 }
 
 void ViewerWindow::mousePressEvent(QMouseEvent* e)
@@ -308,7 +320,8 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
 
     auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask, button));
+    auto position = e->position();
+    windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, convert_coord(position.x()), convert_coord(position.y()), mask, button));
 }
 
 void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
@@ -319,7 +332,8 @@ void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
 
     auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask, button));
+    auto position = e->position();
+    windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, convert_coord(position.x()), convert_coord(position.y()), mask, button));
 }
 
 void ViewerWindow::moveEvent(QMoveEvent*)

@@ -71,9 +71,8 @@ namespace vsgQt
         void wheelEvent(QWheelEvent*) override;
 
         /// convert Qt's window coordinate into Vulkan/VSG ones by scaling by the devicePixelRatio()
-        int32_t convert_coord(int c) const { return static_cast<int32_t>(std::round(static_cast<float>(c) * devicePixelRatio())); }
-        int32_t convert_coord(unsigned int c) const { return static_cast<int32_t>(std::round(static_cast<float>(c) * devicePixelRatio())); }
-        int32_t convert_coord(float c) const { return static_cast<int32_t>(std::round(c * devicePixelRatio())); }
+        template<typename T>
+        int32_t convert_coord(T c) const { return static_cast<int32_t>(std::round(static_cast<qreal>(c) * devicePixelRatio())); }
 
         std::pair<vsg::ButtonMask, uint32_t> convertMouseButtons(QMouseEvent* e) const;
 
