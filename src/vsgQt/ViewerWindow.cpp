@@ -297,7 +297,17 @@ void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
 
     auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask));
+    int32_t x = 0;
+    int32_t y = 0;
+
+#if QT_VERSION_MAJOR == 6
+    x = convert_coord(e->position().x());
+    y = convert_coord(e->position().y());
+#else
+    x = convert_coord(e->x());
+    y = convert_coord(e->y());
+#endif
+    windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, x, y, mask));
 }
 
 void ViewerWindow::mousePressEvent(QMouseEvent* e)
@@ -308,7 +318,18 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
 
     auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask, button));
+    int32_t x = 0;
+    int32_t y = 0;
+
+#if QT_VERSION_MAJOR == 6
+    x = convert_coord(e->position().x());
+    y = convert_coord(e->position().y());
+#else
+    x = convert_coord(e->x());
+    y = convert_coord(e->y());
+#endif
+    windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, x, y, mask, button));
+
 }
 
 void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
@@ -319,7 +340,18 @@ void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
 
     auto [mask, button] = convertMouseButtons(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask, button));
+    int32_t x = 0;
+    int32_t y = 0;
+
+#if QT_VERSION_MAJOR == 6
+    x = convert_coord(e->position().x());
+    y = convert_coord(e->position().y());
+#else
+    x = convert_coord(e->x());
+    y = convert_coord(e->y());
+#endif
+    windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, x, y, mask, button));
+
 }
 
 void ViewerWindow::moveEvent(QMoveEvent*)
