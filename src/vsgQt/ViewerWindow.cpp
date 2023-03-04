@@ -38,8 +38,12 @@ const char* instanceExtensionSurfaceName()
     return VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
     return VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-    return VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+#elif defined(VK_USE_PLATFORM_XCB_KHR) || defined (VK_USE_PLATFORM_WAYLAND_KHR)
+    auto platform = qGuiApp->platformName();
+        if(platform == "wayland")
+            return VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
+        else
+            return VK_KHR_XCB_SURFACE_EXTENSION_NAME;
 #elif defined(VK_USE_PLATFORM_MACOS_MVK)
     return VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
 #endif
@@ -62,9 +66,17 @@ void ViewerWindow::cleanup()
     if (windowAdapter)
     {
 #if QT_HAS_VULKAN_SUPPORT
-        if (surfaceType() == QSurface::VulkanSurface)
+        auto platform = qGuiApp->platformName();
+        if(platform == "wayland")
         {
-            windowAdapter->getSurface()->release();
+            vsg::info("Wayland platform detected, forced using QSurface");
+            setSurfaceType(QSurface::VulkanSurface);
+            intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
+        }
+        else if (surfaceType() == QSurface::VulkanSurface)
+        {
+            vsg::info("Using QSurface");
+            intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
         }
         else
 #endif
