@@ -66,17 +66,9 @@ void ViewerWindow::cleanup()
     if (windowAdapter)
     {
 #if QT_HAS_VULKAN_SUPPORT
-        auto platform = qGuiApp->platformName();
-        if(platform == "wayland")
+        if (surfaceType() == QSurface::VulkanSurface)
         {
-            vsg::info("Wayland platform detected, forced using QSurface");
-            setSurfaceType(QSurface::VulkanSurface);
-            intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
-        }
-        else if (surfaceType() == QSurface::VulkanSurface)
-        {
-            vsg::info("Using QSurface");
-            intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
+            windowAdapter->getSurface()->release();
         }
         else
 #endif
@@ -226,7 +218,14 @@ void ViewerWindow::exposeEvent(QExposeEvent* /*e*/)
     if (!_initialized && isExposed())
     {
 #if QT_HAS_VULKAN_SUPPORT
-        if (surfaceType() == QSurface::VulkanSurface)
+        auto platform = qGuiApp->platformName();
+        if(platform == "wayland")
+        {
+            vsg::info("Wayland platform detected, forced using QSurface");
+            setSurfaceType(QSurface::VulkanSurface);
+            intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
+        }
+        else if (surfaceType() == QSurface::VulkanSurface)
         {
             vsg::info("Using QSurface");
             intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
