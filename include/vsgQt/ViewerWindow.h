@@ -69,7 +69,6 @@ namespace vsgQt
         void resizeEvent(QResizeEvent*) override;
         void wheelEvent(QWheelEvent*) override;
 
-
         /// convert Qt's window coordinate into Vulkan/VSG ones by scaling by the devicePixelRatio()
         template<typename T>
         int32_t convert_coord(T c) const { return static_cast<int32_t>(std::round(static_cast<qreal>(c) * devicePixelRatio())); }
