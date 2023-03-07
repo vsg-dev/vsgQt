@@ -11,9 +11,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 </editor-fold> */
 
 #include <vsg/all.h>
-#ifdef vsgXchange_FOUND
-#    include <vsgXchange/all.h>
-#endif
 
 #include <QPlatformSurfaceEvent>
 #include <QWindow>
@@ -29,6 +26,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #if QT_HAS_VULKAN_SUPPORT
 #    include <QVulkanInstance>
 #endif
+
+#include <iostream>
+
 
 using namespace vsgQt;
 
@@ -296,8 +296,9 @@ void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
     vsg::clock::time_point event_time = vsg::clock::now();
 
     auto [mask, button] = convertMouseButtons(e);
+    auto [x, y] = convertMousePosition(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask));
+    windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, x, y, mask));
 }
 
 void ViewerWindow::mousePressEvent(QMouseEvent* e)
@@ -307,9 +308,11 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
     vsg::clock::time_point event_time = vsg::clock::now();
 
     auto [mask, button] = convertMouseButtons(e);
+    auto [x, y] = convertMousePosition(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask, button));
+    windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, x, y, mask, button));
 }
+
 
 void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
 {
@@ -318,16 +321,9 @@ void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
     vsg::clock::time_point event_time = vsg::clock::now();
 
     auto [mask, button] = convertMouseButtons(e);
+    auto [x, y] = convertMousePosition(e);
 
-    windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, convert_coord(e->x()), convert_coord(e->y()), mask, button));
-}
-
-void ViewerWindow::moveEvent(QMoveEvent*)
-{
-    if (!windowAdapter) return;
-
-    vsg::clock::time_point event_time = vsg::clock::now();
-    windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, convert_coord(x()), convert_coord(y()), convert_coord(width()), convert_coord(height())));
+    windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, x, y, mask, button));
 }
 
 void ViewerWindow::wheelEvent(QWheelEvent* e)
@@ -356,4 +352,13 @@ std::pair<vsg::ButtonMask, uint32_t> ViewerWindow::convertMouseButtons(QMouseEve
     }
 
     return {static_cast<vsg::ButtonMask>(mask), button};
- }
+}
+
+std::pair<int32_t, int32_t> ViewerWindow::convertMousePosition(QMouseEvent* e) const
+{
+#if QT_VERSION_MAJOR == 6
+    return {convert_coord(e->position().x()), convert_coord(e->position().y())};
+#else
+    return {convert_coord(e->x()), convert_coord(e->y())};
+#endif
+}
