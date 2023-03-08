@@ -16,33 +16,29 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <QWindow>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
+#include <QVulkanInstance>
 
 #include <vulkan/vulkan.h>
 
+#include <vsg/app/WindowAdapter.h>
 #include <vsgQt/ViewerWindow.h>
 
-#include <vsg/app/WindowAdapter.h>
-
-#if QT_HAS_VULKAN_SUPPORT
-#    include <QVulkanInstance>
-#endif
-
 #include <iostream>
-
 
 using namespace vsgQt;
 
 const char* instanceExtensionSurfaceName()
 {
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-    return VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
-#elif defined(VK_USE_PLATFORM_XLIB_KHR)
-    return VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-    return VK_KHR_XCB_SURFACE_EXTENSION_NAME;
-#elif defined(VK_USE_PLATFORM_MACOS_MVK)
-    return VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
-#endif
+    auto platformName = qGuiApp->platformName();
+    std::cout<<"qGuiApp->platformName() "<<platformName.toStdString()<<std::endl;
+
+    if (platformName == "xcb") return "VK_KHR_xcb_surface";
+    else if (platformName == "wayland") return "VK_KHR_wayland_surface";
+    else if (platformName == "windows") return "VK_KHR_win32_surface";
+    else if (platformName == "cocoa") return "VK_MVK_macos_surface";
+    else if (platformName == "ios") return "VK_EXT_metal_surface";
+    else if (platformName == "android") return "VK_KHR_android_surface";
+    else return "VK_KHR_xlib_surface"; // not clear from platformName() docs how xlib would map as it's not mention.
 }
 
 ViewerWindow::ViewerWindow() :
@@ -61,16 +57,7 @@ void ViewerWindow::cleanup()
     // remove links to all the VSG related classes.
     if (windowAdapter)
     {
-#if QT_HAS_VULKAN_SUPPORT
-        if (surfaceType() == QSurface::VulkanSurface)
-        {
-            windowAdapter->getSurface()->release();
-        }
-        else
-#endif
-        {
-            windowAdapter->releaseWindow();
-        }
+        windowAdapter->getSurface()->release();
     }
 
     windowAdapter = {};
@@ -137,33 +124,20 @@ bool ViewerWindow::event(QEvent* e)
 
 void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
 {
-#if QT_HAS_VULKAN_SUPPORT
     _initialized = true;
 
     traits->width = width;
     traits->height = height;
     traits->fullscreen = false;
 
-    // create instance
-    vsg::Names instanceExtensions;
-    vsg::Names requestedLayers;
+    traits->validate();
 
-    instanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+    vsg::Names& instanceExtensions = traits->instanceExtensionNames;
+
     instanceExtensions.push_back("VK_KHR_surface");
     instanceExtensions.push_back(instanceExtensionSurfaceName());
 
-    if (traits->debugLayer || traits->apiDumpLayer)
-    {
-        instanceExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-        requestedLayers.push_back("VK_LAYER_KHRONOS_validation");
-        if (traits->apiDumpLayer)
-            requestedLayers.push_back("VK_LAYER_LUNARG_api_dump");
-    }
-
-    vsg::Names validatedNames =
-        vsg::validateInstancelayerNames(requestedLayers);
-
-    instance = vsg::Instance::create(instanceExtensions, validatedNames);
+    instance = vsg::Instance::create(instanceExtensions, traits->requestedLayers, traits->vulkanVersion);
 
     // create Qt wrapper of vkInstance
     auto vulkanInstance = new QVulkanInstance;
@@ -184,50 +158,15 @@ void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
     {
         delete vulkanInstance;
     }
-#else
-    vsg::info("ViewerWindow::intializeUsingAdapterWindow(", width, ", ", height, ") not supported, requires Qt 5.10 or later.");
-#endif
-}
-
-void ViewerWindow::intializeUsingVSGWindow(uint32_t width, uint32_t height)
-{
-    _initialized = true;
-
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-    traits->nativeWindow = reinterpret_cast<HWND>(winId());
-#elif defined(VK_USE_PLATFORM_XLIB_KHR)
-    traits->nativeWindow = static_cast<::Window>(winId());
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-    traits->nativeWindow = static_cast<xcb_window_t>(winId());
-#elif defined(VK_USE_PLATFORM_MACOS_MVK)
-    traits->nativeWindow = reinterpret_cast<NSView*>(winId()); // or NSWindow* ?
-#endif
-
-    traits->width = width;
-    traits->height = height;
-
-    windowAdapter = vsg::Window::create(traits);
 }
 
 void ViewerWindow::exposeEvent(QExposeEvent* /*e*/)
 {
     if (!_initialized && isExposed())
     {
-#if QT_HAS_VULKAN_SUPPORT
-        if (surfaceType() == QSurface::VulkanSurface)
-        {
-            vsg::info("Using QSurface");
-            intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
-        }
-        else
-#endif
-        {
-            vsg::info("Using vsg::Surface");
-            intializeUsingVSGWindow(convert_coord(width()), convert_coord(height()));
-        }
+        intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
 
         if (initializeCallback) initializeCallback(*this, convert_coord(width()), convert_coord(height()));
-
 
         requestUpdate();
     }
