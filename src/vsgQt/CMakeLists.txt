@@ -32,10 +32,18 @@ macro(add_library_export_header _TARGET)
     endif()
 endmacro()
 
-set(SOURCES
-    KeyboardMap.cpp
-    ViewerWindow.cpp
-)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(SOURCES
+        KeyboardMap.cpp
+        makeViewMetalCompatible.mm
+        ViewerWindow.cpp
+    )
+else()
+    set(SOURCES
+        KeyboardMap.cpp
+        ViewerWindow.cpp
+    )
+endif()
 
 set(HEADERS
     ../../include/vsgQt/KeyboardMap.h

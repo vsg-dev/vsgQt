@@ -29,6 +29,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <iostream>
 
+#if defined(__APPLE__)
+    extern "C" { void makeViewMetalCompatible(void* handle); }
+#endif
 
 using namespace vsgQt;
 
@@ -200,7 +203,12 @@ void ViewerWindow::intializeUsingVSGWindow(uint32_t width, uint32_t height)
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
     traits->nativeWindow = static_cast<xcb_window_t>(winId());
 #elif defined(VK_USE_PLATFORM_MACOS_MVK)
-    traits->nativeWindow = reinterpret_cast<NSView*>(winId()); // or NSWindow* ?
+    #if defined(__APPLE__)
+    void* handle = (void*)winId();
+    makeViewMetalCompatible(handle);
+    //traits->nativeWindow = reinterpret_cast<NSView*>(winId()); // or NSWindow* ?
+    traits->nativeWindow = handle;
+    #endif
 #endif
 
     traits->width = width;
