@@ -22,8 +22,9 @@ find_package(vsg 1.0.0)
 vsg_setup_dir_vars()
 vsg_setup_build_vars()
 
-
 find_package(vsgXchange) # only used by exanples
+
+# if Qt5 then we need 5.10 or later
 find_package(${QT_PACKAGE_NAME} COMPONENTS Widgets REQUIRED)
 
 vsg_add_target_clang_format(
@@ -60,14 +61,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 if(WIN32)
-    add_definitions(-DVK_USE_PLATFORM_WIN32_KHR -DNOMINMAX)
+    add_definitions(-DNOMINMAX)
     set(MODE WIN32)
-elseif(APPLE)
-    add_definitions(-DVK_USE_PLATFORM_MACOS_MVK)
-elseif(UNIX)
-    add_definitions(-DVK_USE_PLATFORM_XCB_KHR)
-else()
-    add_definitions(-DVK_USE_PLATFORM_XLIB_KHR)
 endif()
 
 add_subdirectory(src/vsgQt)
