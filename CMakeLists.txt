@@ -5,8 +5,8 @@ project(vsgQt
     DESCRIPTION "Qt integration with VulkanSceneGraph"
     LANGUAGES CXX
 )
-set(vsgQt_SOVERSION 0)
-set(vsgQt_RELEASE_CANDIDATE 0)
+set(VSGQT_SOVERSION 0)
+set(VSGQT_RELEASE_CANDIDATE 0)
 
 set(VSGQT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "Root source directory of vsgQt")
 set(VSGQT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "Root binary directory of vsgQt")
@@ -50,8 +50,8 @@ vsg_add_target_uninstall()
 if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
 
     vsg_add_option_maintainer(
-        PREFIX ${PROJECT_NAME}
-        RCLEVEL ${PROJECT_NAME}_RELEASE_CANDIDATE
+        PREFIX v
+        RCLEVEL ${VSGQT_RELEASE_CANDIDATE}
     )
 
 endif()

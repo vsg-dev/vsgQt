@@ -53,8 +53,8 @@ set(CMAKE_DISABLE_FIND_PACKAGE_vsgQt TRUE CACHE INTERNAL "Disable find_package(v
 
 set_target_properties(vsgQt
     PROPERTIES
-        VERSION ${vsgQt_VERSION}
-        SOVERSION ${vsgQt_SOVERSION}
+        VERSION ${VSGQT_VERSION}
+        SOVERSION ${VSGQT_SOVERSION}
         CXX_STANDARD 17
 )
 
