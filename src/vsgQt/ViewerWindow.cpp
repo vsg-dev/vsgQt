@@ -147,7 +147,6 @@ void ViewerWindow::exposeEvent(QExposeEvent* /*e*/)
 
         if (initializeCallback) initializeCallback(*this, convert_coord(width()), convert_coord(height()));
 
-
         requestUpdate();
     }
 
