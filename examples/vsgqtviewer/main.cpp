@@ -22,11 +22,6 @@ int main(int argc, char* argv[])
     options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
     options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
 
-#ifdef vsgXchange_all
-    // add vsgXchange's support for reading and writing 3rd party file formats
-    options->add(vsgXchange::all::create());
-#endif
-
     arguments.read(options);
 
     auto windowTraits = vsg::WindowTraits::create();
@@ -39,10 +34,6 @@ int main(int argc, char* argv[])
         windowTraits->fullscreen = false;
     }
     auto horizonMountainHeight = arguments.value(0.0, "--hmh");
-
-#if QT_HAS_VULKAN_SUPPORT
-    bool useQtSurface = !arguments.read("--vsg");
-#endif
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -70,11 +61,6 @@ int main(int argc, char* argv[])
     QMainWindow* mainWindow = new QMainWindow();
 
     auto* viewerWindow = new vsgQt::ViewerWindow();
-
-    #if QT_HAS_VULKAN_SUPPORT
-    // if required set the QWindow's SurfaceType to QSurface::VulkanSurface.
-    if (useQtSurface) viewerWindow->setSurfaceType(QSurface::VulkanSurface);
-    #endif
 
     viewerWindow->traits = windowTraits;
 

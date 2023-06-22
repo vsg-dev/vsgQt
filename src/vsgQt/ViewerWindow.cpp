@@ -44,6 +44,7 @@ const char* instanceExtensionSurfaceName()
 ViewerWindow::ViewerWindow() :
     QWindow()
 {
+    setSurfaceType(QSurface::VulkanSurface);
     keyboardMap = vsgQt::KeyboardMap::create();
 }
 
