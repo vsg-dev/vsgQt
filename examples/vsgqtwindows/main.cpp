@@ -6,6 +6,7 @@
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMdiArea>
 
 #include <vsgQt/ViewerWindow.h>
 #include <iostream>
@@ -60,12 +61,13 @@ int main(int argc, char* argv[])
 
     QMainWindow* mainWindow = new QMainWindow();
 
-    auto* viewerWindow = new vsgQt::ViewerWindow();
 
-    viewerWindow->traits = windowTraits;
+    auto* firstWindow = new vsgQt::ViewerWindow();
+
+    firstWindow->traits = windowTraits;
 
     // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::ViewerWindow
-    viewerWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw, uint32_t width, uint32_t height) {
+    firstWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw, uint32_t width, uint32_t height) {
 
         auto& window = vw.windowAdapter;
         if (!window) return false;
@@ -121,7 +123,7 @@ int main(int argc, char* argv[])
     };
 
     // provide the calls to invokve the vsg::Viewer to render a frame.
-    viewerWindow->frameCallback = [](vsgQt::ViewerWindow& vw) {
+    firstWindow->frameCallback = [](vsgQt::ViewerWindow& vw) {
 
         if (!vw.viewer || !vw.viewer->advanceToNextFrame())
         {
@@ -140,10 +142,33 @@ int main(int argc, char* argv[])
         return true;
     };
 
-    auto widget = QWidget::createWindowContainer(viewerWindow, mainWindow);
-    mainWindow->setCentralWidget(widget);
+    auto* secondWindow = new QWindow();
 
-    mainWindow->resize(windowTraits->width, windowTraits->height);
+
+    auto mdiArea = new QMdiArea(mainWindow);
+	mdiArea->setContextMenuPolicy(Qt::PreventContextMenu);
+	mdiArea->setViewMode(QMdiArea::ViewMode::SubWindowView);
+	mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	mdiArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    auto firstWidget = QWidget::createWindowContainer(firstWindow, mdiArea);
+    firstWidget->setMinimumSize(windowTraits->width/2, windowTraits->height/2);
+    firstWidget->setWindowTitle("First View");
+
+    auto secondWwidget = QWidget::createWindowContainer(secondWindow, mdiArea);
+    secondWwidget->setMinimumSize(windowTraits->width/2, windowTraits->height/2);
+    secondWwidget->setWindowTitle("Second View");
+
+    mdiArea->addSubWindow(firstWidget);
+    mdiArea->addSubWindow(secondWwidget);
+
+    mainWindow->setCentralWidget(mdiArea);
+
+    mainWindow->resize(windowTraits->width+600, windowTraits->height);
+
+    firstWindow->resize(windowTraits->width, windowTraits->height);
+    secondWindow->resize(windowTraits->width, windowTraits->height);
 
     mainWindow->show();
 
