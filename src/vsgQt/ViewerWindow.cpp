@@ -30,7 +30,7 @@ using namespace vsgQt;
 const char* instanceExtensionSurfaceName()
 {
     auto platformName = qGuiApp->platformName();
-    std::cout<<"qGuiApp->platformName() "<<platformName.toStdString()<<std::endl;
+    vsg::debug("qGuiApp->platformName() ", platformName.toStdString());
 
     if (platformName == "xcb") return "VK_KHR_xcb_surface";
     else if (platformName == "wayland") return "VK_KHR_wayland_surface";
@@ -59,6 +59,7 @@ void ViewerWindow::cleanup()
     if (windowAdapter)
     {
         windowAdapter->getSurface()->release();
+        windowAdapter->windowValid = false;
     }
 
     windowAdapter = {};
