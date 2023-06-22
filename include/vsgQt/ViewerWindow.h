@@ -35,6 +35,8 @@ namespace vsgQt
         vsg::ref_ptr<vsg::Window> windowAdapter;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
+        bool continuousUpdate = true;
+
         /// width and height in VSG/Vulkan coordinates that map 1:1 to the device pixels, rather than Qt's scaled coordinates.
         using InitializeCallback = std::function<void(ViewerWindow&, uint32_t width, uint32_t height)>;
         InitializeCallback initializeCallback;

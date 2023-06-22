@@ -28,7 +28,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <vulkan/vulkan.h>
 
-#include <vsg/app/WindowAdapter.h>
 #include <vsgQt/ViewerWindow.h>
 
 #include <iostream>
@@ -60,12 +59,14 @@ void ViewerWindow::cleanup()
 
 void ViewerWindow::render()
 {
+    vsg::info("ViewerWindow::render()");
+
     if (frameCallback)
     {
         if (frameCallback(*this))
         {
             // continue rendering
-            requestUpdate();
+            if (continuousUpdate) requestUpdate();
         }
         else if (viewer->status->cancel())
         {
@@ -83,7 +84,7 @@ void ViewerWindow::render()
             viewer->present();
 
             // continue rendering
-            requestUpdate();
+            if (continuousUpdate) requestUpdate();
         }
         else if (viewer->status->cancel())
         {
@@ -148,34 +149,20 @@ void ViewerWindow::exposeEvent(QExposeEvent* /*e*/)
 
         requestUpdate();
     }
-
-    if (auto adapter = windowAdapter.cast<vsg::WindowAdapter>(); adapter)
-    {
-        adapter->windowValid = true;
-        adapter->windowVisible = isExposed();
-    }
 }
 
 void ViewerWindow::hideEvent(QHideEvent* /*e*/)
 {
-    if (auto adapter = windowAdapter.cast<vsg::WindowAdapter>(); adapter)
-    {
-        adapter->windowVisible = false;
-    }
 }
 
 void ViewerWindow::resizeEvent(QResizeEvent* /*e*/)
 {
     if (!windowAdapter) return;
-
-    // WindowAdapter
-    if (auto adapter = windowAdapter.cast<vsg::WindowAdapter>(); adapter)
-    {
-        adapter->updateExtents(convert_coord(width()), convert_coord(height()));
-    }
-
+//
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, convert_coord(x()), convert_coord(y()), convert_coord(width()), convert_coord(height())));
+
+    if (!continuousUpdate) requestUpdate();
 }
 
 void ViewerWindow::keyPressEvent(QKeyEvent* e)
@@ -190,6 +177,8 @@ void ViewerWindow::keyPressEvent(QKeyEvent* e)
         vsg::clock::time_point event_time = vsg::clock::now();
         windowAdapter->bufferedEvents.push_back(vsg::KeyPressEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
+
+    if (!continuousUpdate) requestUpdate();
 }
 
 void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
@@ -204,6 +193,8 @@ void ViewerWindow::keyReleaseEvent(QKeyEvent* e)
         vsg::clock::time_point event_time = vsg::clock::now();
         windowAdapter->bufferedEvents.push_back(vsg::KeyReleaseEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
+
+    if (!continuousUpdate) requestUpdate();
 }
 
 void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
@@ -216,6 +207,8 @@ void ViewerWindow::mouseMoveEvent(QMouseEvent* e)
     auto [x, y] = convertMousePosition(e);
 
     windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, x, y, mask));
+
+    if (!continuousUpdate) requestUpdate();
 }
 
 void ViewerWindow::mousePressEvent(QMouseEvent* e)
@@ -228,6 +221,8 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
     auto [x, y] = convertMousePosition(e);
 
     windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, x, y, mask, button));
+
+    if (!continuousUpdate) requestUpdate();
 }
 
 void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
@@ -240,6 +235,8 @@ void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
     auto [x, y] = convertMousePosition(e);
 
     windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, x, y, mask, button));
+
+    if (!continuousUpdate) requestUpdate();
 }
 
 void ViewerWindow::wheelEvent(QWheelEvent* e)
@@ -248,6 +245,8 @@ void ViewerWindow::wheelEvent(QWheelEvent* e)
 
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ScrollWheelEvent::create(windowAdapter, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));
+
+    if (!continuousUpdate) requestUpdate();
 }
 
 std::pair<vsg::ButtonMask, uint32_t> ViewerWindow::convertMouseButtons(QMouseEvent* e) const
