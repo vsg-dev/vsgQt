@@ -200,7 +200,6 @@ KeyboardMap::KeyboardMap() :
 
 bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vsg::KeySymbol& modifiedKeySymbol, vsg::KeyModifier& keyModifier)
 {
-
     uint16_t modifierMask = 0;
     switch (e->modifiers())
     {

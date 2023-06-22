@@ -45,7 +45,6 @@ namespace vsgQt
         FrameCallback frameCallback;
 
     protected:
-
         /// Initialize the Vulkan integration using VulkanSceneGraph vkInstance/vkSurface support
         /// width and height in VSG/Vulkan coordinates that map 1:1 to the device pixels, rather than Qt's scaled coordinates.
         void intializeUsingVSGWindow(uint32_t width, uint32_t height);

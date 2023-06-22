@@ -10,14 +10,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 </editor-fold> */
 
-
 #if defined(WIN32)
-    #define VK_USE_PLATFORM_WIN32_KHR
+#    define VK_USE_PLATFORM_WIN32_KHR
 #elif defined(__APPLE__)
-    #define VK_USE_PLATFORM_MACOS_MVK
+#    define VK_USE_PLATFORM_MACOS_MVK
 #else
-    #define VK_USE_PLATFORM_XCB_KHR
-    // #define VK_USE_PLATFORM_XLIB_KHR
+#    define VK_USE_PLATFORM_XCB_KHR
+// #define VK_USE_PLATFORM_XLIB_KHR
 #endif
 
 #include <vsg/all.h>
@@ -231,7 +230,6 @@ void ViewerWindow::mousePressEvent(QMouseEvent* e)
     windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, x, y, mask, button));
 }
 
-
 void ViewerWindow::mouseReleaseEvent(QMouseEvent* e)
 {
     if (!windowAdapter) return;
@@ -261,12 +259,12 @@ std::pair<vsg::ButtonMask, uint32_t> ViewerWindow::convertMouseButtons(QMouseEve
     if (e->buttons() & Qt::MiddleButton) mask = mask | vsg::BUTTON_MASK_2;
     if (e->buttons() & Qt::RightButton) mask = mask | vsg::BUTTON_MASK_3;
 
-    switch(e->button())
+    switch (e->button())
     {
-        case Qt::LeftButton: button = 1; break;
-        case Qt::MiddleButton: button = 2; break;
-        case Qt::RightButton: button = 3; break;
-        default: break;
+    case Qt::LeftButton: button = 1; break;
+    case Qt::MiddleButton: button = 2; break;
+    case Qt::RightButton: button = 3; break;
+    default: break;
     }
 
     return {static_cast<vsg::ButtonMask>(mask), button};
