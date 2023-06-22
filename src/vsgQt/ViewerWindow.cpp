@@ -10,13 +10,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 </editor-fold> */
 
+
+#if defined(WIN32)
+    #define VK_USE_PLATFORM_WIN32_KHR
+#elif defined(__APPLE__)
+    #define VK_USE_PLATFORM_MACOS_MVK
+#else
+    #define VK_USE_PLATFORM_XCB_KHR
+    // #define VK_USE_PLATFORM_XLIB_KHR
+#endif
+
 #include <vsg/all.h>
 
 #include <QPlatformSurfaceEvent>
 #include <QWindow>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
-#include <QVulkanInstance>
 
 #include <vulkan/vulkan.h>
 
@@ -27,24 +36,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace vsgQt;
 
-const char* instanceExtensionSurfaceName()
-{
-    auto platformName = qGuiApp->platformName();
-    vsg::debug("qGuiApp->platformName() ", platformName.toStdString());
-
-    if (platformName == "xcb") return "VK_KHR_xcb_surface";
-    else if (platformName == "wayland") return "VK_KHR_wayland_surface";
-    else if (platformName == "windows") return "VK_KHR_win32_surface";
-    else if (platformName == "cocoa") return "VK_MVK_macos_surface";
-    else if (platformName == "ios") return "VK_EXT_metal_surface";
-    else if (platformName == "android") return "VK_KHR_android_surface";
-    else return "VK_KHR_xlib_surface"; // not clear from platformName() docs how xlib would map as it's not mention.
-}
-
 ViewerWindow::ViewerWindow() :
     QWindow()
 {
-    setSurfaceType(QSurface::VulkanSurface);
     keyboardMap = vsgQt::KeyboardMap::create();
 }
 
@@ -58,8 +52,7 @@ void ViewerWindow::cleanup()
     // remove links to all the VSG related classes.
     if (windowAdapter)
     {
-        windowAdapter->getSurface()->release();
-        windowAdapter->windowValid = false;
+        windowAdapter->releaseWindow();
     }
 
     windowAdapter = {};
@@ -124,51 +117,36 @@ bool ViewerWindow::event(QEvent* e)
     return QWindow::event(e);
 }
 
-void ViewerWindow::intializeUsingAdapterWindow(uint32_t width, uint32_t height)
+void ViewerWindow::intializeUsingVSGWindow(uint32_t width, uint32_t height)
 {
+    vsg::info("ViewerWindow::intializeUsingVSGWindow()");
+
     _initialized = true;
+
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    traits->nativeWindow = reinterpret_cast<HWND>(winId());
+#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+    traits->nativeWindow = static_cast<::Window>(winId());
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
+    traits->nativeWindow = static_cast<xcb_window_t>(winId());
+#elif defined(VK_USE_PLATFORM_MACOS_MVK)
+    traits->nativeWindow = reinterpret_cast<NSView*>(winId()); // or NSWindow* ?
+#endif
 
     traits->width = width;
     traits->height = height;
-    traits->fullscreen = false;
 
-    traits->validate();
-
-    vsg::Names& instanceExtensions = traits->instanceExtensionNames;
-
-    instanceExtensions.push_back("VK_KHR_surface");
-    instanceExtensions.push_back(instanceExtensionSurfaceName());
-
-    instance = vsg::Instance::create(instanceExtensions, traits->requestedLayers, traits->vulkanVersion);
-
-    // create Qt wrapper of vkInstance
-    auto vulkanInstance = new QVulkanInstance;
-    vulkanInstance->setVkInstance(*instance);
-
-    if (vulkanInstance->create())
-    {
-        // set up the window for Vulkan usage
-        setVulkanInstance(vulkanInstance);
-
-        auto surface = vsg::Surface::create(QVulkanInstance::surfaceForWindow(this), instance);
-        windowAdapter = new vsg::WindowAdapter(surface, traits);
-
-        // vsg::clock::time_point event_time = vsg::clock::now();
-        // windowAdapter->bufferedEvents.emplace_back(new vsg::ExposeWindowEvent(windowAdapter, event_time, rect.x(), rect.y(), width, height));
-    }
-    else
-    {
-        delete vulkanInstance;
-    }
+    windowAdapter = vsg::Window::create(traits);
 }
 
 void ViewerWindow::exposeEvent(QExposeEvent* /*e*/)
 {
     if (!_initialized && isExposed())
     {
-        intializeUsingAdapterWindow(convert_coord(width()), convert_coord(height()));
+        intializeUsingVSGWindow(convert_coord(width()), convert_coord(height()));
 
         if (initializeCallback) initializeCallback(*this, convert_coord(width()), convert_coord(height()));
+
 
         requestUpdate();
     }
