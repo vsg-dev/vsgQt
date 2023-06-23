@@ -66,83 +66,9 @@ int main(int argc, char* argv[])
 
     firstWindow->traits = windowTraits;
 
-    // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::ViewerWindow
-    firstWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw, uint32_t width, uint32_t height) {
-
-        auto& window = vw.windowAdapter;
-        if (!window) return false;
-
-        auto& viewer = vw.viewer;
-        if (!viewer) viewer = vsg::Viewer::create();
-
-        viewer->addWindow(window);
-
-        // compute the bounds of the scene graph to help position camera
-        vsg::ComputeBounds computeBounds;
-        vsg_scene->accept(computeBounds);
-        vsg::dvec3 centre = (computeBounds.bounds.min + computeBounds.bounds.max) * 0.5;
-        double radius = vsg::length(computeBounds.bounds.max - computeBounds.bounds.min) * 0.6;
-        double nearFarRatio = 0.001;
-
-        // set up the camera
-        auto lookAt = vsg::LookAt::create(centre + vsg::dvec3(0.0, -radius * 3.5, 0.0), centre, vsg::dvec3(0.0, 0.0, 1.0));
-
-        vsg::ref_ptr<vsg::ProjectionMatrix> perspective;
-        vsg::ref_ptr<vsg::EllipsoidModel> ellipsoidModel(vsg_scene->getObject<vsg::EllipsoidModel>("EllipsoidModel"));
-        if (ellipsoidModel)
-        {
-            perspective = vsg::EllipsoidPerspective::create(
-                lookAt, ellipsoidModel, 30.0,
-                static_cast<double>(width) /
-                    static_cast<double>(height),
-                nearFarRatio, horizonMountainHeight);
-        }
-        else
-        {
-            perspective = vsg::Perspective::create(
-                30.0,
-                static_cast<double>(width) /
-                    static_cast<double>(height),
-                nearFarRatio * radius, radius * 4.5);
-        }
-
-        auto camera = vsg::Camera::create(perspective, lookAt, vsg::ViewportState::create(window->extent2D()));
-
-        // add close handler to respond the close window button and pressing escape
-        viewer->addEventHandler(vsg::CloseHandler::create(viewer));
-
-        // add trackball to enable mouse driven camera view control.
-        viewer->addEventHandler(vsg::Trackball::create(camera, ellipsoidModel));
-
-        auto commandGraph = vsg::createCommandGraphForView(window, camera, vsg_scene);
-        viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
-
-        viewer->compile();
-
-        return true;
-    };
-
-    // provide the calls to invokve the vsg::Viewer to render a frame.
-    firstWindow->frameCallback = [](vsgQt::ViewerWindow& vw) {
-
-        if (!vw.viewer || !vw.viewer->advanceToNextFrame())
-        {
-            return false;
-        }
-
-        // pass any events into EventHandlers assigned to the Viewer
-        vw.viewer->handleEvents();
-
-        vw.viewer->update();
-
-        vw.viewer->recordAndSubmit();
-
-        vw.viewer->present();
-
-        return true;
-    };
-
-    auto* secondWindow = new QWindow();
+    auto secondTraits = vsg::WindowTraits::create();
+    auto* secondWindow = new vsgQt::ViewerWindow();
+    secondWindow->traits = secondTraits;
 
     auto mdiArea = new QMdiArea(mainWindow);
 	mdiArea->setContextMenuPolicy(Qt::PreventContextMenu);
@@ -152,11 +78,11 @@ int main(int argc, char* argv[])
 	mdiArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     auto firstWidget = QWidget::createWindowContainer(firstWindow, mdiArea);
-    firstWidget->setMinimumSize(windowTraits->width, windowTraits->height);
+    firstWidget->setMinimumSize(windowTraits->width/2, windowTraits->height/2);
     firstWidget->setWindowTitle("First View");
 
     auto secondWwidget = QWidget::createWindowContainer(secondWindow, mdiArea);
-    secondWwidget->setMinimumSize(windowTraits->width, windowTraits->height);
+    secondWwidget->setMinimumSize(windowTraits->width/2, windowTraits->height/2);
     secondWwidget->setWindowTitle("Second View");
 
     // firstWindow->initializeWindow();
@@ -168,6 +94,113 @@ int main(int argc, char* argv[])
 
     // firstWindow->resize(windowTraits->width, windowTraits->height);
     // secondWindow->resize(windowTraits->width, windowTraits->height);
+
+    {
+        firstWindow->initializeWindow();
+
+        vsg::ref_ptr<vsg::Window> vsg_firstWindow = *firstWindow;
+        secondTraits->shareWindow = vsg_firstWindow;
+
+        secondWindow->initializeWindow();
+
+
+        auto width = windowTraits->width;
+        auto height = windowTraits->height;
+
+        auto viewer = vsg::Viewer::create();
+
+        firstWindow->viewer = viewer;
+        secondWindow->viewer = viewer;
+
+        viewer->addWindow(*firstWindow);
+        viewer->addWindow(*secondWindow);
+
+        // compute the bounds of the scene graph to help position camera
+        vsg::ComputeBounds computeBounds;
+        vsg_scene->accept(computeBounds);
+        vsg::dvec3 centre = (computeBounds.bounds.min + computeBounds.bounds.max) * 0.5;
+        double radius = vsg::length(computeBounds.bounds.max - computeBounds.bounds.min) * 0.6;
+        double nearFarRatio = 0.001;
+
+        vsg::ref_ptr<vsg::EllipsoidModel> ellipsoidModel(vsg_scene->getObject<vsg::EllipsoidModel>("EllipsoidModel"));
+        vsg::ref_ptr<vsg::Camera> firstCamera;
+        {
+            // set up the camera
+            auto lookAt = vsg::LookAt::create(centre + vsg::dvec3(0.0, -radius * 3.5, 0.0), centre, vsg::dvec3(0.0, 0.0, 1.0));
+
+            vsg::ref_ptr<vsg::ProjectionMatrix> perspective;
+            if (ellipsoidModel)
+            {
+                perspective = vsg::EllipsoidPerspective::create(
+                    lookAt, ellipsoidModel, 30.0,
+                    static_cast<double>(width) /
+                        static_cast<double>(height),
+                    nearFarRatio, horizonMountainHeight);
+            }
+            else
+            {
+                perspective = vsg::Perspective::create(
+                    30.0,
+                    static_cast<double>(width) /
+                        static_cast<double>(height),
+                    nearFarRatio * radius, radius * 4.5);
+            }
+
+            firstCamera = vsg::Camera::create(perspective, lookAt, vsg::ViewportState::create(VkExtent2D{width, height}));
+        }
+
+        vsg::ref_ptr<vsg::Camera> secondCamera;
+        {
+            // set up the camera
+            auto lookAt = vsg::LookAt::create(centre + vsg::dvec3(0.0, -radius * 3.5, 0.0), centre, vsg::dvec3(0.0, 0.0, 1.0));
+
+            vsg::ref_ptr<vsg::ProjectionMatrix> perspective;
+            if (ellipsoidModel)
+            {
+                perspective = vsg::EllipsoidPerspective::create(
+                    lookAt, ellipsoidModel, 30.0,
+                    static_cast<double>(width) /
+                        static_cast<double>(height),
+                    nearFarRatio, horizonMountainHeight);
+            }
+            else
+            {
+                perspective = vsg::Perspective::create(
+                    30.0,
+                    static_cast<double>(width) /
+                        static_cast<double>(height),
+                    nearFarRatio * radius, radius * 4.5);
+            }
+
+            secondCamera = vsg::Camera::create(perspective, lookAt, vsg::ViewportState::create(VkExtent2D{width, height}));
+        }
+
+        // add close handler to respond the close window button and pressing escape
+        viewer->addEventHandler(vsg::CloseHandler::create(viewer));
+
+        // add trackball to enable mouse driven camera view control.
+        auto firstTrackball = vsg::Trackball::create(firstCamera, ellipsoidModel);
+        firstTrackball->addWindow(*firstWindow);
+
+        auto secondTrackball = vsg::Trackball::create(secondCamera, ellipsoidModel);
+        secondTrackball->addWindow(*secondWindow);
+
+        viewer->addEventHandler(firstTrackball);
+        viewer->addEventHandler(secondTrackball);
+
+        auto firstCommandGraph = vsg::createCommandGraphForView(*firstWindow, firstCamera, vsg_scene);
+        auto secondCommandGraph = vsg::createCommandGraphForView(*secondWindow, secondCamera, vsg_scene);
+
+        viewer->assignRecordAndSubmitTaskAndPresentation({firstCommandGraph, secondCommandGraph});
+
+        viewer->compile();
+    }
+
+#if 1
+    secondWindow->frameCallback = [](vsgQt::ViewerWindow&) {
+        return false;
+    };
+#endif
 
     mainWindow->show();
 

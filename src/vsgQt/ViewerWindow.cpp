@@ -47,11 +47,16 @@ ViewerWindow::~ViewerWindow()
 
 void ViewerWindow::cleanup()
 {
+    vsg::info("ViewerWindow::cleanup()", this);
+
+    if (viewer) viewer->close();
+#if 0
     // remove links to all the VSG related classes.
     if (windowAdapter)
     {
         windowAdapter->releaseWindow();
     }
+#endif
 
     windowAdapter = {};
     viewer = {};
@@ -70,7 +75,7 @@ void ViewerWindow::render()
         if (frameCallback(*this))
         {
             // continue rendering
-            if (continuousUpdate) requestUpdate();
+            //if (continuousUpdate) requestUpdate();
         }
         else if (viewer->status->cancel())
         {
@@ -88,7 +93,7 @@ void ViewerWindow::render()
             viewer->present();
 
             // continue rendering
-            if (continuousUpdate) requestUpdate();
+            //if (continuousUpdate) requestUpdate();
         }
         else if (viewer->status->cancel())
         {
@@ -110,11 +115,15 @@ bool ViewerWindow::event(QEvent* e)
         auto surfaceEvent = dynamic_cast<QPlatformSurfaceEvent*>(e);
         if (surfaceEvent->surfaceEventType() == QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
         {
+            vsg::info("ViewerWindow::event(QEvent* e) QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)");
+
             cleanup();
         }
+        break;
     }
 
     default:
+        vsg::info("ViewerWindow::event(QEvent* e) type = ", e->type(), " not handled");
         break;
     }
 
