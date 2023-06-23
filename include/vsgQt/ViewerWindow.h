@@ -31,6 +31,7 @@ namespace vsgQt
         virtual ~ViewerWindow();
 
         vsg::ref_ptr<vsg::WindowTraits> traits;
+        vsg::ref_ptr<vsg::Instance> instance;
         vsg::ref_ptr<vsg::Viewer> viewer;
 
         vsg::ref_ptr<vsg::WindowAdapter> windowAdapter;
