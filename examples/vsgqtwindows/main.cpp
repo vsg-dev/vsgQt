@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     windowTraits->debugLayer = arguments.read({"--debug", "-d"});
     windowTraits->apiDumpLayer = arguments.read({"--api", "-a"});
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
-    if (arguments.read({"--window", "-w"}, windowTraits->width,windowTraits->height))
+    if (arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height))
     {
         windowTraits->fullscreen = false;
     }
@@ -144,7 +144,6 @@ int main(int argc, char* argv[])
 
     auto* secondWindow = new QWindow();
 
-
     auto mdiArea = new QMdiArea(mainWindow);
 	mdiArea->setContextMenuPolicy(Qt::PreventContextMenu);
 	mdiArea->setViewMode(QMdiArea::ViewMode::SubWindowView);
@@ -153,22 +152,22 @@ int main(int argc, char* argv[])
 	mdiArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     auto firstWidget = QWidget::createWindowContainer(firstWindow, mdiArea);
-    firstWidget->setMinimumSize(windowTraits->width/2, windowTraits->height/2);
+    firstWidget->setMinimumSize(windowTraits->width, windowTraits->height);
     firstWidget->setWindowTitle("First View");
 
     auto secondWwidget = QWidget::createWindowContainer(secondWindow, mdiArea);
-    secondWwidget->setMinimumSize(windowTraits->width/2, windowTraits->height/2);
+    secondWwidget->setMinimumSize(windowTraits->width, windowTraits->height);
     secondWwidget->setWindowTitle("Second View");
+
+    // firstWindow->initializeWindow();
 
     mdiArea->addSubWindow(firstWidget);
     mdiArea->addSubWindow(secondWwidget);
 
     mainWindow->setCentralWidget(mdiArea);
 
-    mainWindow->resize(windowTraits->width+600, windowTraits->height);
-
-    firstWindow->resize(windowTraits->width, windowTraits->height);
-    secondWindow->resize(windowTraits->width, windowTraits->height);
+    // firstWindow->resize(windowTraits->width, windowTraits->height);
+    // secondWindow->resize(windowTraits->width, windowTraits->height);
 
     mainWindow->show();
 

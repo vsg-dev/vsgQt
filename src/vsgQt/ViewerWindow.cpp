@@ -59,7 +59,11 @@ void ViewerWindow::cleanup()
 
 void ViewerWindow::render()
 {
-    vsg::info("ViewerWindow::render()");
+    // vsg::info("ViewerWindow::render() viewer = ", viewer);
+
+    if (continuousUpdate) requestUpdate();
+
+    if (!viewer) return;
 
     if (frameCallback)
     {
@@ -117,11 +121,9 @@ bool ViewerWindow::event(QEvent* e)
     return QWindow::event(e);
 }
 
-void ViewerWindow::intializeUsingVSGWindow(uint32_t width, uint32_t height)
+void ViewerWindow::initializeWindow()
 {
-    vsg::info("ViewerWindow::intializeUsingVSGWindow()");
-
-    _initialized = true;
+    if (windowAdapter) return;
 
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     traits->nativeWindow = reinterpret_cast<HWND>(winId());
@@ -133,22 +135,30 @@ void ViewerWindow::intializeUsingVSGWindow(uint32_t width, uint32_t height)
     traits->nativeWindow = reinterpret_cast<NSView*>(winId()); // or NSWindow* ?
 #endif
 
-    traits->width = width;
-    traits->height = height;
+    traits->width = convert_coord(width());
+    traits->height = convert_coord(height());
 
     windowAdapter = vsg::Window::create(traits);
+}
+
+void ViewerWindow::initializeViewer()
+{
+    if (_initialized) return;
+
+    _initialized = true;
+
+    initializeWindow();
+
+    if (initializeCallback) initializeCallback(*this, traits->width, traits->height);
 }
 
 void ViewerWindow::exposeEvent(QExposeEvent* /*e*/)
 {
     if (!_initialized && isExposed())
     {
-        intializeUsingVSGWindow(convert_coord(width()), convert_coord(height()));
-
-        if (initializeCallback) initializeCallback(*this, convert_coord(width()), convert_coord(height()));
-
-        requestUpdate();
+        initializeViewer();
     }
+    requestUpdate();
 }
 
 void ViewerWindow::hideEvent(QHideEvent* /*e*/)
@@ -158,7 +168,7 @@ void ViewerWindow::hideEvent(QHideEvent* /*e*/)
 void ViewerWindow::resizeEvent(QResizeEvent* /*e*/)
 {
     if (!windowAdapter) return;
-//
+
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, convert_coord(x()), convert_coord(y()), convert_coord(width()), convert_coord(height())));
 

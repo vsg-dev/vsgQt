@@ -34,6 +34,9 @@ namespace vsgQt
         vsg::ref_ptr<vsg::Window> windowAdapter;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
+
+        operator vsg::ref_ptr<vsg::Window>() { return windowAdapter; }
+
         bool continuousUpdate = true;
 
         /// width and height in VSG/Vulkan coordinates that map 1:1 to the device pixels, rather than Qt's scaled coordinates.
@@ -43,10 +46,12 @@ namespace vsgQt
         using FrameCallback = std::function<bool(ViewerWindow&)>;
         FrameCallback frameCallback;
 
-    protected:
         /// Initialize the Vulkan integration using VulkanSceneGraph vkInstance/vkSurface support
         /// width and height in VSG/Vulkan coordinates that map 1:1 to the device pixels, rather than Qt's scaled coordinates.
-        void intializeUsingVSGWindow(uint32_t width, uint32_t height);
+        void initializeWindow();
+        void initializeViewer();
+
+    protected:
 
         void render();
         void cleanup();
