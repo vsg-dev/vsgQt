@@ -78,11 +78,9 @@ int main(int argc, char* argv[])
 	mdiArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     auto firstWidget = QWidget::createWindowContainer(firstWindow, mdiArea);
-    firstWidget->setMinimumSize(windowTraits->width/2, windowTraits->height/2);
     firstWidget->setWindowTitle("First View");
 
     auto secondWwidget = QWidget::createWindowContainer(secondWindow, mdiArea);
-    secondWwidget->setMinimumSize(windowTraits->width/2, windowTraits->height/2);
     secondWwidget->setWindowTitle("Second View");
 
     // firstWindow->initializeWindow();
@@ -90,10 +88,11 @@ int main(int argc, char* argv[])
     mdiArea->addSubWindow(firstWidget);
     mdiArea->addSubWindow(secondWwidget);
 
-    mainWindow->setCentralWidget(mdiArea);
+    // firstWidget->showMaximized();
+    mdiArea->tileSubWindows();
+    //mdiArea->cascadeSubWindows();
 
-    // firstWindow->resize(windowTraits->width, windowTraits->height);
-    // secondWindow->resize(windowTraits->width, windowTraits->height);
+    mainWindow->setCentralWidget(mdiArea);
 
     {
         firstWindow->initializeWindow();
@@ -111,9 +110,6 @@ int main(int argc, char* argv[])
 
         firstWindow->viewer = viewer;
         secondWindow->viewer = viewer;
-
-        viewer->addWindow(*firstWindow);
-        viewer->addWindow(*secondWindow);
 
         // compute the bounds of the scene graph to help position camera
         vsg::ComputeBounds computeBounds;
@@ -196,7 +192,7 @@ int main(int argc, char* argv[])
         viewer->compile();
     }
 
-#if 1
+#if 0
     secondWindow->frameCallback = [](vsgQt::ViewerWindow&) {
         return false;
     };
