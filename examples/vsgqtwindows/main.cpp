@@ -176,11 +176,11 @@ int main(int argc, char* argv[])
 
     mdiArea->traits = windowTraits;
 
-	mdiArea->setContextMenuPolicy(Qt::PreventContextMenu);
-	mdiArea->setViewMode(QMdiArea::ViewMode::SubWindowView);
-	mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-	mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-	mdiArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mdiArea->setContextMenuPolicy(Qt::PreventContextMenu);
+    mdiArea->setViewMode(QMdiArea::ViewMode::SubWindowView);
+    mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mdiArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     mdiArea->addView(vsg_scene, "First Window");
     mdiArea->addView(vsg_scene, "Second Window");
