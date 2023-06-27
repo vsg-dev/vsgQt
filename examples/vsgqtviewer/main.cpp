@@ -21,6 +21,9 @@ int main(int argc, char* argv[])
     auto options = vsg::Options::create();
     options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
     options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
+#ifdef vsgXchange_FOUND
+    options->add(vsgXchange::all::create());
+#endif
 
     arguments.read(options);
 

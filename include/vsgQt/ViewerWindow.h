@@ -25,7 +25,9 @@ namespace vsgQt
     class VSGQT_DECLSPEC ViewerWindow : public QWindow
     {
     public:
-        ViewerWindow();
+        ViewerWindow(QWindow *parent = nullptr);
+        ViewerWindow(vsg::ref_ptr<vsg::Viewer> viewer, QWindow *parent = nullptr);
+
         virtual ~ViewerWindow();
 
         vsg::ref_ptr<vsg::WindowTraits> traits;

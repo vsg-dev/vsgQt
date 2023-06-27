@@ -34,10 +34,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace vsgQt;
 
-ViewerWindow::ViewerWindow() :
-    QWindow()
+ViewerWindow::ViewerWindow(QWindow* parent):
+    QWindow(parent),
+    traits(vsg::WindowTraits::create()),
+    keyboardMap(KeyboardMap::create())
 {
-    keyboardMap = vsgQt::KeyboardMap::create();
+    traits->width = width();
+    traits->height = height();
+}
+
+ViewerWindow::ViewerWindow(vsg::ref_ptr<vsg::Viewer> in_viewer, QWindow* parent):
+    QWindow(parent),
+    traits(vsg::WindowTraits::create()),
+    viewer(in_viewer),
+    keyboardMap(KeyboardMap::create())
+{
+    traits->width = width();
+    traits->height = height();
 }
 
 ViewerWindow::~ViewerWindow()
@@ -50,6 +63,9 @@ void ViewerWindow::cleanup()
     // remove links to all the VSG related classes.
     if (windowAdapter)
     {
+        // wait for all rendering to be completed before we start cleaning up resources.
+        if (viewer) viewer->deviceWaitIdle();
+
         viewer->removeWindow(windowAdapter);
         windowAdapter->releaseWindow();
     }
@@ -128,6 +144,8 @@ bool ViewerWindow::event(QEvent* e)
 void ViewerWindow::initializeWindow()
 {
     if (windowAdapter) return;
+
+    if (!traits) traits = vsg::WindowTraits::create();
 
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     traits->nativeWindow = reinterpret_cast<HWND>(winId());
