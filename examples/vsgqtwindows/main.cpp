@@ -18,7 +18,6 @@ class MultiViewArea : public QMdiArea
 public:
 
     vsg::ref_ptr<vsg::WindowTraits> traits;
-    vsg::ref_ptr<vsg::Device> device;
     vsg::ref_ptr<vsg::Viewer> viewer;
 
     MultiViewArea(QWidget *parent = nullptr) :
@@ -43,6 +42,7 @@ public:
         {
             window->traits->debugLayer = traits->debugLayer;
             window->traits->apiDumpLayer = traits->apiDumpLayer;
+            window->traits->device = device;
         }
 
         auto widget = QWidget::createWindowContainer(window, this);
@@ -53,16 +53,10 @@ public:
         if (views.empty()) widget->showMaximized();
         else tileSubWindows();
 
-        if (device)
-        {
-            window->traits->device = device;
-            window->initializeWindow();
-        }
-        else
-        {
-            window->initializeWindow();
-            device = window->windowAdapter->getOrCreateDevice();
-        }
+        window->initializeWindow();
+
+        // if first window to be created use it's device for future window creation.
+        if (!taits->device) taits->device = window->windowAdapter->getOrCreateDevice();
 
         // compute the bounds of the scene graph to help position camera
         vsg::ComputeBounds computeBounds;
