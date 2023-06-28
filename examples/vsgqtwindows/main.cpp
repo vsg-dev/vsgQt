@@ -17,9 +17,9 @@ class MultiViewArea : public QMdiArea
 {
 public:
 
-    vsg::ref_ptr<vsg::Viewer> viewer;
     vsg::ref_ptr<vsg::WindowTraits> traits;
-    vsg::observer_ptr<vsg::Window> shared_vsgWindow;
+    vsg::ref_ptr<vsg::Device> device;
+    vsg::ref_ptr<vsg::Viewer> viewer;
 
     MultiViewArea(QWidget *parent = nullptr) :
         QMdiArea(parent),
@@ -53,16 +53,15 @@ public:
         if (views.empty()) widget->showMaximized();
         else tileSubWindows();
 
-        if (auto ref_sharedWindow = shared_vsgWindow.ref_ptr())
+        if (device)
         {
-            window->traits->shareWindow = ref_sharedWindow.get();
+            window->traits->device = device;
             window->initializeWindow();
         }
         else
         {
             window->initializeWindow();
-            vsg::ref_ptr<vsg::Window> vsg_window = (*window);
-            shared_vsgWindow = vsg_window;
+            device = window->windowAdapter->getOrCreateDevice();
         }
 
         // compute the bounds of the scene graph to help position camera
