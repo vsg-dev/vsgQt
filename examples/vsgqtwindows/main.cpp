@@ -42,7 +42,7 @@ public:
         {
             window->traits->debugLayer = traits->debugLayer;
             window->traits->apiDumpLayer = traits->apiDumpLayer;
-            window->traits->device = device;
+            window->traits->device = traits->device;
         }
 
         auto widget = QWidget::createWindowContainer(window, this);
@@ -56,7 +56,7 @@ public:
         window->initializeWindow();
 
         // if first window to be created use it's device for future window creation.
-        if (!taits->device) taits->device = window->windowAdapter->getOrCreateDevice();
+        if (!traits->device) traits->device = window->windowAdapter->getOrCreateDevice();
 
         // compute the bounds of the scene graph to help position camera
         vsg::ComputeBounds computeBounds;
