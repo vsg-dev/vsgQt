@@ -67,12 +67,6 @@ public:
 
         uint32_t width = window->traits->width;
         uint32_t height = window->traits->height;
-        if (width==0 || height==0)
-        {
-            // fallback
-            width = 200;
-            height = 200;
-        }
 
         vsg::ref_ptr<vsg::EllipsoidModel> ellipsoidModel(vsg_scene->getObject<vsg::EllipsoidModel>("EllipsoidModel"));
         vsg::ref_ptr<vsg::Camera> camera;
