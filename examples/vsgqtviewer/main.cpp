@@ -7,7 +7,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
 
-#include <vsgQt/Window.h>
+#include <vsgQt/ViewerWindow.h>
 #include <iostream>
 
 #include <iostream>

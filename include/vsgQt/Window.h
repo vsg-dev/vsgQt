@@ -22,13 +22,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 namespace vsgQt
 {
 
-    class VSGQT_DECLSPEC ViewerWindow : public QWindow
+    class VSGQT_DECLSPEC Window : public QWindow
     {
     public:
-        ViewerWindow(QWindow *parent = nullptr);
-        ViewerWindow(vsg::ref_ptr<vsg::Viewer> viewer, QWindow *parent = nullptr);
+        Window(QWindow *parent = nullptr);
+        Window(vsg::ref_ptr<vsg::Viewer> viewer, QWindow *parent = nullptr);
 
-        virtual ~ViewerWindow();
+        virtual ~Window();
 
         vsg::ref_ptr<vsg::WindowTraits> traits;
         vsg::ref_ptr<vsg::Viewer> viewer;
@@ -42,10 +42,10 @@ namespace vsgQt
         bool continuousUpdate = true;
 
         /// width and height in VSG/Vulkan coordinates that map 1:1 to the device pixels, rather than Qt's scaled coordinates.
-        using InitializeCallback = std::function<void(ViewerWindow&, uint32_t width, uint32_t height)>;
+        using InitializeCallback = std::function<void(Window&, uint32_t width, uint32_t height)>;
         InitializeCallback initializeCallback;
 
-        using FrameCallback = std::function<bool(ViewerWindow&)>;
+        using FrameCallback = std::function<bool(Window&)>;
         FrameCallback frameCallback;
 
         /// Initialize the Vulkan integration using VulkanSceneGraph vkInstance/vkSurface support
@@ -83,3 +83,5 @@ namespace vsgQt
     };
 
 } // namespace vsgQt
+
+EVSG_type_name(vsgQt::Window);
