@@ -12,7 +12,7 @@ git clone https://github.com/vsg-dev/vsgQt.git
 ## Dependencies:
 
 * [VulkanSDK](https://www.lunarg.com/vulkan-sdk/) version 1.1.70 or later
-* [VulkanSceneGraph](https://github.com/vsg-dev/VulkanSceneGraph) 1.0.8 or later.
+* [VulkanSceneGraph](https://github.com/vsg-dev/VulkanSceneGraph) master, 1.0.8 or later.
 * [CMake](https://cmake.org/) version 3.7 or later
 * [Qt](https://www.qt.io/) version 5 or later
 * C++17 capable compiler
