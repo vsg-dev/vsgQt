@@ -7,7 +7,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
 
-#include <vsgQt/ViewerWindow.h>
+#include <vsgQt/Window.h>
 #include <iostream>
 
 #include <iostream>
@@ -63,12 +63,12 @@ int main(int argc, char* argv[])
 
     QMainWindow* mainWindow = new QMainWindow();
 
-    auto* viewerWindow = new vsgQt::ViewerWindow();
+    auto* viewerWindow = new vsgQt::Window();
 
     viewerWindow->traits = windowTraits;
 
-    // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::ViewerWindow
-    viewerWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw, uint32_t width, uint32_t height) {
+    // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::Window
+    viewerWindow->initializeCallback = [&](vsgQt::Window& vw, uint32_t width, uint32_t height) {
 
         auto& window = vw.windowAdapter;
         if (!window) return false;
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
     };
 
     // provide the calls to invokve the vsg::Viewer to render a frame.
-    viewerWindow->frameCallback = [](vsgQt::ViewerWindow& vw) {
+    viewerWindow->frameCallback = [](vsgQt::Window& vw) {
 
         if (!vw.viewer || !vw.viewer->advanceToNextFrame())
         {

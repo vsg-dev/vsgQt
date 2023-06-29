@@ -8,7 +8,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMdiArea>
 
-#include <vsgQt/ViewerWindow.h>
+#include <vsgQt/Window.h>
 #include <iostream>
 
 #include <iostream>
@@ -29,7 +29,7 @@ public:
 
     struct ViewWindow
     {
-        vsgQt::ViewerWindow* window = nullptr;
+        vsgQt::Window* window = nullptr;
     };
 
     using Views = std::vector<ViewWindow>;
@@ -37,7 +37,7 @@ public:
 
     size_t addView(vsg::ref_ptr<vsg::Node> vsg_scene, const QString& title = {})
     {
-        auto window = new vsgQt::ViewerWindow(viewer);
+        auto window = new vsgQt::Window(viewer);
         if (traits)
         {
             window->traits->debugLayer = traits->debugLayer;

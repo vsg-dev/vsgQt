@@ -8,14 +8,14 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMdiArea>
 
-#include <vsgQt/ViewerWindow.h>
+#include <vsgQt/Window.h>
 #include <iostream>
 
 #include <iostream>
 
-vsgQt::ViewerWindow* createWindow(vsg::ref_ptr<vsg::Viewer> viewer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
+vsgQt::Window* createWindow(vsg::ref_ptr<vsg::Viewer> viewer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
 {
-    auto window = new vsgQt::ViewerWindow(viewer, parent);
+    auto window = new vsgQt::Window(viewer, parent);
     if (traits)
     {
         window->traits->debugLayer = traits->debugLayer;
