@@ -37,13 +37,7 @@ public:
 
     size_t addView(vsg::ref_ptr<vsg::Node> vsg_scene, const QString& title = {})
     {
-        auto window = new vsgQt::Window(viewer);
-        if (traits)
-        {
-            window->traits->debugLayer = traits->debugLayer;
-            window->traits->apiDumpLayer = traits->apiDumpLayer;
-            window->traits->device = traits->device;
-        }
+        auto window = new vsgQt::Window(viewer, traits);
 
         auto widget = QWidget::createWindowContainer(window, this);
         widget->setWindowTitle(title);
@@ -130,7 +124,9 @@ int main(int argc, char* argv[])
     windowTraits->windowTitle = "vsgQt viewer";
     windowTraits->debugLayer = arguments.read({"--debug", "-d"});
     windowTraits->apiDumpLayer = arguments.read({"--api", "-a"});
-    auto horizonMountainHeight = arguments.value(0.0, "--hmh");
+    arguments.read("--samples", windowTraits->samples);
+    arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height);
+    if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);

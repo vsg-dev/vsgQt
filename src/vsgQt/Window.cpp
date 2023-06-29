@@ -34,6 +34,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace vsgQt;
 
+Window::Window(QScreen* targetScreen) :
+    QWindow(targetScreen),
+    traits(vsg::WindowTraits::create()),
+    keyboardMap(KeyboardMap::create())
+{
+    traits->width = width();
+    traits->height = height();
+}
+
 Window::Window(QWindow* parent) :
     QWindow(parent),
     traits(vsg::WindowTraits::create()),
@@ -43,12 +52,48 @@ Window::Window(QWindow* parent) :
     traits->height = height();
 }
 
-Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, QWindow* parent) :
+Window::Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen) :
+    QWindow(targetScreen),
+    keyboardMap(KeyboardMap::create())
+{
+    if (in_traits) traits = vsg::WindowTraits::create(*in_traits);
+    else traits =vsg::WindowTraits::create();
+
+    traits->width = width();
+    traits->height = height();
+}
+
+Window::Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
     QWindow(parent),
-    traits(vsg::WindowTraits::create()),
+    keyboardMap(KeyboardMap::create())
+{
+    if (in_traits) traits = vsg::WindowTraits::create(*in_traits);
+    else traits =vsg::WindowTraits::create();
+
+    traits->width = width();
+    traits->height = height();
+}
+
+Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen) :
+    QWindow(targetScreen),
     viewer(in_viewer),
     keyboardMap(KeyboardMap::create())
 {
+    if (in_traits) traits = vsg::WindowTraits::create(*in_traits);
+    else traits = vsg::WindowTraits::create();
+
+    traits->width = width();
+    traits->height = height();
+}
+
+Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
+    QWindow(parent),
+    viewer(in_viewer),
+    keyboardMap(KeyboardMap::create())
+{
+    if (in_traits) traits = vsg::WindowTraits::create(*in_traits);
+    else traits = vsg::WindowTraits::create();
+
     traits->width = width();
     traits->height = height();
 }

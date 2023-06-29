@@ -31,12 +31,9 @@ int main(int argc, char* argv[])
     windowTraits->windowTitle = "vsgQt viewer";
     windowTraits->debugLayer = arguments.read({"--debug", "-d"});
     windowTraits->apiDumpLayer = arguments.read({"--api", "-a"});
+    arguments.read("--samples", windowTraits->samples);
+    arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height);
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
-    if (arguments.read({"--window", "-w"}, windowTraits->width,windowTraits->height))
-    {
-        windowTraits->fullscreen = false;
-    }
-    auto horizonMountainHeight = arguments.value(0.0, "--hmh");
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -63,9 +60,7 @@ int main(int argc, char* argv[])
 
     QMainWindow* mainWindow = new QMainWindow();
 
-    auto* window = new vsgQt::Window();
-
-    window->traits = windowTraits;
+    auto* window = new vsgQt::Window(windowTraits);
 
     // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::Window
     window->initializeCallback = [&](vsgQt::Window& vw, uint32_t width, uint32_t height) {
@@ -92,9 +87,8 @@ int main(int argc, char* argv[])
         {
             perspective = vsg::EllipsoidPerspective::create(
                 lookAt, ellipsoidModel, 30.0,
-                static_cast<double>(width) /
-                    static_cast<double>(height),
-                nearFarRatio, horizonMountainHeight);
+                static_cast<double>(width) / static_cast<double>(height),
+                nearFarRatio, 0.0);
         }
         else
         {

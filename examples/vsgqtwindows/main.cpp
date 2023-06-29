@@ -15,13 +15,7 @@
 
 vsgQt::Window* createWindow(vsg::ref_ptr<vsg::Viewer> viewer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
 {
-    auto window = new vsgQt::Window(viewer, parent);
-    if (traits)
-    {
-        window->traits->debugLayer = traits->debugLayer;
-        window->traits->apiDumpLayer = traits->apiDumpLayer;
-        window->traits->device = traits->device;
-    }
+    auto window = new vsgQt::Window(viewer, traits, parent);
 
     window->setTitle(title);
 
@@ -99,6 +93,9 @@ int main(int argc, char* argv[])
     windowTraits->windowTitle = "vsgQt viewer";
     windowTraits->debugLayer = arguments.read({"--debug", "-d"});
     windowTraits->apiDumpLayer = arguments.read({"--api", "-a"});
+    arguments.read("--samples", windowTraits->samples);
+    arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height);
+    if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);

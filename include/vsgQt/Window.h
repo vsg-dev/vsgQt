@@ -25,8 +25,12 @@ namespace vsgQt
     class VSGQT_DECLSPEC Window : public QWindow
     {
     public:
-        Window(QWindow* parent = nullptr);
-        Window(vsg::ref_ptr<vsg::Viewer> viewer, QWindow* parent = nullptr);
+        Window(QScreen* targetScreen = nullptr);
+        Window(QWindow* parent);
+        Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen = nullptr);
+        Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent);
+        Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen = nullptr);
+        Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent);
 
         virtual ~Window();
 
