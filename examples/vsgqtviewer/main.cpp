@@ -63,20 +63,18 @@ int main(int argc, char* argv[])
 
     QMainWindow* mainWindow = new QMainWindow();
 
-    auto* viewerWindow = new vsgQt::Window();
+    auto* window = new vsgQt::Window();
 
-    viewerWindow->traits = windowTraits;
+    window->traits = windowTraits;
 
     // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::Window
-    viewerWindow->initializeCallback = [&](vsgQt::Window& vw, uint32_t width, uint32_t height) {
+    window->initializeCallback = [&](vsgQt::Window& vw, uint32_t width, uint32_t height) {
 
-        auto& window = vw.windowAdapter;
-        if (!window) return false;
+        auto& vsg_window = vw.windowAdapter;
+        if (!vsg_window) return false;
 
         auto& viewer = vw.viewer;
         if (!viewer) viewer = vsg::Viewer::create();
-
-        viewer->addWindow(window);
 
         // compute the bounds of the scene graph to help position camera
         vsg::ComputeBounds computeBounds;
@@ -107,7 +105,7 @@ int main(int argc, char* argv[])
                 nearFarRatio * radius, radius * 4.5);
         }
 
-        auto camera = vsg::Camera::create(perspective, lookAt, vsg::ViewportState::create(window->extent2D()));
+        auto camera = vsg::Camera::create(perspective, lookAt, vsg::ViewportState::create(vsg_window->extent2D()));
 
         // add close handler to respond the close window button and pressing escape
         viewer->addEventHandler(vsg::CloseHandler::create(viewer));
@@ -115,7 +113,7 @@ int main(int argc, char* argv[])
         // add trackball to enable mouse driven camera view control.
         viewer->addEventHandler(vsg::Trackball::create(camera, ellipsoidModel));
 
-        auto commandGraph = vsg::createCommandGraphForView(window, camera, vsg_scene);
+        auto commandGraph = vsg::createCommandGraphForView(vsg_window, camera, vsg_scene);
         viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
 
         viewer->compile();
@@ -124,7 +122,7 @@ int main(int argc, char* argv[])
     };
 
     // provide the calls to invokve the vsg::Viewer to render a frame.
-    viewerWindow->frameCallback = [](vsgQt::Window& vw) {
+    window->frameCallback = [](vsgQt::Window& vw) {
 
         if (!vw.viewer || !vw.viewer->advanceToNextFrame())
         {
@@ -143,7 +141,7 @@ int main(int argc, char* argv[])
         return true;
     };
 
-    auto widget = QWidget::createWindowContainer(viewerWindow, mainWindow);
+    auto widget = QWidget::createWindowContainer(window, mainWindow);
     mainWindow->setCentralWidget(widget);
 
     mainWindow->resize(windowTraits->width, windowTraits->height);
