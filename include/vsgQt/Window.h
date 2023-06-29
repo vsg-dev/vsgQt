@@ -25,8 +25,8 @@ namespace vsgQt
     class VSGQT_DECLSPEC Window : public QWindow
     {
     public:
-        Window(QWindow *parent = nullptr);
-        Window(vsg::ref_ptr<vsg::Viewer> viewer, QWindow *parent = nullptr);
+        Window(QWindow* parent = nullptr);
+        Window(vsg::ref_ptr<vsg::Viewer> viewer, QWindow* parent = nullptr);
 
         virtual ~Window();
 
@@ -35,7 +35,6 @@ namespace vsgQt
 
         vsg::ref_ptr<vsg::Window> windowAdapter;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
-
 
         operator vsg::ref_ptr<vsg::Window>() { return windowAdapter; }
 
@@ -54,7 +53,6 @@ namespace vsgQt
         void initializeViewer();
 
     protected:
-
         void render();
         void cleanup();
 

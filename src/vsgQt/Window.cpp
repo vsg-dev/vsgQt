@@ -34,7 +34,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace vsgQt;
 
-Window::Window(QWindow* parent):
+Window::Window(QWindow* parent) :
     QWindow(parent),
     traits(vsg::WindowTraits::create()),
     keyboardMap(KeyboardMap::create())
@@ -43,7 +43,7 @@ Window::Window(QWindow* parent):
     traits->height = height();
 }
 
-Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, QWindow* parent):
+Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, QWindow* parent) :
     QWindow(parent),
     traits(vsg::WindowTraits::create()),
     viewer(in_viewer),
