@@ -132,16 +132,6 @@ int main(int argc, char* argv[])
     auto secondWindow = createWindow(viewer, windowTraits, vsg_scene, nullptr, "Second Window");
     auto thirdWindow = createWindow(viewer, windowTraits, vsg_scene, nullptr, "Third Window");
 
-#if 0
-    // assigned the firstWindow to the MainWindow
-    QMainWindow* mainWindow = new QMainWindow();
-    auto widget = QWidget::createWindowContainer(firstWindow, mainWindow);
-    mainWindow->setCentralWidget(widget);
-    mainWindow->resize(windowTraits->width, windowTraits->height);
-    mainWindow->show();
-#endif
-
-
     firstWindow->setGeometry(0, 0, 640, 480);
     firstWindow->show();
 

@@ -39,6 +39,8 @@ Window::Window(QScreen* targetScreen) :
     traits(vsg::WindowTraits::create()),
     keyboardMap(KeyboardMap::create())
 {
+    traits->x = x();
+    traits->y = y();
     traits->width = width();
     traits->height = height();
 }
@@ -48,6 +50,8 @@ Window::Window(QWindow* parent) :
     traits(vsg::WindowTraits::create()),
     keyboardMap(KeyboardMap::create())
 {
+    traits->x = x();
+    traits->y = y();
     traits->width = width();
     traits->height = height();
 }
@@ -56,22 +60,38 @@ Window::Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen)
     QWindow(targetScreen),
     keyboardMap(KeyboardMap::create())
 {
-    if (in_traits) traits = vsg::WindowTraits::create(*in_traits);
-    else traits =vsg::WindowTraits::create();
-
-    traits->width = width();
-    traits->height = height();
+    if (in_traits)
+    {
+        traits = vsg::WindowTraits::create(*in_traits);
+        setGeometry(traits->x, traits->y, traits->width, traits->height);
+    }
+    else
+    {
+        traits =vsg::WindowTraits::create();
+        traits->x = x();
+        traits->y = y();
+        traits->width = width();
+        traits->height = height();
+    }
 }
 
 Window::Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
     QWindow(parent),
     keyboardMap(KeyboardMap::create())
 {
-    if (in_traits) traits = vsg::WindowTraits::create(*in_traits);
-    else traits =vsg::WindowTraits::create();
-
-    traits->width = width();
-    traits->height = height();
+    if (in_traits)
+    {
+        traits = vsg::WindowTraits::create(*in_traits);
+        setGeometry(traits->x, traits->y, traits->width, traits->height);
+    }
+    else
+    {
+        traits =vsg::WindowTraits::create();
+        traits->x = x();
+        traits->y = y();
+        traits->width = width();
+        traits->height = height();
+    }
 }
 
 Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen) :
@@ -79,11 +99,19 @@ Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTrai
     viewer(in_viewer),
     keyboardMap(KeyboardMap::create())
 {
-    if (in_traits) traits = vsg::WindowTraits::create(*in_traits);
-    else traits = vsg::WindowTraits::create();
-
-    traits->width = width();
-    traits->height = height();
+    if (in_traits)
+    {
+        traits = vsg::WindowTraits::create(*in_traits);
+        setGeometry(traits->x, traits->y, traits->width, traits->height);
+    }
+    else
+    {
+        traits =vsg::WindowTraits::create();
+        traits->x = x();
+        traits->y = y();
+        traits->width = width();
+        traits->height = height();
+    }
 }
 
 Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
@@ -91,11 +119,19 @@ Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTrai
     viewer(in_viewer),
     keyboardMap(KeyboardMap::create())
 {
-    if (in_traits) traits = vsg::WindowTraits::create(*in_traits);
-    else traits = vsg::WindowTraits::create();
-
-    traits->width = width();
-    traits->height = height();
+    if (in_traits)
+    {
+        traits = vsg::WindowTraits::create(*in_traits);
+        setGeometry(traits->x, traits->y, traits->width, traits->height);
+    }
+    else
+    {
+        traits =vsg::WindowTraits::create();
+        traits->x = x();
+        traits->y = y();
+        traits->width = width();
+        traits->height = height();
+    }
 }
 
 Window::~Window()
@@ -202,6 +238,8 @@ void Window::initializeWindow()
     traits->nativeWindow = reinterpret_cast<NSView*>(winId()); // or NSWindow* ?
 #endif
 
+    traits->x = convert_coord(x());
+    traits->y = convert_coord(y());
     traits->width = convert_coord(width());
     traits->height = convert_coord(height());
 
