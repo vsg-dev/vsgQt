@@ -33,3 +33,5 @@ namespace vsgQt
     };
 
 } // namespace vsgQt
+
+EVSG_type_name(vsgQt::KeyboardMap);

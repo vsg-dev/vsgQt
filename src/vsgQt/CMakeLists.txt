@@ -34,12 +34,12 @@ endmacro()
 
 set(SOURCES
     KeyboardMap.cpp
-    ViewerWindow.cpp
+    Window.cpp
 )
 
 set(HEADERS
     ../../include/vsgQt/KeyboardMap.h
-    ../../include/vsgQt/ViewerWindow.h
+    ../../include/vsgQt/Window.h
 )
 
 # shared mode is automatically choosed by setting BUILD_SHARED_LIBS=ON

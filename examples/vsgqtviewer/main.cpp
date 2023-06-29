@@ -21,6 +21,9 @@ int main(int argc, char* argv[])
     auto options = vsg::Options::create();
     options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
     options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
+#ifdef vsgXchange_FOUND
+    options->add(vsgXchange::all::create());
+#endif
 
     arguments.read(options);
 
@@ -28,12 +31,9 @@ int main(int argc, char* argv[])
     windowTraits->windowTitle = "vsgQt viewer";
     windowTraits->debugLayer = arguments.read({"--debug", "-d"});
     windowTraits->apiDumpLayer = arguments.read({"--api", "-a"});
+    arguments.read("--samples", windowTraits->samples);
+    arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height);
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
-    if (arguments.read({"--window", "-w"}, windowTraits->width,windowTraits->height))
-    {
-        windowTraits->fullscreen = false;
-    }
-    auto horizonMountainHeight = arguments.value(0.0, "--hmh");
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -60,20 +60,16 @@ int main(int argc, char* argv[])
 
     QMainWindow* mainWindow = new QMainWindow();
 
-    auto* viewerWindow = new vsgQt::ViewerWindow();
+    auto* window = new vsgQt::Window(windowTraits);
 
-    viewerWindow->traits = windowTraits;
+    // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::Window
+    window->initializeCallback = [&](vsgQt::Window& vw, uint32_t width, uint32_t height) {
 
-    // provide the calls to set up the vsg::Viewer that will be used to render to the QWindow subclass vsgQt::ViewerWindow
-    viewerWindow->initializeCallback = [&](vsgQt::ViewerWindow& vw, uint32_t width, uint32_t height) {
-
-        auto& window = vw.windowAdapter;
-        if (!window) return false;
+        auto& vsg_window = vw.windowAdapter;
+        if (!vsg_window) return false;
 
         auto& viewer = vw.viewer;
         if (!viewer) viewer = vsg::Viewer::create();
-
-        viewer->addWindow(window);
 
         // compute the bounds of the scene graph to help position camera
         vsg::ComputeBounds computeBounds;
@@ -91,9 +87,8 @@ int main(int argc, char* argv[])
         {
             perspective = vsg::EllipsoidPerspective::create(
                 lookAt, ellipsoidModel, 30.0,
-                static_cast<double>(width) /
-                    static_cast<double>(height),
-                nearFarRatio, horizonMountainHeight);
+                static_cast<double>(width) / static_cast<double>(height),
+                nearFarRatio, 0.0);
         }
         else
         {
@@ -104,7 +99,7 @@ int main(int argc, char* argv[])
                 nearFarRatio * radius, radius * 4.5);
         }
 
-        auto camera = vsg::Camera::create(perspective, lookAt, vsg::ViewportState::create(window->extent2D()));
+        auto camera = vsg::Camera::create(perspective, lookAt, vsg::ViewportState::create(vsg_window->extent2D()));
 
         // add close handler to respond the close window button and pressing escape
         viewer->addEventHandler(vsg::CloseHandler::create(viewer));
@@ -112,7 +107,7 @@ int main(int argc, char* argv[])
         // add trackball to enable mouse driven camera view control.
         viewer->addEventHandler(vsg::Trackball::create(camera, ellipsoidModel));
 
-        auto commandGraph = vsg::createCommandGraphForView(window, camera, vsg_scene);
+        auto commandGraph = vsg::createCommandGraphForView(vsg_window, camera, vsg_scene);
         viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
 
         viewer->compile();
@@ -121,7 +116,7 @@ int main(int argc, char* argv[])
     };
 
     // provide the calls to invokve the vsg::Viewer to render a frame.
-    viewerWindow->frameCallback = [](vsgQt::ViewerWindow& vw) {
+    window->frameCallback = [](vsgQt::Window& vw) {
 
         if (!vw.viewer || !vw.viewer->advanceToNextFrame())
         {
@@ -140,7 +135,7 @@ int main(int argc, char* argv[])
         return true;
     };
 
-    auto widget = QWidget::createWindowContainer(viewerWindow, mainWindow);
+    auto widget = QWidget::createWindowContainer(window, mainWindow);
     mainWindow->setCentralWidget(widget);
 
     mainWindow->resize(windowTraits->width, windowTraits->height);
