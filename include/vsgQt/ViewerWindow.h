@@ -20,6 +20,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 namespace vsgQt
 {
 
+    /// deprecated, provide temporary fallback to help older code keep compiling.
     using ViewerWindow = vsgQt::Window;
 
 } // namespace vsgQt
