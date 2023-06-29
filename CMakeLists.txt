@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.7)
 
 project(vsgQt
-    VERSION 0.0.0
+    VERSION 0.1.0
     DESCRIPTION "Qt integration with VulkanSceneGraph"
     LANGUAGES CXX
 )
-set(VSGQT_SOVERSION 0)
-set(VSGQT_RELEASE_CANDIDATE 0)
+set(VSGQT_SOVERSION 1)
+set(VSGQT_RELEASE_CANDIDATE 1)
 
 set(VSGQT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "Root source directory of vsgQt")
 set(VSGQT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "Root binary directory of vsgQt")
