@@ -22,6 +22,7 @@ vsgQtConfigVersion.cmake
 *_autogen/
 *vsgQtConfig.cmake.in
 include/vsgQt/Export.h
+Doxyfile.docs-vsgQt
 
 # Compiled Object files
 *.slo
