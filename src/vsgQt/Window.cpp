@@ -159,16 +159,12 @@ void Window::render()
 {
     // vsg::info("Window::render() viewer = ", viewer);
 
-    if (continuousUpdate) requestUpdate();
-
     if (!viewer) return;
 
     if (frameCallback)
     {
         if (frameCallback(*this))
         {
-            // continue rendering
-            //if (continuousUpdate) requestUpdate();
         }
         else if (viewer->status->cancel())
         {
@@ -184,9 +180,6 @@ void Window::render()
             viewer->update();
             viewer->recordAndSubmit();
             viewer->present();
-
-            // continue rendering
-            //if (continuousUpdate) requestUpdate();
         }
         else if (viewer->status->cancel())
         {
@@ -194,6 +187,9 @@ void Window::render()
             QCoreApplication::exit(0);
         }
     }
+
+    // continue rendering if desired
+    if (continuousUpdate) requestUpdate();
 }
 
 bool Window::event(QEvent* e)
