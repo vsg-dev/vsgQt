@@ -12,15 +12,34 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 </editor-fold> */
 
-//#include <QVulkanInstance>
-#include <QWindow>
+#include <vsg/app/Viewer.h>
 
-#include <vsgQt/Window.h>
+#include <vsgQt/Export.h>
+
+#include <QTimer>
 
 namespace vsgQt
 {
 
-    /// deprecated, provide temporary fallback to help older code keep compiling.
-    using ViewerWindow = vsgQt::Window;
+    class VSGQT_DECLSPEC Renderer : public vsg::Inherit<vsg::Object, Renderer>
+    {
+    public:
+
+        Renderer(vsg::ref_ptr<vsg::Viewer> in_viewer);
+
+        vsg::ref_ptr<vsg::Viewer> viewer;
+        QTimer timer;
+        std::atomic_uint requests;
+        bool continuousUpdate = true;
+
+        void request();
+
+        void render();
+
+        void setInterval(int msec);
+
+    };
 
 } // namespace vsgQt
+
+EVSG_type_name(vsgQt::Renderer);
