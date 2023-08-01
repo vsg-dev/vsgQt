@@ -130,8 +130,8 @@ int main(int argc, char* argv[])
     arguments.read("--samples", windowTraits->samples);
     arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height);
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
-    bool continuousUpdate = !arguments.read({"--event-driven", "--ed"});
 
+    bool continuousUpdate = !arguments.read({"--event-driven", "--ed"});
     auto internval = arguments.value<int>(0, "--interval");
 
     if (arguments.errors())
@@ -177,11 +177,7 @@ int main(int argc, char* argv[])
 
     mdiArea->viewer->compile();
 
-    if (internval >= 0)
-    {
-        mdiArea->renderer->setInterval(internval);
-    }
-
+    if (internval >= 0) mdiArea->renderer->setInterval(internval);
     mdiArea->renderer->continuousUpdate = continuousUpdate;
 
     mainWindow->show();

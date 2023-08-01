@@ -68,7 +68,6 @@ vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Renderer> renderer, vsg::ref_ptr
     auto commandGraph = vsg::createCommandGraphForView(*window, camera, vsg_scene);
 
     renderer->viewer->addRecordAndSubmitTaskAndPresentation({commandGraph});
-    //viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
 
     return window;
 }
@@ -95,6 +94,9 @@ int main(int argc, char* argv[])
     arguments.read("--samples", windowTraits->samples);
     arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height);
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
+
+    bool continuousUpdate = !arguments.read({"--event-driven", "--ed"});
+    auto internval = arguments.value<int>(0, "--interval");
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -131,7 +133,15 @@ int main(int argc, char* argv[])
 
     mainWindow->setCentralWidget(widget);
 
+    mainWindow->setGeometry(windowTraits->x, windowTraits->y, windowTraits->width, windowTraits->height);
+
     mainWindow->show();
+
+    if (internval >= 0) renderer->setInterval(internval);
+    renderer->continuousUpdate = continuousUpdate;
+
+    viewer->addEventHandler(vsg::CloseHandler::create(viewer));
+    viewer->compile();
 
     return application.exec();
 }

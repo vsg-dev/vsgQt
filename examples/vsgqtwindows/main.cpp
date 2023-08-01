@@ -96,6 +96,9 @@ int main(int argc, char* argv[])
     arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height);
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
 
+    bool continuousUpdate = !arguments.read({"--event-driven", "--ed"});
+    auto internval = arguments.value<int>(0, "--interval");
+
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
 
@@ -141,6 +144,10 @@ int main(int argc, char* argv[])
     thirdWindow->setGeometry(1360, 0, 640, 480);
     thirdWindow->show();
 
+    if (internval >= 0) renderer->setInterval(internval);
+    renderer->continuousUpdate = continuousUpdate;
+
+    viewer->addEventHandler(vsg::CloseHandler::create(viewer));
     viewer->compile();
 
     renderer->setInterval(0);
