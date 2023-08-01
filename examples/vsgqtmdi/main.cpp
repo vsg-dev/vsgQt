@@ -19,11 +19,13 @@ public:
 
     vsg::ref_ptr<vsg::WindowTraits> traits;
     vsg::ref_ptr<vsg::Viewer> viewer;
+    vsg::ref_ptr<vsgQt::Renderer> renderer;
 
     MultiViewArea(QWidget *parent = nullptr) :
         QMdiArea(parent),
-        viewer(vsg::Viewer::create())
+        viewer(vsgQt::CustomViewer::create())
     {
+        renderer = vsgQt::Renderer::create(viewer);
         viewer->addEventHandler(vsg::CloseHandler::create(viewer));
     }
 
@@ -37,7 +39,7 @@ public:
 
     size_t addView(vsg::ref_ptr<vsg::Node> vsg_scene, const QString& title = {})
     {
-        auto window = new vsgQt::Window(viewer, traits);
+        auto window = new vsgQt::Window(renderer, traits);
 
         auto widget = QWidget::createWindowContainer(window, this);
         widget->setWindowTitle(title);
@@ -105,6 +107,7 @@ public:
     }
 };
 
+
 int main(int argc, char* argv[])
 {
     vsg::CommandLine arguments(&argc, argv);
@@ -127,6 +130,9 @@ int main(int argc, char* argv[])
     arguments.read("--samples", windowTraits->samples);
     arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height);
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
+    bool continuousUpdate = !arguments.read({"--event-driven", "--ed"});
+
+    auto internval = arguments.value<int>(0, "--interval");
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -171,6 +177,12 @@ int main(int argc, char* argv[])
 
     mdiArea->viewer->compile();
 
+    if (internval >= 0)
+    {
+        mdiArea->renderer->setInterval(internval);
+    }
+
+    mdiArea->renderer->continuousUpdate = continuousUpdate;
 
     mainWindow->show();
 

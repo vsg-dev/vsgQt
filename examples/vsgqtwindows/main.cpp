@@ -13,9 +13,9 @@
 
 #include <iostream>
 
-vsgQt::Window* createWindow(vsg::ref_ptr<vsg::Viewer> viewer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
+vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Renderer> renderer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
 {
-    auto window = new vsgQt::Window(viewer, traits, parent);
+    auto window = new vsgQt::Window(renderer, traits, parent);
 
     window->setTitle(title);
 
@@ -37,7 +37,7 @@ vsgQt::Window* createWindow(vsg::ref_ptr<vsg::Viewer> viewer, vsg::ref_ptr<vsg::
     vsg::ref_ptr<vsg::EllipsoidModel> ellipsoidModel(vsg_scene->getObject<vsg::EllipsoidModel>("EllipsoidModel"));
     vsg::ref_ptr<vsg::Camera> camera;
     {
-        // set up the camera
+//         // set up the camera
         auto lookAt = vsg::LookAt::create(centre + vsg::dvec3(0.0, -radius * 3.5, 0.0), centre, vsg::dvec3(0.0, 0.0, 1.0));
 
         vsg::ref_ptr<vsg::ProjectionMatrix> perspective;
@@ -64,11 +64,11 @@ vsgQt::Window* createWindow(vsg::ref_ptr<vsg::Viewer> viewer, vsg::ref_ptr<vsg::
     auto trackball = vsg::Trackball::create(camera, ellipsoidModel);
     trackball->addWindow(*window);
 
-    viewer->addEventHandler(trackball);
+    renderer->viewer->addEventHandler(trackball);
 
     auto commandGraph = vsg::createCommandGraphForView(*window, camera, vsg_scene);
 
-    viewer->addRecordAndSubmitTaskAndPresentation({commandGraph});
+    renderer->viewer->addRecordAndSubmitTaskAndPresentation({commandGraph});
     //viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
 
     return window;
@@ -122,15 +122,16 @@ int main(int argc, char* argv[])
     QApplication application(argc, argv);
 
     // create the viewer that will manage all the rendering of the views
-    auto viewer = vsg::Viewer::create();
+    auto viewer = vsgQt::CustomViewer::create();
+    auto renderer = vsgQt::Renderer::create(viewer);
 
     // add close handler to respond the close window button and pressing escape
-    viewer->addEventHandler(vsg::CloseHandler::create(viewer));
+    // viewer->addEventHandler(vsg::CloseHandler::create(viewer));
 
     // create the windows
-    auto firstWindow = createWindow(viewer, windowTraits, vsg_scene, nullptr, "First Window");
-    auto secondWindow = createWindow(viewer, windowTraits, vsg_scene, nullptr, "Second Window");
-    auto thirdWindow = createWindow(viewer, windowTraits, vsg_scene, nullptr, "Third Window");
+    auto firstWindow = createWindow(renderer, windowTraits, vsg_scene, nullptr, "First Window");
+    auto secondWindow = createWindow(renderer, windowTraits, vsg_scene, nullptr, "Second Window");
+    auto thirdWindow = createWindow(renderer, windowTraits, vsg_scene, nullptr, "Third Window");
 
     firstWindow->setGeometry(0, 0, 640, 480);
     firstWindow->show();
@@ -142,6 +143,8 @@ int main(int argc, char* argv[])
     thirdWindow->show();
 
     viewer->compile();
+
+    renderer->setInterval(0);
 
     return application.exec();
 }

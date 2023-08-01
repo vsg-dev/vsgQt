@@ -18,6 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <vsg/app/Window.h>
 
 #include <vsgQt/KeyboardMap.h>
+#include <vsgQt/Renderer.h>
 
 namespace vsgQt
 {
@@ -29,36 +30,26 @@ namespace vsgQt
         Window(QWindow* parent);
         Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen = nullptr);
         Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent);
-        Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen = nullptr);
-        Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent);
+        Window(vsg::ref_ptr<Renderer> in_renderer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen = nullptr);
+        Window(vsg::ref_ptr<Renderer> in_renderer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent);
 
         virtual ~Window();
 
         vsg::ref_ptr<vsg::WindowTraits> traits;
-        vsg::ref_ptr<vsg::Viewer> viewer;
+        vsg::ref_ptr<Renderer> renderer;
 
         vsg::ref_ptr<vsg::Window> windowAdapter;
         vsg::ref_ptr<KeyboardMap> keyboardMap;
 
         operator vsg::ref_ptr<vsg::Window>() { return windowAdapter; }
 
-        bool continuousUpdate = true;
-
-        /// width and height in VSG/Vulkan coordinates that map 1:1 to the device pixels, rather than Qt's scaled coordinates.
-        using InitializeCallback = std::function<void(Window&, uint32_t width, uint32_t height)>;
-        InitializeCallback initializeCallback;
-
-        using FrameCallback = std::function<bool(Window&)>;
-        FrameCallback frameCallback;
-
         /// Initialize the Vulkan integration using VulkanSceneGraph vkInstance/vkSurface support
-        /// width and height in VSG/Vulkan coordinates that map 1:1 to the device pixels, rather than Qt's scaled coordinates.
         virtual void initializeWindow();
-        virtual void initializeViewer();
+
+        void cleanup();
 
     protected:
-        void render();
-        void cleanup();
+
 
         bool event(QEvent* e) override;
 

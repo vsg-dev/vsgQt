@@ -29,10 +29,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <vulkan/vulkan.h>
 
 #include <vsgQt/Renderer.h>
+#include <vsgQt/Window.h>
 
 #include <iostream>
 
 using namespace vsgQt;
+
+bool CustomViewer::pollEvents(bool discardPreviousEvents)
+{
+    if (discardPreviousEvents) _events.clear();
+    for (auto& window : _windows)
+    {
+        _events.splice(_events.end(), window->bufferedEvents);
+        window->bufferedEvents.clear();
+    }
+
+    return !_events.empty();
+}
 
 Renderer::Renderer(vsg::ref_ptr<vsg::Viewer> in_viewer) :
     viewer(in_viewer)
@@ -43,18 +56,24 @@ void Renderer::request()
     ++requests;
 }
 
+void Renderer::removeWindow(Window* window)
+{
+    viewer->deviceWaitIdle();
+    viewer->removeWindow(window->windowAdapter);
+}
+
 void Renderer::render()
 {
-
     if (!continuousUpdate && requests.load() == 0)
     {
-        // vsg::info("render() no render : requests = ", requests.load());
+        //vsg::info("render() no render : requests = ", requests.load());
         return;
     }
 
     if (viewer->advanceToNextFrame())
     {
         vsg::info("render() doing rendering requests = ", requests.load());
+
         viewer->handleEvents();
         viewer->update();
         viewer->recordAndSubmit();
@@ -63,6 +82,10 @@ void Renderer::render()
     else
     {
         vsg::info("render() render but viewer->advanceToNextFrame() returns false : requests = ", requests.load());
+        if (viewer->status->cancel())
+        {
+            QCoreApplication::quit();
+        }
     }
 
     requests = 0;
@@ -71,6 +94,6 @@ void Renderer::render()
 void Renderer::setInterval(int msec)
 {
     timer.setInterval(msec);
-    timer.connect(&timer, &QTimer::timeout, [&](){ vsg::info("tick"); render(); } );
+    timer.connect(&timer, &QTimer::timeout, [&](){ render(); } );
     timer.start();
 }

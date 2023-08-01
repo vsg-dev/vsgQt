@@ -21,6 +21,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 namespace vsgQt
 {
 
+    // forward declare
+    class Window;
+
+    class VSGQT_DECLSPEC CustomViewer : public vsg::Inherit<vsg::Viewer, CustomViewer>
+    {
+    public:
+        CustomViewer() {};
+
+        /// poll the events for all attached windows, return true if new events are available
+        bool pollEvents(bool discardPreviousEvents = true) override;
+    };
+
     class VSGQT_DECLSPEC Renderer : public vsg::Inherit<vsg::Object, Renderer>
     {
     public:
@@ -33,6 +45,8 @@ namespace vsgQt
         bool continuousUpdate = true;
 
         void request();
+
+        void removeWindow(Window* window);
 
         void render();
 
