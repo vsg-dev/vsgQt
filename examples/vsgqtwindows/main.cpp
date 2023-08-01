@@ -37,7 +37,7 @@ vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Renderer> renderer, vsg::ref_ptr
     vsg::ref_ptr<vsg::EllipsoidModel> ellipsoidModel(vsg_scene->getObject<vsg::EllipsoidModel>("EllipsoidModel"));
     vsg::ref_ptr<vsg::Camera> camera;
     {
-//         // set up the camera
+        // set up the camera
         auto lookAt = vsg::LookAt::create(centre + vsg::dvec3(0.0, -radius * 3.5, 0.0), centre, vsg::dvec3(0.0, 0.0, 1.0));
 
         vsg::ref_ptr<vsg::ProjectionMatrix> perspective;
@@ -69,7 +69,6 @@ vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Renderer> renderer, vsg::ref_ptr
     auto commandGraph = vsg::createCommandGraphForView(*window, camera, vsg_scene);
 
     renderer->viewer->addRecordAndSubmitTaskAndPresentation({commandGraph});
-    //viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
 
     return window;
 }

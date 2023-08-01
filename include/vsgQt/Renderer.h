@@ -29,7 +29,7 @@ namespace vsgQt
     public:
         CustomViewer() {};
 
-        /// poll the events for all attached windows, return true if new events are available
+        /// override pollEvents to prevent the window->pollEvents() being called by vsg::Viewer
         bool pollEvents(bool discardPreviousEvents = true) override;
     };
 
