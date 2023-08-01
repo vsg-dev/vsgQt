@@ -243,6 +243,7 @@ void Window::resizeEvent(QResizeEvent* e)
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, convert_coord(x()), convert_coord(y()), convert_coord(width()), convert_coord(height())));
 
+    windowAdapter->resize();
 
     if (renderer) renderer->request();
 }
