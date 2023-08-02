@@ -13,9 +13,9 @@
 
 #include <iostream>
 
-vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Renderer> renderer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
+vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Viewer> viewer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
 {
-    auto window = new vsgQt::Window(renderer, traits, parent);
+    auto window = new vsgQt::Window(viewer, traits, parent);
 
     window->setTitle(title);
 
@@ -64,11 +64,11 @@ vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Renderer> renderer, vsg::ref_ptr
     auto trackball = vsg::Trackball::create(camera, ellipsoidModel);
     trackball->addWindow(*window);
 
-    renderer->viewer->addEventHandler(trackball);
+    viewer->addEventHandler(trackball);
 
     auto commandGraph = vsg::createCommandGraphForView(*window, camera, vsg_scene);
 
-    renderer->viewer->addRecordAndSubmitTaskAndPresentation({commandGraph});
+    viewer->addRecordAndSubmitTaskAndPresentation({commandGraph});
 
     return window;
 }
@@ -125,16 +125,15 @@ int main(int argc, char* argv[])
 
 
     // create the viewer that will manage all the rendering of the views
-    auto viewer = vsgQt::CustomViewer::create();
-    auto renderer = vsgQt::Renderer::create(viewer);
+    auto viewer = vsgQt::Viewer::create();
 
     // add close handler to respond the close window button and pressing escape
     viewer->addEventHandler(vsg::CloseHandler::create(viewer));
 
     // create the windows
-    auto firstWindow = createWindow(renderer, windowTraits, vsg_scene, nullptr, "First Window");
-    auto secondWindow = createWindow(renderer, windowTraits, vsg_scene, nullptr, "Second Window");
-    auto thirdWindow = createWindow(renderer, windowTraits, vsg_scene, nullptr, "Third Window");
+    auto firstWindow = createWindow(viewer, windowTraits, vsg_scene, nullptr, "First Window");
+    auto secondWindow = createWindow(viewer, windowTraits, vsg_scene, nullptr, "Second Window");
+    auto thirdWindow = createWindow(viewer, windowTraits, vsg_scene, nullptr, "Third Window");
 
     firstWindow->setGeometry(0, 0, 640, 480);
     firstWindow->show();
@@ -145,8 +144,8 @@ int main(int argc, char* argv[])
     thirdWindow->setGeometry(1360, 0, 640, 480);
     thirdWindow->show();
 
-    if (internval >= 0) renderer->setInterval(internval);
-    renderer->continuousUpdate = continuousUpdate;
+    if (internval >= 0) viewer->setInterval(internval);
+    viewer->continuousUpdate = continuousUpdate;
 
     viewer->compile();
 

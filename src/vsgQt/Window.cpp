@@ -94,9 +94,9 @@ Window::Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
     }
 }
 
-Window::Window(vsg::ref_ptr<Renderer> in_renderer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen) :
+Window::Window(vsg::ref_ptr<vsgQt::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen) :
     QWindow(targetScreen),
-    renderer(in_renderer),
+    viewer(in_viewer),
     keyboardMap(KeyboardMap::create())
 {
     if (in_traits)
@@ -114,9 +114,9 @@ Window::Window(vsg::ref_ptr<Renderer> in_renderer, vsg::ref_ptr<vsg::WindowTrait
     }
 }
 
-Window::Window(vsg::ref_ptr<Renderer> in_renderer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
+Window::Window(vsg::ref_ptr<vsgQt::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
     QWindow(parent),
-    renderer(in_renderer),
+    viewer(in_viewer),
     keyboardMap(KeyboardMap::create())
 {
     if (in_traits)
@@ -173,9 +173,9 @@ void Window::cleanup()
         vsg::info("Window::cleanup() A ", this);
 
         // wait for all rendering to be completed before we start cleaning up resources.
-        if (renderer)
+        if (viewer)
         {
-            renderer->removeWindow(this);
+            viewer->removeWindow(windowAdapter);
         }
 
         windowAdapter->releaseWindow();
@@ -186,7 +186,7 @@ void Window::cleanup()
     }
 
     windowAdapter = {};
-    renderer = {};
+    viewer = {};
 }
 
 
@@ -204,7 +204,7 @@ bool Window::event(QEvent* e)
             windowAdapter->bufferedEvents.push_back(vsg::CloseWindowEvent::create(windowAdapter, event_time));
 
 #if 0
-            if (renderer) renderer->scheduleRemovalWindow(this);
+            if (viewer) viewer->scheduleRemovalWindow(this);
 #else
             cleanup();
 #endif
@@ -227,13 +227,13 @@ void Window::exposeEvent(QExposeEvent* /*e*/)
         initializeWindow();
     }
 
-    if (renderer) renderer->request();
+    if (viewer) viewer->request();
 }
 
 void Window::hideEvent(QHideEvent* e)
 {
     //vsg::info("Window::hideEvent(", e, ")");
-    //if (renderer) renderer->request();
+    //if (viewer) viewer->request();
 }
 
 void Window::resizeEvent(QResizeEvent* e)
@@ -245,7 +245,7 @@ void Window::resizeEvent(QResizeEvent* e)
 
     windowAdapter->resize();
 
-    if (renderer) renderer->request();
+    if (viewer) viewer->request();
 }
 
 void Window::keyPressEvent(QKeyEvent* e)
@@ -261,7 +261,7 @@ void Window::keyPressEvent(QKeyEvent* e)
         windowAdapter->bufferedEvents.push_back(vsg::KeyPressEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
 
-    if (renderer) renderer->request();
+    if (viewer) viewer->request();
 }
 
 void Window::keyReleaseEvent(QKeyEvent* e)
@@ -277,7 +277,7 @@ void Window::keyReleaseEvent(QKeyEvent* e)
         windowAdapter->bufferedEvents.push_back(vsg::KeyReleaseEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
 
-    if (renderer) renderer->request();
+    if (viewer) viewer->request();
 }
 
 void Window::mouseMoveEvent(QMouseEvent* e)
@@ -291,7 +291,7 @@ void Window::mouseMoveEvent(QMouseEvent* e)
 
     windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, x, y, mask));
 
-    if (renderer) renderer->request();
+    if (viewer) viewer->request();
 }
 
 void Window::mousePressEvent(QMouseEvent* e)
@@ -305,7 +305,7 @@ void Window::mousePressEvent(QMouseEvent* e)
 
     windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, x, y, mask, button));
 
-    if (renderer) renderer->request();
+    if (viewer) viewer->request();
 }
 
 void Window::mouseReleaseEvent(QMouseEvent* e)
@@ -319,7 +319,7 @@ void Window::mouseReleaseEvent(QMouseEvent* e)
 
     windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, x, y, mask, button));
 
-    if (renderer) renderer->request();
+    if (viewer) viewer->request();
 }
 
 void Window::wheelEvent(QWheelEvent* e)
@@ -329,7 +329,7 @@ void Window::wheelEvent(QWheelEvent* e)
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ScrollWheelEvent::create(windowAdapter, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));
 
-    if (renderer) renderer->request();
+    if (viewer) viewer->request();
 }
 
 std::pair<vsg::ButtonMask, uint32_t> Window::convertMouseButtons(QMouseEvent* e) const

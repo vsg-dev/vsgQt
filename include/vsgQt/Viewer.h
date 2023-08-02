@@ -24,29 +24,21 @@ namespace vsgQt
     // forward declare
     class Window;
 
-    class VSGQT_DECLSPEC CustomViewer : public vsg::Inherit<vsg::Viewer, CustomViewer>
-    {
-    public:
-        CustomViewer() {};
 
-        /// override pollEvents to prevent the window->pollEvents() being called by vsg::Viewer
-        bool pollEvents(bool discardPreviousEvents = true) override;
-    };
-
-    class VSGQT_DECLSPEC Renderer : public vsg::Inherit<vsg::Object, Renderer>
+    class VSGQT_DECLSPEC Viewer : public vsg::Inherit<vsg::Viewer, Viewer>
     {
     public:
 
-        Renderer(vsg::ref_ptr<vsg::Viewer> in_viewer);
+        Viewer();
 
-        vsg::ref_ptr<vsg::Viewer> viewer;
         QTimer timer;
         std::atomic_uint requests;
         bool continuousUpdate = true;
 
-        void request();
+        /// override pollEvents to prevent the window->pollEvents() being called by vsg::Viewer
+        bool pollEvents(bool discardPreviousEvents = true) override;
 
-        void removeWindow(Window* window);
+        void request();
 
         void render();
 
@@ -56,4 +48,4 @@ namespace vsgQt
 
 } // namespace vsgQt
 
-EVSG_type_name(vsgQt::Renderer);
+EVSG_type_name(vsgQt::Viewer);

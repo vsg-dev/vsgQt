@@ -11,9 +11,9 @@
 
 #include <iostream>
 
-vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Renderer> renderer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
+vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Viewer> viewer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
 {
-    auto window = new vsgQt::Window(renderer, traits, parent);
+    auto window = new vsgQt::Window(viewer, traits, parent);
 
     window->setTitle(title);
 
@@ -62,11 +62,11 @@ vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Renderer> renderer, vsg::ref_ptr
     auto trackball = vsg::Trackball::create(camera, ellipsoidModel);
     trackball->addWindow(*window);
 
-    renderer->viewer->addEventHandler(trackball);
+    viewer->addEventHandler(trackball);
 
     auto commandGraph = vsg::createCommandGraphForView(*window, camera, vsg_scene);
 
-    renderer->viewer->addRecordAndSubmitTaskAndPresentation({commandGraph});
+    viewer->addRecordAndSubmitTaskAndPresentation({commandGraph});
 
     return window;
 }
@@ -124,10 +124,9 @@ int main(int argc, char* argv[])
     QMainWindow* mainWindow = new QMainWindow();
 
     // create the viewer that will manage all the rendering of the views
-    auto viewer = vsgQt::CustomViewer::create();
-    auto renderer = vsgQt::Renderer::create(viewer);
+    auto viewer = vsgQt::Viewer::create();
 
-    auto window = createWindow(renderer, windowTraits, vsg_scene, nullptr, "First Window");
+    auto window = createWindow(viewer, windowTraits, vsg_scene, nullptr, "First Window");
 
     auto widget = QWidget::createWindowContainer(window, mainWindow);
 
@@ -137,8 +136,8 @@ int main(int argc, char* argv[])
 
     mainWindow->show();
 
-    if (internval >= 0) renderer->setInterval(internval);
-    renderer->continuousUpdate = continuousUpdate;
+    if (internval >= 0) viewer->setInterval(internval);
+    viewer->continuousUpdate = continuousUpdate;
 
     viewer->addEventHandler(vsg::CloseHandler::create(viewer));
     viewer->compile();

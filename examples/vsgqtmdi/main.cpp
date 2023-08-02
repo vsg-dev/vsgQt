@@ -18,14 +18,12 @@ class MultiViewArea : public QMdiArea
 public:
 
     vsg::ref_ptr<vsg::WindowTraits> traits;
-    vsg::ref_ptr<vsg::Viewer> viewer;
-    vsg::ref_ptr<vsgQt::Renderer> renderer;
+    vsg::ref_ptr<vsgQt::Viewer> viewer;
 
     MultiViewArea(QWidget *parent = nullptr) :
         QMdiArea(parent),
-        viewer(vsgQt::CustomViewer::create())
+        viewer(vsgQt::Viewer::create())
     {
-        renderer = vsgQt::Renderer::create(viewer);
         viewer->addEventHandler(vsg::CloseHandler::create(viewer));
     }
 
@@ -39,7 +37,7 @@ public:
 
     size_t addView(vsg::ref_ptr<vsg::Node> vsg_scene, const QString& title = {})
     {
-        auto window = new vsgQt::Window(renderer, traits);
+        auto window = new vsgQt::Window(viewer, traits);
 
         auto widget = QWidget::createWindowContainer(window, this);
         widget->setWindowTitle(title);
@@ -177,8 +175,8 @@ int main(int argc, char* argv[])
 
     mdiArea->viewer->compile();
 
-    if (internval >= 0) mdiArea->renderer->setInterval(internval);
-    mdiArea->renderer->continuousUpdate = continuousUpdate;
+    if (internval >= 0) mdiArea->viewer->setInterval(internval);
+    mdiArea->viewer->continuousUpdate = continuousUpdate;
 
     mainWindow->show();
 

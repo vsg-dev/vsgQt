@@ -28,14 +28,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <vulkan/vulkan.h>
 
-#include <vsgQt/Renderer.h>
+#include <vsgQt/Viewer.h>
 #include <vsgQt/Window.h>
 
 #include <iostream>
 
 using namespace vsgQt;
 
-bool CustomViewer::pollEvents(bool discardPreviousEvents)
+
+Viewer::Viewer()
+{
+}
+
+bool Viewer::pollEvents(bool discardPreviousEvents)
 {
     if (discardPreviousEvents) _events.clear();
     for (auto& window : _windows)
@@ -47,22 +52,12 @@ bool CustomViewer::pollEvents(bool discardPreviousEvents)
     return !_events.empty();
 }
 
-Renderer::Renderer(vsg::ref_ptr<vsg::Viewer> in_viewer) :
-    viewer(in_viewer)
-{
-}
-void Renderer::request()
+void Viewer::request()
 {
     ++requests;
 }
 
-void Renderer::removeWindow(Window* window)
-{
-    viewer->deviceWaitIdle();
-    viewer->removeWindow(window->windowAdapter);
-}
-
-void Renderer::render()
+void Viewer::render()
 {
     if (!continuousUpdate && requests.load() == 0)
     {
@@ -70,19 +65,19 @@ void Renderer::render()
         return;
     }
 
-    if (viewer->advanceToNextFrame())
+    if (advanceToNextFrame())
     {
         vsg::info("render() doing rendering requests = ", requests.load());
 
-        viewer->handleEvents();
-        viewer->update();
-        viewer->recordAndSubmit();
-        viewer->present();
+        handleEvents();
+        update();
+        recordAndSubmit();
+        present();
     }
     else
     {
-        vsg::info("render() render but viewer->advanceToNextFrame() returns false : requests = ", requests.load());
-        if (viewer->status->cancel())
+        vsg::info("render() render but advanceToNextFrame() returns false : requests = ", requests.load());
+        if (status->cancel())
         {
             QCoreApplication::quit();
         }
@@ -91,7 +86,7 @@ void Renderer::render()
     requests = 0;
 }
 
-void Renderer::setInterval(int msec)
+void Viewer::setInterval(int msec)
 {
     timer.setInterval(msec);
     timer.connect(&timer, &QTimer::timeout, [&](){ render(); } );
