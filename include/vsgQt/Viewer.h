@@ -38,10 +38,14 @@ namespace vsgQt
         /// override pollEvents to prevent the window->pollEvents() being called by vsg::Viewer
         bool pollEvents(bool discardPreviousEvents = true) override;
 
-        void request();
+        /// increment the requests count to signal that a new frame should be rendered on the next timer call.
+        virtual void request();
 
-        void render();
+        /// called by the QTimer and will do the viewer frame calls to render all windows associated with the viewer.
+        /// if continuousUpdate is false then the viewer frame calls are only done if the requests count is > 0
+        virtual void render();
 
+        /// set the QTimer interval in milliseconds, this controls how often the Viewer::render() is called
         void setInterval(int msec);
 
     };
