@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
     auto renderer = vsgQt::Renderer::create(viewer);
 
     // add close handler to respond the close window button and pressing escape
-    // viewer->addEventHandler(vsg::CloseHandler::create(viewer));
+    viewer->addEventHandler(vsg::CloseHandler::create(viewer));
 
     // create the windows
     auto firstWindow = createWindow(renderer, windowTraits, vsg_scene, nullptr, "First Window");
@@ -148,7 +148,6 @@ int main(int argc, char* argv[])
     if (internval >= 0) renderer->setInterval(internval);
     renderer->continuousUpdate = continuousUpdate;
 
-    viewer->addEventHandler(vsg::CloseHandler::create(viewer));
     viewer->compile();
 
     renderer->setInterval(0);
