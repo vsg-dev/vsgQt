@@ -70,8 +70,6 @@ void Viewer::render()
 
     if (advanceToNextFrame())
     {
-        vsg::info("render() doing rendering requests = ", requests.load());
-
         handleEvents();
         update();
         recordAndSubmit();
@@ -79,7 +77,6 @@ void Viewer::render()
     }
     else
     {
-        vsg::info("render() render but advanceToNextFrame() returns false : requests = ", requests.load());
         if (status->cancel())
         {
             QCoreApplication::quit();

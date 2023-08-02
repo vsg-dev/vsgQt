@@ -136,7 +136,6 @@ Window::Window(vsg::ref_ptr<vsgQt::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTr
 
 Window::~Window()
 {
-    vsg::info("Window::cleanup() destructor ", this);
     cleanup();
 }
 
@@ -166,12 +165,9 @@ void Window::initializeWindow()
 
 void Window::cleanup()
 {
-
     // remove links to all the VSG related classes.
     if (windowAdapter)
     {
-        vsg::info("Window::cleanup() A ", this);
-
         // wait for all rendering to be completed before we start cleaning up resources.
         if (viewer)
         {
@@ -179,10 +175,6 @@ void Window::cleanup()
         }
 
         windowAdapter->releaseWindow();
-    }
-    else
-    {
-        vsg::info("Window::cleanup() B ", this);
     }
 
     windowAdapter = {};
@@ -198,22 +190,15 @@ bool Window::event(QEvent* e)
         auto surfaceEvent = dynamic_cast<QPlatformSurfaceEvent*>(e);
         if (surfaceEvent->surfaceEventType() == QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
         {
-            vsg::info("Window::event(QEvent* e) QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)");
-
             vsg::clock::time_point event_time = vsg::clock::now();
             windowAdapter->bufferedEvents.push_back(vsg::CloseWindowEvent::create(windowAdapter, event_time));
 
-#if 0
-            if (viewer) viewer->scheduleRemovalWindow(this);
-#else
             cleanup();
-#endif
         }
         break;
     }
 
     default:
-        vsg::info("Window::event(QEvent* e) type = ", e->type(), " not handled");
         break;
     }
 
@@ -230,13 +215,11 @@ void Window::exposeEvent(QExposeEvent* /*e*/)
     if (viewer) viewer->request();
 }
 
-void Window::hideEvent(QHideEvent* e)
+void Window::hideEvent(QHideEvent* /*e*/)
 {
-    //vsg::info("Window::hideEvent(", e, ")");
-    //if (viewer) viewer->request();
 }
 
-void Window::resizeEvent(QResizeEvent* e)
+void Window::resizeEvent(QResizeEvent* /*e*/)
 {
     if (!windowAdapter) return;
 
