@@ -46,10 +46,9 @@ namespace vsgQt
         /// Initialize the Vulkan integration using VulkanSceneGraph vkInstance/vkSurface support
         virtual void initializeWindow();
 
-        void cleanup();
-
     protected:
 
+        void cleanup();
 
         bool event(QEvent* e) override;
 
