@@ -110,6 +110,8 @@ public:
 
 int main(int argc, char* argv[])
 {
+    QApplication application(argc, argv);
+
     vsg::CommandLine arguments(&argc, argv);
 
     // set up vsg::Options to pass in filepaths and ReaderWriter's and other IO
@@ -154,8 +156,6 @@ int main(int argc, char* argv[])
                   << std::endl;
         return 1;
     }
-
-    QApplication application(argc, argv);
 
     QMainWindow* mainWindow = new QMainWindow();
 

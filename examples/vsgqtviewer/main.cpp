@@ -74,6 +74,8 @@ vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Renderer> renderer, vsg::ref_ptr
 
 int main(int argc, char* argv[])
 {
+    QApplication application(argc, argv);
+
     vsg::CommandLine arguments(&argc, argv);
 
     // set up vsg::Options to pass in filepaths and ReaderWriter's and other IO
@@ -119,7 +121,6 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    QApplication application(argc, argv);
 
     QMainWindow* mainWindow = new QMainWindow();
 
