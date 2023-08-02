@@ -38,7 +38,10 @@ using namespace vsgQt;
 
 Viewer::Viewer()
 {
+    // set the default timer as 8ms.
+    setInterval(8);
 }
+
 
 bool Viewer::pollEvents(bool discardPreviousEvents)
 {

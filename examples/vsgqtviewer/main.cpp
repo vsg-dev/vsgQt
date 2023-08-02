@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
 
     bool continuousUpdate = !arguments.read({"--event-driven", "--ed"});
-    auto internval = arguments.value<int>(8, "--interval");
+    auto internval = arguments.value<int>(-1, "--interval");
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
