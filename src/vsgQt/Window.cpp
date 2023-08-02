@@ -171,6 +171,7 @@ void Window::cleanup()
         // wait for all rendering to be completed before we start cleaning up resources.
         if (viewer)
         {
+            viewer->deviceWaitIdle();
             viewer->removeWindow(windowAdapter);
         }
 
