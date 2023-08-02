@@ -150,7 +150,5 @@ int main(int argc, char* argv[])
 
     viewer->compile();
 
-    renderer->setInterval(0);
-
     return application.exec();
 }
