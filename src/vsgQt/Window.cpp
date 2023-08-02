@@ -94,7 +94,7 @@ Window::Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
     }
 }
 
-Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen) :
+Window::Window(vsg::ref_ptr<vsgQt::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen) :
     QWindow(targetScreen),
     viewer(in_viewer),
     keyboardMap(KeyboardMap::create())
@@ -114,7 +114,7 @@ Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTrai
     }
 }
 
-Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
+Window::Window(vsg::ref_ptr<vsgQt::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
     QWindow(parent),
     viewer(in_viewer),
     keyboardMap(KeyboardMap::create())
@@ -137,85 +137,6 @@ Window::Window(vsg::ref_ptr<vsg::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTrai
 Window::~Window()
 {
     cleanup();
-}
-
-void Window::cleanup()
-{
-    // remove links to all the VSG related classes.
-    if (windowAdapter)
-    {
-        // wait for all rendering to be completed before we start cleaning up resources.
-        if (viewer) viewer->deviceWaitIdle();
-
-        viewer->removeWindow(windowAdapter);
-        windowAdapter->releaseWindow();
-    }
-
-    windowAdapter = {};
-    viewer = {};
-}
-
-void Window::render()
-{
-    // vsg::info("Window::render() viewer = ", viewer);
-
-    if (!viewer) return;
-
-    if (frameCallback)
-    {
-        if (frameCallback(*this))
-        {
-        }
-        else if (viewer->status->cancel())
-        {
-            cleanup();
-            QCoreApplication::exit(0);
-        }
-    }
-    else if (viewer)
-    {
-        if (viewer->advanceToNextFrame())
-        {
-            viewer->handleEvents();
-            viewer->update();
-            viewer->recordAndSubmit();
-            viewer->present();
-        }
-        else if (viewer->status->cancel())
-        {
-            cleanup();
-            QCoreApplication::exit(0);
-        }
-    }
-
-    // continue rendering if desired
-    if (continuousUpdate) requestUpdate();
-}
-
-bool Window::event(QEvent* e)
-{
-    switch (e->type())
-    {
-    case QEvent::UpdateRequest:
-        render();
-        break;
-
-    case QEvent::PlatformSurface: {
-        auto surfaceEvent = dynamic_cast<QPlatformSurfaceEvent*>(e);
-        if (surfaceEvent->surfaceEventType() == QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
-        {
-            vsg::debug("Window::event(QEvent* e) QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)");
-            cleanup();
-        }
-        break;
-    }
-
-    default:
-        vsg::debug("Window::event(QEvent* e) type = ", e->type(), " not handled");
-        break;
-    }
-
-    return QWindow::event(e);
 }
 
 void Window::initializeWindow()
@@ -242,24 +163,56 @@ void Window::initializeWindow()
     windowAdapter = vsg::Window::create(traits);
 }
 
-void Window::initializeViewer()
+void Window::cleanup()
 {
-    if (_initialized) return;
+    // remove links to all the VSG related classes.
+    if (windowAdapter)
+    {
+        // wait for all rendering to be completed before we start cleaning up resources.
+        if (viewer)
+        {
+            viewer->removeWindow(windowAdapter);
+        }
 
-    _initialized = true;
+        windowAdapter->releaseWindow();
+    }
 
-    initializeWindow();
+    windowAdapter = {};
+    viewer = {};
+}
 
-    if (initializeCallback) initializeCallback(*this, traits->width, traits->height);
+
+bool Window::event(QEvent* e)
+{
+    switch (e->type())
+    {
+    case QEvent::PlatformSurface: {
+        auto surfaceEvent = dynamic_cast<QPlatformSurfaceEvent*>(e);
+        if (surfaceEvent->surfaceEventType() == QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
+        {
+            vsg::clock::time_point event_time = vsg::clock::now();
+            windowAdapter->bufferedEvents.push_back(vsg::CloseWindowEvent::create(windowAdapter, event_time));
+
+            cleanup();
+        }
+        break;
+    }
+
+    default:
+        break;
+    }
+
+    return QWindow::event(e);
 }
 
 void Window::exposeEvent(QExposeEvent* /*e*/)
 {
     if (!_initialized && isExposed())
     {
-        initializeViewer();
+        initializeWindow();
     }
-    requestUpdate();
+
+    if (viewer) viewer->request();
 }
 
 void Window::hideEvent(QHideEvent* /*e*/)
@@ -273,7 +226,9 @@ void Window::resizeEvent(QResizeEvent* /*e*/)
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ConfigureWindowEvent::create(windowAdapter, event_time, convert_coord(x()), convert_coord(y()), convert_coord(width()), convert_coord(height())));
 
-    if (!continuousUpdate) requestUpdate();
+    windowAdapter->resize();
+
+    if (viewer) viewer->request();
 }
 
 void Window::keyPressEvent(QKeyEvent* e)
@@ -289,7 +244,7 @@ void Window::keyPressEvent(QKeyEvent* e)
         windowAdapter->bufferedEvents.push_back(vsg::KeyPressEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
 
-    if (!continuousUpdate) requestUpdate();
+    if (viewer) viewer->request();
 }
 
 void Window::keyReleaseEvent(QKeyEvent* e)
@@ -305,7 +260,7 @@ void Window::keyReleaseEvent(QKeyEvent* e)
         windowAdapter->bufferedEvents.push_back(vsg::KeyReleaseEvent::create(windowAdapter, event_time, keySymbol, modifiedKeySymbol, keyModifier));
     }
 
-    if (!continuousUpdate) requestUpdate();
+    if (viewer) viewer->request();
 }
 
 void Window::mouseMoveEvent(QMouseEvent* e)
@@ -319,7 +274,7 @@ void Window::mouseMoveEvent(QMouseEvent* e)
 
     windowAdapter->bufferedEvents.push_back(vsg::MoveEvent::create(windowAdapter, event_time, x, y, mask));
 
-    if (!continuousUpdate) requestUpdate();
+    if (viewer) viewer->request();
 }
 
 void Window::mousePressEvent(QMouseEvent* e)
@@ -333,7 +288,7 @@ void Window::mousePressEvent(QMouseEvent* e)
 
     windowAdapter->bufferedEvents.push_back(vsg::ButtonPressEvent::create(windowAdapter, event_time, x, y, mask, button));
 
-    if (!continuousUpdate) requestUpdate();
+    if (viewer) viewer->request();
 }
 
 void Window::mouseReleaseEvent(QMouseEvent* e)
@@ -347,7 +302,7 @@ void Window::mouseReleaseEvent(QMouseEvent* e)
 
     windowAdapter->bufferedEvents.push_back(vsg::ButtonReleaseEvent::create(windowAdapter, event_time, x, y, mask, button));
 
-    if (!continuousUpdate) requestUpdate();
+    if (viewer) viewer->request();
 }
 
 void Window::wheelEvent(QWheelEvent* e)
@@ -357,7 +312,7 @@ void Window::wheelEvent(QWheelEvent* e)
     vsg::clock::time_point event_time = vsg::clock::now();
     windowAdapter->bufferedEvents.push_back(vsg::ScrollWheelEvent::create(windowAdapter, event_time, e->angleDelta().y() < 0 ? vsg::vec3(0.0f, -1.0f, 0.0f) : vsg::vec3(0.0f, 1.0f, 0.0f)));
 
-    if (!continuousUpdate) requestUpdate();
+    if (viewer) viewer->request();
 }
 
 std::pair<vsg::ButtonMask, uint32_t> Window::convertMouseButtons(QMouseEvent* e) const

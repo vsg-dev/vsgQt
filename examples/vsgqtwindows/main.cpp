@@ -13,7 +13,7 @@
 
 #include <iostream>
 
-vsgQt::Window* createWindow(vsg::ref_ptr<vsg::Viewer> viewer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
+vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Viewer> viewer, vsg::ref_ptr<vsg::WindowTraits> traits, vsg::ref_ptr<vsg::Node> vsg_scene, QWindow* parent, const QString& title = {})
 {
     auto window = new vsgQt::Window(viewer, traits, parent);
 
@@ -69,13 +69,14 @@ vsgQt::Window* createWindow(vsg::ref_ptr<vsg::Viewer> viewer, vsg::ref_ptr<vsg::
     auto commandGraph = vsg::createCommandGraphForView(*window, camera, vsg_scene);
 
     viewer->addRecordAndSubmitTaskAndPresentation({commandGraph});
-    //viewer->assignRecordAndSubmitTaskAndPresentation({commandGraph});
 
     return window;
 }
 
 int main(int argc, char* argv[])
 {
+    QApplication application(argc, argv);
+
     vsg::CommandLine arguments(&argc, argv);
 
     // set up vsg::Options to pass in filepaths and ReaderWriter's and other IO
@@ -96,6 +97,9 @@ int main(int argc, char* argv[])
     arguments.read("--samples", windowTraits->samples);
     arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height);
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
+
+    bool continuousUpdate = !arguments.read({"--event-driven", "--ed"});
+    auto internval = arguments.value<int>(-1, "--interval");
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -119,10 +123,9 @@ int main(int argc, char* argv[])
     }
 
 
-    QApplication application(argc, argv);
 
     // create the viewer that will manage all the rendering of the views
-    auto viewer = vsg::Viewer::create();
+    auto viewer = vsgQt::Viewer::create();
 
     // add close handler to respond the close window button and pressing escape
     viewer->addEventHandler(vsg::CloseHandler::create(viewer));
@@ -140,6 +143,9 @@ int main(int argc, char* argv[])
 
     thirdWindow->setGeometry(1360, 0, 640, 480);
     thirdWindow->show();
+
+    if (internval >= 0) viewer->setInterval(internval);
+    viewer->continuousUpdate = continuousUpdate;
 
     viewer->compile();
 

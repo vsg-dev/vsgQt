@@ -12,15 +12,44 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 </editor-fold> */
 
-//#include <QVulkanInstance>
-#include <QWindow>
+#include <vsg/app/Viewer.h>
 
-#include <vsgQt/Window.h>
+#include <vsgQt/Export.h>
+
+#include <QTimer>
 
 namespace vsgQt
 {
 
-    /// deprecated, provide temporary fallback to help older code keep compiling.
-    using ViewerWindow = vsgQt::Window;
+    // forward declare
+    class Window;
+
+
+    class VSGQT_DECLSPEC Viewer : public vsg::Inherit<vsg::Viewer, Viewer>
+    {
+    public:
+
+        Viewer();
+
+        QTimer timer;
+        std::atomic_uint requests;
+        bool continuousUpdate = true;
+
+        /// override pollEvents to prevent the window->pollEvents() being called by vsg::Viewer
+        bool pollEvents(bool discardPreviousEvents = true) override;
+
+        /// increment the requests count to signal that a new frame should be rendered on the next timer call.
+        virtual void request();
+
+        /// called by the QTimer and will do the viewer frame calls to render all windows associated with the viewer.
+        /// if continuousUpdate is false then the viewer frame calls are only done if the requests count is > 0
+        virtual void render();
+
+        /// set the QTimer interval in milliseconds, this controls how often the Viewer::render() is called
+        void setInterval(int msec);
+
+    };
 
 } // namespace vsgQt
+
+EVSG_type_name(vsgQt::Viewer);

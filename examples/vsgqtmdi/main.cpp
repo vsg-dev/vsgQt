@@ -18,11 +18,11 @@ class MultiViewArea : public QMdiArea
 public:
 
     vsg::ref_ptr<vsg::WindowTraits> traits;
-    vsg::ref_ptr<vsg::Viewer> viewer;
+    vsg::ref_ptr<vsgQt::Viewer> viewer;
 
     MultiViewArea(QWidget *parent = nullptr) :
         QMdiArea(parent),
-        viewer(vsg::Viewer::create())
+        viewer(vsgQt::Viewer::create())
     {
         viewer->addEventHandler(vsg::CloseHandler::create(viewer));
     }
@@ -105,8 +105,11 @@ public:
     }
 };
 
+
 int main(int argc, char* argv[])
 {
+    QApplication application(argc, argv);
+
     vsg::CommandLine arguments(&argc, argv);
 
     // set up vsg::Options to pass in filepaths and ReaderWriter's and other IO
@@ -127,6 +130,9 @@ int main(int argc, char* argv[])
     arguments.read("--samples", windowTraits->samples);
     arguments.read({"--window", "-w"}, windowTraits->width, windowTraits->height);
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
+
+    bool continuousUpdate = !arguments.read({"--event-driven", "--ed"});
+    auto internval = arguments.value<int>(-1, "--interval");
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -149,8 +155,6 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    QApplication application(argc, argv);
-
     QMainWindow* mainWindow = new QMainWindow();
 
     auto mdiArea = new MultiViewArea(mainWindow);
@@ -171,6 +175,8 @@ int main(int argc, char* argv[])
 
     mdiArea->viewer->compile();
 
+    if (internval >= 0) mdiArea->viewer->setInterval(internval);
+    mdiArea->viewer->continuousUpdate = continuousUpdate;
 
     mainWindow->show();
 
