@@ -152,7 +152,7 @@ void Window::initializeWindow()
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
     traits->nativeWindow = static_cast<xcb_window_t>(winId());
 #elif defined(VK_USE_PLATFORM_MACOS_MVK)
-    traits->nativeWindow = reinterpret_cast<NSView*>(winId()); // or NSWindow* ?
+    traits->nativeWindow = winId();
 #endif
 
     traits->x = convert_coord(x());
