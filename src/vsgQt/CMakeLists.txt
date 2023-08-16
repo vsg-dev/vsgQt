@@ -72,10 +72,6 @@ target_link_libraries(vsgQt
         vsg::vsg
 )
 
-if(vsgXchange_FOUND)
-    target_link_libraries(vsgQt PRIVATE vsgXchange::vsgXchange)
-endif()
-
 add_library_export_header(vsgQt)
 
 install(TARGETS vsgQt ${INSTALL_TARGETS_DEFAULT_FLAGS})
