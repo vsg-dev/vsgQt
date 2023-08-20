@@ -9,7 +9,6 @@
 #include <QtWidgets/QMdiArea>
 
 #include <vsgQt/Window.h>
-#include <iostream>
 
 #include <iostream>
 
@@ -21,7 +20,7 @@ vsgQt::Window* createWindow(vsg::ref_ptr<vsgQt::Viewer> viewer, vsg::ref_ptr<vsg
 
     window->initializeWindow();
 
-    // if first window to be created use it's device for future window creation.
+    // if this is the first window to be created, use its device for future window creation.
     if (!traits->device) traits->device = window->windowAdapter->getOrCreateDevice();
 
     // compute the bounds of the scene graph to help position camera
@@ -79,8 +78,8 @@ int main(int argc, char* argv[])
 
     vsg::CommandLine arguments(&argc, argv);
 
-    // set up vsg::Options to pass in filepaths and ReaderWriter's and other IO
-    // realted options to use when reading and writing files.
+    // set up vsg::Options to pass in filepaths, ReaderWriters and other IO
+    // related options to use when reading and writing files.
     auto options = vsg::Options::create();
     options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
     options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
@@ -99,7 +98,7 @@ int main(int argc, char* argv[])
     if (arguments.read({"--fullscreen", "--fs"})) windowTraits->fullscreen = true;
 
     bool continuousUpdate = !arguments.read({"--event-driven", "--ed"});
-    auto internval = arguments.value<int>(-1, "--interval");
+    auto interval = arguments.value<int>(-1, "--interval");
 
     if (arguments.errors())
         return arguments.writeErrorMessages(std::cerr);
@@ -116,7 +115,7 @@ int main(int argc, char* argv[])
     auto vsg_scene = vsg::read_cast<vsg::Node>(filename, options);
     if (!vsg_scene)
     {
-        std::cout << "Failed to load a valid scenene graph, Please specify a 3d "
+        std::cout << "Failed to load a valid scene graph. Please specify a valid 3d "
                      "model or image file on the command line."
                   << std::endl;
         return 1;
@@ -127,7 +126,7 @@ int main(int argc, char* argv[])
     // create the viewer that will manage all the rendering of the views
     auto viewer = vsgQt::Viewer::create();
 
-    // add close handler to respond the close window button and pressing escape
+    // add close handler to respond to the close window button and pressing escape
     viewer->addEventHandler(vsg::CloseHandler::create(viewer));
 
     // create the windows
@@ -144,7 +143,7 @@ int main(int argc, char* argv[])
     thirdWindow->setGeometry(1360, 0, 640, 480);
     thirdWindow->show();
 
-    if (internval >= 0) viewer->setInterval(internval);
+    if (interval >= 0) viewer->setInterval(interval);
     viewer->continuousUpdate = continuousUpdate;
 
     viewer->compile();

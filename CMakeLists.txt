@@ -22,7 +22,7 @@ find_package(vsg 1.0.8)
 vsg_setup_dir_vars()
 vsg_setup_build_vars()
 
-find_package(vsgXchange) # only used by exanples
+find_package(vsgXchange) # only used by examples
 
 # if Qt5 then we need 5.10 or later
 find_package(${QT_PACKAGE_NAME} COMPONENTS Widgets REQUIRED)

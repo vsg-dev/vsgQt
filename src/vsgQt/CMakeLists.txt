@@ -4,7 +4,7 @@
 # available arguments:
 #
 #    <target>        pattern for generating macro names (<target>_DECLSPEC)
-#                    and install pathes (include/<target>/Export.h)
+#                    and install paths (include/<target>/Export.h)
 #
 # In public c++ headers the generated file must be included with
 #
@@ -44,8 +44,8 @@ set(HEADERS
     ../../include/vsgQt/Viewer.h
 )
 
-# shared mode is automatically choosed by setting BUILD_SHARED_LIBS=ON
-# POSITION_INDEPENDENT_CODE ON is set be default in shared mode
+# shared mode is automatically chosen by setting BUILD_SHARED_LIBS=ON
+# POSITION_INDEPENDENT_CODE ON is set by default in shared mode
 add_library(vsgQt ${SOURCES} ${HEADERS})
 
 # add definitions to enable building vsgQt as part of submodule

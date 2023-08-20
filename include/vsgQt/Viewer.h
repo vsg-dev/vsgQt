@@ -35,7 +35,7 @@ namespace vsgQt
         std::atomic_uint requests;
         bool continuousUpdate = true;
 
-        /// override pollEvents to prevent the window->pollEvents() being called by vsg::Viewer
+        /// override pollEvents to prevent the window->pollEvents() from being called by vsg::Viewer
         bool pollEvents(bool discardPreviousEvents = true) override;
 
         /// increment the requests count to signal that a new frame should be rendered on the next timer call.

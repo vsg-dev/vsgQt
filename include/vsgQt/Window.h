@@ -43,7 +43,7 @@ namespace vsgQt
 
         operator vsg::ref_ptr<vsg::Window>() { return windowAdapter; }
 
-        /// Initialize the Vulkan integration using VulkanSceneGraph vkInstance/vkSurface support
+        /// Initialize the Vulkan integration using VulkanSceneGraph VkInstance/VkSurface support
         virtual void initializeWindow();
 
     protected:
