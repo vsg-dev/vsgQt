@@ -36,10 +36,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 using namespace vsgQt;
 
 
-Viewer::Viewer()
+Viewer::Viewer(int msecTimerInterval)
 {
     // set the default timer as 8ms.
-    setInterval(8);
+    if (msecTimerInterval > 0) setInterval(msecTimerInterval);
 }
 
 
@@ -60,7 +60,7 @@ void Viewer::request()
     ++requests;
 }
 
-void Viewer::render()
+void Viewer::render(double simulationTime)
 {
     if (!continuousUpdate && requests.load() == 0)
     {
@@ -68,7 +68,7 @@ void Viewer::render()
         return;
     }
 
-    if (advanceToNextFrame())
+    if (advanceToNextFrame(simulationTime))
     {
         handleEvents();
         update();
@@ -86,9 +86,9 @@ void Viewer::render()
     requests = 0;
 }
 
-void Viewer::setInterval(int msec)
+void Viewer::setInterval(int msecTimerInterval)
 {
-    timer.setInterval(msec);
+    timer.setInterval(msecTimerInterval);
     timer.connect(&timer, &QTimer::timeout, [&](){ render(); } );
     timer.start();
 }

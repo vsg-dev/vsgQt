@@ -29,7 +29,11 @@ namespace vsgQt
     {
     public:
 
-        Viewer();
+        /// Create Viewer.
+        /// If msecTimerInterval is > 0 then call setInterval(msecTimerInterval) to set up QTime to call Viewer::render() at this interval,
+        /// otherwise the redraw is left application to call Viewer::render() when required, call Viewer::setInverval() to set up the timer, 
+        /// or to call the underlying vsg::Viewer methods for rendering a framne within the application when the viewer needs to redraw a frame. 
+        Viewer(int msecTimerInterval = 0);
 
         QTimer timer;
         std::atomic_uint requests;
@@ -43,10 +47,10 @@ namespace vsgQt
 
         /// called by the QTimer and will do the viewer frame calls to render all windows associated with the viewer.
         /// if continuousUpdate is false then the viewer frame calls are only done if the requests count is > 0
-        virtual void render();
+        virtual void render(double simulationTime = vsg::Viewer::UseTimeSinceStartPoint);
 
         /// set the QTimer interval in milliseconds, this controls how often the Viewer::render() is called
-        void setInterval(int msec);
+        void setInterval(int msecTimerInterval);
 
     };
 
