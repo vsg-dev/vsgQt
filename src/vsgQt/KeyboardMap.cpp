@@ -199,13 +199,12 @@ bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vs
     else
     {
         keySymbol = vsg::KeySymbol(e->key());
-        if (keySymbol>='A' && keySymbol<='Z') keySymbol = vsg::KeySymbol(int(keySymbol) + int('a'-'A'));
+        if (keySymbol >= 'A' && keySymbol <= 'Z') keySymbol = vsg::KeySymbol(int(keySymbol) + int('a' - 'A'));
 
         modifiedKeySymbol = vsg::KeySymbol(*(e->text().toLatin1().data()));
 
         // std::cout<<"KeyboardMap::getKeySymbol() NOT found in map, keySymbol = "<<keySymbol<<" "<<char(keySymbol)<< ", modifiedKeySymbol = "<<modifiedKeySymbol<<" "<<char(modifiedKeySymbol)<<std::endl;
     }
-
 
     return true;
 }

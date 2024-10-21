@@ -24,15 +24,13 @@ namespace vsgQt
     // forward declare
     class Window;
 
-
     class VSGQT_DECLSPEC Viewer : public vsg::Inherit<vsg::Viewer, Viewer>
     {
     public:
-
         /// Create Viewer.
         /// If msecTimerInterval is > 0 then call setInterval(msecTimerInterval) to set up QTime to call Viewer::render() at this interval,
-        /// otherwise the redraw is left application to call Viewer::render() when required, call Viewer::setInverval() to set up the timer, 
-        /// or to call the underlying vsg::Viewer methods for rendering a framne within the application when the viewer needs to redraw a frame. 
+        /// otherwise the redraw is left application to call Viewer::render() when required, call Viewer::setInverval() to set up the timer,
+        /// or to call the underlying vsg::Viewer methods for rendering a framne within the application when the viewer needs to redraw a frame.
         Viewer(int msecTimerInterval = 0);
 
         QTimer timer;
@@ -51,7 +49,6 @@ namespace vsgQt
 
         /// set the QTimer interval in milliseconds, this controls how often the Viewer::render() is called
         void setInterval(int msecTimerInterval);
-
     };
 
 } // namespace vsgQt

@@ -67,7 +67,7 @@ Window::Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QScreen* targetScreen)
     }
     else
     {
-        traits =vsg::WindowTraits::create();
+        traits = vsg::WindowTraits::create();
         traits->x = x();
         traits->y = y();
         traits->width = width();
@@ -86,7 +86,7 @@ Window::Window(vsg::ref_ptr<vsg::WindowTraits> in_traits, QWindow* parent) :
     }
     else
     {
-        traits =vsg::WindowTraits::create();
+        traits = vsg::WindowTraits::create();
         traits->x = x();
         traits->y = y();
         traits->width = width();
@@ -106,7 +106,7 @@ Window::Window(vsg::ref_ptr<vsgQt::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTr
     }
     else
     {
-        traits =vsg::WindowTraits::create();
+        traits = vsg::WindowTraits::create();
         traits->x = x();
         traits->y = y();
         traits->width = width();
@@ -126,7 +126,7 @@ Window::Window(vsg::ref_ptr<vsgQt::Viewer> in_viewer, vsg::ref_ptr<vsg::WindowTr
     }
     else
     {
-        traits =vsg::WindowTraits::create();
+        traits = vsg::WindowTraits::create();
         traits->x = x();
         traits->y = y();
         traits->width = width();
@@ -181,7 +181,6 @@ void Window::cleanup()
     windowAdapter = {};
     viewer = {};
 }
-
 
 bool Window::event(QEvent* e)
 {

@@ -35,13 +35,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace vsgQt;
 
-
 Viewer::Viewer(int msecTimerInterval)
 {
     // set the default timer as 8ms.
     if (msecTimerInterval > 0) setInterval(msecTimerInterval);
 }
-
 
 bool Viewer::pollEvents(bool discardPreviousEvents)
 {
@@ -89,6 +87,6 @@ void Viewer::render(double simulationTime)
 void Viewer::setInterval(int msecTimerInterval)
 {
     timer.setInterval(msecTimerInterval);
-    timer.connect(&timer, &QTimer::timeout, [&](){ render(); } );
+    timer.connect(&timer, &QTimer::timeout, [&]() { render(); });
     timer.start();
 }

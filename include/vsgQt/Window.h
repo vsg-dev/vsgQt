@@ -47,7 +47,6 @@ namespace vsgQt
         virtual void initializeWindow();
 
     protected:
-
         void cleanup();
 
         bool event(QEvent* e) override;
