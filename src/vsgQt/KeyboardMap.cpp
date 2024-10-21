@@ -90,36 +90,6 @@ KeyboardMap::KeyboardMap() :
         //KEY_Script_switch = 0xFF7E, /* Alias for mode_switch */
         {Qt::Key_NumLock, vsg::KEY_Num_Lock},
 
-        /* Keypad Functions, keypad numbers cleverly chosen to map to ascii */
-
-        //KEY_KP_Space = 0xFF80, /* space */
-        //KEY_KP_Tab = 0xFF89,
-        //KEY_KP_Enter = 0xFF8D, /* enter */
-        //KEY_KP_F1 = 0xFF91,    /* PF1, KP_A, ... */
-        //KEY_KP_F2 = 0xFF92,
-        //KEY_KP_F3 = 0xFF93,
-        //KEY_KP_F4 = 0xFF94,
-        //KEY_KP_Home = 0xFF95,
-        //KEY_KP_Left = 0xFF96,
-        //KEY_KP_Up = 0xFF97,
-        //KEY_KP_Right = 0xFF98,
-        //KEY_KP_Down = 0xFF99,
-        //KEY_KP_Prior = 0xFF9A,
-        //KEY_KP_Page_Up = 0xFF9A,
-        //KEY_KP_Next = 0xFF9B,
-        //KEY_KP_Page_Down = 0xFF9B,
-        //KEY_KP_End = 0xFF9C,
-        //KEY_KP_Begin = 0xFF9D,
-        //KEY_KP_Insert = 0xFF9E,
-        //KEY_KP_Delete = 0xFF9F,
-        //KEY_KP_Equal = 0xFFBD, /* equals */
-        //KEY_KP_Multiply = 0xFFAA,
-        //KEY_KP_Add = 0xFFAB,
-        //KEY_KP_Separator = 0xFFAC, /* separator, often comma */
-        //KEY_KP_Subtract = 0xFFAD,
-        //KEY_KP_Decimal = 0xFFAE,
-        //KEY_KP_Divide = 0xFFAF,
-
 #if 0
         {Qt::Key_0, vsg::KEY_KP_0},
         {Qt::Key_1, vsg::KEY_KP_1},
