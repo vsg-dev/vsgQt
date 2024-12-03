@@ -171,19 +171,21 @@ KeyboardMap::KeyboardMap() :
 bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vsg::KeySymbol& modifiedKeySymbol, vsg::KeyModifier& keyModifier)
 {
     uint16_t modifierMask = 0;
-    switch (e->modifiers())
+    if (e->modifiers() & Qt::ShiftModifier)
     {
-    case Qt::NoModifier:
-        break;
-    case Qt::ShiftModifier:
         modifierMask |= vsg::KeyModifier::MODKEY_Shift;
-        break;
-    case Qt::ControlModifier:
+    }
+    if (e->modifiers() & Qt::ControlModifier)
+    {
         modifierMask |= vsg::KeyModifier::MODKEY_Control;
-        break;
-    case Qt::AltModifier:
+    }
+    if (e->modifiers() & Qt::AltModifier)
+    {
         modifierMask |= vsg::KeyModifier::MODKEY_Alt;
-        break;
+    }
+    if (e->modifiers() & Qt::MetaModifier)
+    {
+        modifierMask |= vsg::KeyModifier::MODKEY_Meta;
     }
 
     keyModifier = (vsg::KeyModifier)modifierMask;
