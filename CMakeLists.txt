@@ -15,7 +15,8 @@ set(VSGQT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "Root binary d
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(QT_PACKAGE_NAME Qt5 CACHE STRING "Set Qt package name, i.e. Qt5 or Qt6.")
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 find_package(vsg 1.1.2)
 
@@ -23,9 +24,6 @@ vsg_setup_dir_vars()
 vsg_setup_build_vars()
 
 find_package(vsgXchange) # only used by examples
-
-# if Qt5 then we need 5.10 or later
-find_package(${QT_PACKAGE_NAME} COMPONENTS Widgets REQUIRED)
 
 vsg_add_target_clang_format(
     FILES
