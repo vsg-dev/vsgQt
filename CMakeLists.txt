@@ -5,6 +5,9 @@ project(vsgQt
     DESCRIPTION "Qt integration with VulkanSceneGraph"
     LANGUAGES CXX
 )
+
+option(VSGQT_BUILD_EXMAPLES "Build examples" ON)
+
 set(VSGQT_SOVERSION 3)
 set(VSGQT_RELEASE_CANDIDATE 0)
 
@@ -21,8 +24,6 @@ find_package(vsg 1.1.2)
 
 vsg_setup_dir_vars()
 vsg_setup_build_vars()
-
-find_package(vsgXchange) # only used by examples
 
 # if Qt5 then we need 5.10 or later
 find_package(${QT_PACKAGE_NAME} COMPONENTS Widgets REQUIRED)
@@ -66,6 +67,8 @@ if(WIN32)
 endif()
 
 add_subdirectory(src/vsgQt)
-add_subdirectory(examples)
+if (VSGQT_BUILD_EXMAPLES)
+    add_subdirectory(examples)
+endif()
 
 vsg_add_feature_summary()
