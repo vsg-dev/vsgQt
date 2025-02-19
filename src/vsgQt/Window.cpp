@@ -161,6 +161,7 @@ void Window::initializeWindow()
     traits->height = convert_coord(height());
 
     windowAdapter = vsg::Window::create(traits);
+    _initialized = true;
 }
 
 void Window::cleanup()
