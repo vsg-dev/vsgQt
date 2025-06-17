@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 
 project(vsgQt
-    VERSION 0.3.0
+    VERSION 0.4.0
     DESCRIPTION "Qt integration with VulkanSceneGraph"
     LANGUAGES CXX
 )
