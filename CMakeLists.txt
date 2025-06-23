@@ -6,7 +6,7 @@ project(vsgQt
     LANGUAGES CXX
 )
 
-option(VSGQT_BUILD_EXMAPLES "Build examples" ON)
+option(VSGQT_BUILD_EXAMPLES "Build examples" ON)
 
 set(VSGQT_SOVERSION 3)
 set(VSGQT_RELEASE_CANDIDATE 0)
@@ -67,7 +67,7 @@ if(WIN32)
 endif()
 
 add_subdirectory(src/vsgQt)
-if (VSGQT_BUILD_EXMAPLES)
+if (VSGQT_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
