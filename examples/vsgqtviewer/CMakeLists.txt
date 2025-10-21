@@ -5,7 +5,7 @@ set(SOURCES
 set(HEADERS
 )
 
-add_executable(vsgqtviewer ${MODE} ${SOURCES} ${HEADERS} ${FORMS})
+add_executable(vsgqtviewer WIN32 ${SOURCES} ${HEADERS} ${FORMS})
 
 target_link_libraries(vsgqtviewer vsgQt)
 

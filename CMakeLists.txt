@@ -63,7 +63,6 @@ set(CMAKE_AUTOUIC ON)
 
 if(WIN32)
     add_definitions(-DNOMINMAX)
-    set(MODE WIN32)
 endif()
 
 add_subdirectory(src/vsgQt)

@@ -5,7 +5,7 @@ set(SOURCES
 set(HEADERS
 )
 
-add_executable(vsgqtwindows ${MODE} ${SOURCES} ${HEADERS} ${FORMS})
+add_executable(vsgqtwindows WIN32 ${SOURCES} ${HEADERS} ${FORMS})
 
 target_link_libraries(vsgqtwindows vsgQt)
 

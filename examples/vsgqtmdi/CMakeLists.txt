@@ -5,7 +5,7 @@ set(SOURCES
 set(HEADERS
 )
 
-add_executable(vsgqtmdi ${MODE} ${SOURCES} ${HEADERS} ${FORMS})
+add_executable(vsgqtmdi WIN32 ${SOURCES} ${HEADERS} ${FORMS})
 
 target_link_libraries(vsgqtmdi vsgQt)
 
