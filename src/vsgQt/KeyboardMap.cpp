@@ -188,9 +188,18 @@ bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vs
         modifierMask |= vsg::KeyModifier::MODKEY_Meta;
     }
 
+    // On key releases, mod keys are not present in QKeyEvent::modifiers(), so need to manually add them to the modifierMask
+    const int key = e->key();
+    if (key == Qt::Key_Control)
+        modifierMask |= vsg::KeyModifier::MODKEY_Control;
+    else if (key == Qt::Key_Shift)
+        modifierMask |= vsg::KeyModifier::MODKEY_Shift;
+    else if (key == Qt::Key_Alt)
+        modifierMask |= vsg::KeyModifier::MODKEY_Alt;
+
     keyModifier = (vsg::KeyModifier)modifierMask;
 
-    auto itr = _keycodeMap.find((uint32_t)e->key());
+    auto itr = _keycodeMap.find((uint32_t)key);
     if (itr != _keycodeMap.end())
     {
         keySymbol = itr->second;
@@ -200,7 +209,7 @@ bool KeyboardMap::getKeySymbol(const QKeyEvent* e, vsg::KeySymbol& keySymbol, vs
     }
     else
     {
-        keySymbol = vsg::KeySymbol(e->key());
+        keySymbol = vsg::KeySymbol(key);
         if (keySymbol >= 'A' && keySymbol <= 'Z') keySymbol = vsg::KeySymbol(int(keySymbol) + int('a' - 'A'));
 
         modifiedKeySymbol = vsg::KeySymbol(*(e->text().toLatin1().data()));
