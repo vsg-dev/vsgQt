@@ -10,7 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 </editor-fold> */
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #    define VK_USE_PLATFORM_WIN32_KHR
 #elif defined(__APPLE__)
 #    define VK_USE_PLATFORM_MACOS_MVK
