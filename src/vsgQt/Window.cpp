@@ -45,6 +45,9 @@ Window::Window(QScreen* targetScreen) :
     traits->y = y();
     traits->width = width();
     traits->height = height();
+#if VSG_API_VERSION_GREATER_EQUAL(1,1,17)
+    traits->dragAndDrop = false;
+#endif
 }
 
 Window::Window(QWindow* parent) :
